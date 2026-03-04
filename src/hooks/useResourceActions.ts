@@ -34,17 +34,15 @@ export const useResourceActions = () => {
   const getFolderDeleteHandler = (folder: FolderData, parentGuid?: string | 'root' | null) => (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (window.confirm(`Delete folder "${folder.name}"?`)) {
-      deleteFolder.mutate({ guid: folder.guid, parent_id: parentGuid === 'root' ? null : parentGuid });
-    }
+    // Confirmation is now handled by DeleteConfirmationDialog in the component
+    deleteFolder.mutate({ guid: folder.guid, parent_id: parentGuid === 'root' ? null : parentGuid });
   };
 
   const getFileDeleteHandler = (file: FileData, currentFolderGuid?: string | 'root' | null) => (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (window.confirm(`Delete file "${file.name}"?`)) {
-      deleteFile.mutate({ guid: file.guid, folder_id: currentFolderGuid === 'root' ? null : (currentFolderGuid || null) });
-    }
+    // Confirmation is now handled by DeleteConfirmationDialog in the component
+    deleteFile.mutate({ guid: file.guid, folder_id: currentFolderGuid === 'root' ? null : (currentFolderGuid || null) });
   };
   const getDownloadHandler = (guid: string) => (e: React.MouseEvent) => {
     e.preventDefault();

@@ -1,5 +1,6 @@
 import { Loader2, Star } from "lucide-react"
 import { useFavorites } from "@/lib/queries"
+import { useParams } from "react-router-dom"
 import type { FolderData, FileData } from "@/lib/api"
 import { FolderCard } from "@/components/ui/FolderCard"
 import { FileCard } from "@/components/ui/FileCard"
@@ -7,7 +8,8 @@ import { ResourceSection } from "@/components/ui/ResourceSection"
 import { useResourceActions } from "@/hooks/useResourceActions"
 
 export const Favorites = () => {
-  const { data, isLoading } = useFavorites();
+  const { workspaceGuid } = useParams<{ workspaceGuid: string }>();
+  const { data, isLoading } = useFavorites(workspaceGuid);
   const {
     getFolderFavoriteHandler,
     getFileFavoriteHandler,

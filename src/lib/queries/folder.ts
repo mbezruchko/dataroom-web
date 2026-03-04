@@ -3,13 +3,15 @@ import { toast } from 'sonner';
 import { api } from '../api';
 import type { FolderDetailed, FolderData, FolderBreadcrumb, FileData } from '../api';
 
-export const useFolder = (folderId: string | 'root') => {
+export const useFolder = (folderId: string | 'root', workspaceGuid?: string | null) => {
   return useQuery({
-    queryKey: ['folder', folderId],
+    queryKey: ['folder', folderId, workspaceGuid],
     queryFn: async () => {
       if (folderId === 'root') {
-        const folders = (await api.get<FolderData[]>('/folders')).data;
-        const files = (await api.get<FileData[]>('/files')).data;
+        const url = workspaceGuid ? `/folders?workspace_guid=${workspaceGuid}` : '/folders';
+        const filesUrl = workspaceGuid ? `/files?workspace_guid=${workspaceGuid}` : '/files';
+        const folders = (await api.get<FolderData[]>(url)).data;
+        const files = (await api.get<FileData[]>(filesUrl)).data;
         return {
           id: 0,
           guid: 'root',
@@ -44,8 +46,8 @@ export const useFolderPath = (folderId: string | 'root') => {
 export const useCreateFolder = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ name, parent_guid }: { name: string; parent_guid?: string | null }) => {
-      const { data } = await api.post<FolderData>('/folders', { name, parent_guid });
+    mutationFn: async ({ name, parent_guid, workspace_guid }: { name: string; parent_guid?: string | null, workspace_guid?: string }) => {
+      const { data } = await api.post<FolderData>('/folders', { name, parent_guid, workspace_guid });
       return { data, parent_guid };
     },
     onSuccess: () => {

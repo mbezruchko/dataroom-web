@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { useCreateFolder } from "@/lib/queries"
+import { useParams } from "react-router-dom"
 import {
   Dialog,
   DialogContent,
@@ -20,6 +21,7 @@ interface CreateFolderDialogProps {
 export function CreateFolderDialog({ parentId }: CreateFolderDialogProps) {
   const [open, setOpen] = useState(false)
   const [name, setName] = useState("")
+  const { workspaceGuid } = useParams<{ workspaceGuid: string }>()
   const createFolder = useCreateFolder()
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -29,7 +31,11 @@ export function CreateFolderDialog({ parentId }: CreateFolderDialogProps) {
     const normalizedParentId = parentId === 'root' ? null : parentId
 
     createFolder.mutate(
-      { name: name.trim(), parent_guid: normalizedParentId },
+      {
+        name: name.trim(),
+        parent_guid: normalizedParentId,
+        workspace_guid: workspaceGuid
+      },
       {
         onSuccess: () => {
           setOpen(false)

@@ -1,4 +1,4 @@
-import { useLocation } from "react-router-dom"
+import { useLocation, useParams } from "react-router-dom"
 import { Loader2, Search } from "lucide-react"
 import { useSearch } from "@/lib/queries"
 import type { FolderData, FileData } from "@/lib/api"
@@ -8,11 +8,12 @@ import { ResourceSection } from "@/components/ui/ResourceSection"
 import { useResourceActions } from "@/hooks/useResourceActions"
 
 export const SearchResults = () => {
+  const { workspaceGuid } = useParams<{ workspaceGuid: string }>();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const query = queryParams.get('q') || "";
 
-  const { data, isLoading } = useSearch(query);
+  const { data, isLoading } = useSearch(query, workspaceGuid);
   const {
     getFolderFavoriteHandler,
     getFileFavoriteHandler,

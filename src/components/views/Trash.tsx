@@ -1,9 +1,11 @@
 import { Loader2, Trash2, RotateCcw, FileText } from "lucide-react"
 import { useTrash, useRestoreFile } from "@/lib/queries"
+import { useParams } from "react-router-dom"
 import type { FileData } from "@/lib/api"
 
 export const Trash = () => {
-  const { data, isLoading } = useTrash();
+  const { workspaceGuid } = useParams<{ workspaceGuid: string }>();
+  const { data, isLoading } = useTrash(workspaceGuid);
   const restoreFile = useRestoreFile();
 
   if (isLoading) {
@@ -30,7 +32,7 @@ export const Trash = () => {
               {data.files.map((file: FileData) => (
                 <div key={file.guid} className="group relative p-4 border rounded-lg shadow-sm hover:bg-accent transition-colors flex items-center justify-between gap-3 h-20">
                   <div className="flex items-center gap-3 truncate min-w-0">
-                    <span className="text-2xl shrink-0 opacity-50"><FileText className="color-sidebar-foreground" /></span>
+                    <span className="text-2xl shrink-0 opacity-50"><FileText /></span>
                     <div className="flex flex-col truncate">
                       <span className="font-medium truncate text-muted-foreground">{file.name}</span>
                       <span className="text-xs text-muted-foreground truncate">{(file.size / 1024 / 1024).toFixed(2)} MB</span>

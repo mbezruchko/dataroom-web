@@ -2,12 +2,12 @@ import { useQuery } from '@tanstack/react-query';
 import { api } from '../api';
 import type { SearchResponse } from '../api';
 
-export const useSearch = (query: string) => {
+export const useSearch = (query: string, workspaceGuid?: string) => {
   return useQuery({
-    queryKey: ['search', query],
+    queryKey: ['search', query, workspaceGuid],
     queryFn: async () => {
       const { data } = await api.get<SearchResponse>(`/search`, {
-        params: { query },
+        params: { query, workspace_guid: workspaceGuid },
       });
       return data;
     },
@@ -15,21 +15,25 @@ export const useSearch = (query: string) => {
   });
 };
 
-export const useFavorites = () => {
+export const useFavorites = (workspaceGuid?: string) => {
   return useQuery({
-    queryKey: ['favorites'],
+    queryKey: ['favorites', workspaceGuid],
     queryFn: async () => {
-      const { data } = await api.get<SearchResponse>('/search/favorites');
+      const { data } = await api.get<SearchResponse>('/search/favorites', {
+        params: { workspace_guid: workspaceGuid }
+      });
       return data;
     },
   });
 };
 
-export const useTrash = () => {
+export const useTrash = (workspaceGuid?: string) => {
   return useQuery({
-    queryKey: ['trash'],
+    queryKey: ['trash', workspaceGuid],
     queryFn: async () => {
-      const { data } = await api.get<SearchResponse>('/search/trash');
+      const { data } = await api.get<SearchResponse>('/search/trash', {
+        params: { workspace_guid: workspaceGuid }
+      });
       return data;
     },
   });

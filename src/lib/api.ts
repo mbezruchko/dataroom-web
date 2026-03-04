@@ -46,3 +46,13 @@ export interface SearchResponse {
   folders: FolderData[];
   files: FileData[];
 }
+
+export interface WorkspaceData {
+  id: number;
+  guid: string;
+  name: string;
+  description: string | null;
+  is_deleted: boolean;
+  created_at: string;
+  updated_at: string;
+}

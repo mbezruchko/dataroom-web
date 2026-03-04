@@ -7,19 +7,23 @@ import type { AxiosRequestConfig } from 'axios';
 interface UploadVariables {
   files: File[];
   folder_guid: string | null;
+  workspace_guid?: string;
   onUploadProgress?: (progressEvent: any) => void;
 }
 
 export const useUploadFile = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ files, folder_guid, onUploadProgress }: UploadVariables) => {
+    mutationFn: async ({ files, folder_guid, workspace_guid, onUploadProgress }: UploadVariables) => {
       const formData = new FormData();
       files.forEach(file => {
         formData.append('files', file);
       });
       if (folder_guid !== null) {
         formData.append('folder_guid', folder_guid);
+      }
+      if (workspace_guid) {
+        formData.append('workspace_guid', workspace_guid);
       }
       const config: AxiosRequestConfig = {
         headers: { 'Content-Type': 'multipart/form-data' },

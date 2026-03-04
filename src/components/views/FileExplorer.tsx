@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { useLocation } from "react-router-dom"
+import { useParams } from "react-router-dom"
 import axios from "axios"
 import { Loader2, Pencil, Check, X } from "lucide-react"
 import { useFolder, useRenameFolder } from "@/lib/queries"
@@ -13,11 +13,10 @@ import { ResourceSection } from "@/components/ui/ResourceSection"
 import { useResourceActions } from "@/hooks/useResourceActions"
 
 export const FileExplorer = () => {
-  const location = useLocation();
-  const pathParts = location.pathname.split('/').filter(Boolean);
-  const folderGuid = pathParts[0] === 'folder' ? pathParts[1] : 'root';
+  const { workspaceGuid, folderGuid: folderGuidParam } = useParams<{ workspaceGuid: string, folderGuid?: string }>();
+  const folderGuid = folderGuidParam || 'root';
 
-  const { data: folder, isLoading, isError, error } = useFolder(folderGuid);
+  const { data: folder, isLoading, isError, error } = useFolder(folderGuid, workspaceGuid);
   const isNotFound = folderGuid !== 'root' && isError && axios.isAxiosError(error) && error.response?.status === 404;
   const renameFolder = useRenameFolder();
   const {

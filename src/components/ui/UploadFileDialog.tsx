@@ -1,5 +1,6 @@
 import { useState, useRef } from "react"
 import { useUploadFile } from "@/lib/queries"
+import { useParams } from "react-router-dom"
 import {
   Dialog,
   DialogContent,
@@ -21,6 +22,7 @@ export function UploadFileDialog({ folderId }: UploadFileDialogProps) {
   const [files, setFiles] = useState<File[]>([])
   const [progress, setProgress] = useState(0)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const { workspaceGuid } = useParams<{ workspaceGuid: string }>()
   const uploadFile = useUploadFile()
 
   const targetFolderId = folderId === 'root' ? null : folderId
@@ -39,6 +41,7 @@ export function UploadFileDialog({ folderId }: UploadFileDialogProps) {
       {
         files,
         folder_guid: targetFolderId,
+        workspace_guid: workspaceGuid,
         onUploadProgress: (progressEvent) => {
           if (progressEvent.total) {
             const percentCompleted = Math.round(

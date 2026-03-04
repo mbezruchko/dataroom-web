@@ -12,7 +12,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Menu } from "lucide-react"
 import React, { useState } from "react"
-import { Link, useNavigate, useLocation } from "react-router-dom"
+import { Link, useNavigate, useLocation, useParams } from "react-router-dom"
 import { useAppStore } from "@/store/useAppStore"
 import { useFolderPath } from "@/lib/queries"
 
@@ -27,13 +27,17 @@ export function Header() {
 
   const navigate = useNavigate()
   const location = useLocation()
+  const { workspaceGuid } = useParams<{ workspaceGuid: string }>()
   const [search, setSearch] = useState("")
-  const [, segment, folderGuidFromPath] = location.pathname.split("/")
-  const folderGuid = segment === "folder" ? folderGuidFromPath : 'root'
+
+  const pathParts = location.pathname.split("/").filter(Boolean)
+  // URL is /:workspaceGuid/folder/:folderGuid or /:workspaceGuid/root
+  const folderGuid = pathParts[1] === "folder" ? pathParts[2] : (pathParts[1] === "root" ? "root" : "root")
+
   const { data: folderPath, isLoading } = useFolderPath(folderGuid)
 
   const items: BreadcrumbItemData[] = [
-    { label: "Root", href: "/root", active: folderGuid === 'root' }
+    { label: "Root", href: `/${workspaceGuid}/root`, active: folderGuid === 'root' }
   ];
 
   if (folderPath && folderPath.length > 0) {
@@ -41,7 +45,7 @@ export function Header() {
       const isLast = index === folderPath.length - 1;
       items.push({
         label: folder.name,
-        href: `/folder/${folder.guid}`,
+        href: `/${workspaceGuid}/folder/${folder.guid}`,
         active: isLast
       });
     });
@@ -49,7 +53,7 @@ export function Header() {
 
   const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && search.trim()) {
-      navigate(`/search?q=${encodeURIComponent(search.trim())}`)
+      navigate(`/${workspaceGuid}/search?q=${encodeURIComponent(search.trim())}`)
       setSearch("")
     }
   }

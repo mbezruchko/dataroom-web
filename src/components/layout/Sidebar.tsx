@@ -1,36 +1,33 @@
 import { cn } from "@/lib/utils"
-import { FolderOpen, Lock, Star, Trash2 } from "lucide-react"
+import { FolderOpen, Star, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Link, useLocation } from "react-router-dom"
+import { Link, useLocation, useParams } from "react-router-dom"
 import { useAppStore } from "@/store/useAppStore"
-
-const folderLinks = [
-  { icon: FolderOpen, label: "Storage", href: "/root" },
-  { icon: Star, label: "Favorites", href: "/favorites" },
-  { icon: Trash2, label: "Trash", href: "/trash" },
-]
+import { WorkspaceSwitcher } from "./WorkspaceSwitcher"
 
 export function Sidebar() {
   const location = useLocation()
+  const { workspaceGuid } = useParams<{ workspaceGuid: string }>()
   const sidebarOpen = useAppStore(state => state.sidebarOpen)
 
   if (!sidebarOpen) return null;
 
+  const folderLinks = [
+    { icon: FolderOpen, label: "Storage", href: `/${workspaceGuid}/root` },
+    { icon: Star, label: "Favorites", href: `/${workspaceGuid}/favorites` },
+    { icon: Trash2, label: "Trash", href: `/${workspaceGuid}/trash` },
+  ]
+
   return (
     <div className="flex w-64 flex-col border-r bg-sidebar text-sidebar-foreground transition-all duration-300">
-      <div className="flex h-14 items-center border-b px-4">
-        <Link to="/" className="flex items-center gap-2 font-semibold">
-          <div className="flex size-6 items-center justify-center rounded-sm bg-primary/10 text-primary">
-            <Lock className="size-4" />
-          </div>
-          <span>DataRoom</span>
-        </Link>
+      <div className="flex h-14 items-center border-b px-2">
+        <WorkspaceSwitcher />
       </div>
 
       <div className="flex-1 overflow-auto py-2">
         <nav className="space-y-1 px-2">
           {folderLinks.map((item, index) => {
-            const isActive = location.pathname.startsWith(item.href);
+            const isActive = location.pathname === item.href || (item.label === "Storage" && location.pathname.includes("/folder/"));
 
             return (
               <Button
