@@ -12,7 +12,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Menu } from "lucide-react"
 import React, { useState } from "react"
-import { Link, useLocation, useNavigate } from "react-router-dom"
+import { Link, useNavigate, useParams } from "react-router-dom"
 import { useAppStore } from "@/store/useAppStore"
 import { useFolderPath } from "@/lib/queries"
 
@@ -24,26 +24,17 @@ interface BreadcrumbItemData {
 
 export function Header() {
   const toggleSidebar = useAppStore(state => state.toggleSidebar)
-  const location = useLocation()
+
   const navigate = useNavigate()
   const [search, setSearch] = useState("")
-
-  const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && search.trim()) {
-      navigate(`/search?q=${encodeURIComponent(search.trim())}`)
-      setSearch("")
-    }
-  }
-
-  const pathParts = location.pathname.split('/').filter(Boolean);
-  const folderIdString = pathParts[0] === 'folder' ? pathParts[1] : 'root';
-  const folderId = folderIdString === 'root' ? 'root' : parseInt(folderIdString, 10);
-
-  const { data: folderPath, isLoading } = useFolderPath(folderId);
+  const { folderId: folderIdParam } = useParams<{ folderId: string }>()
+  const folderId: number | 'root' = folderIdParam ? parseInt(folderIdParam, 10) : 'root'
+  const { data: folderPath, isLoading } = useFolderPath(folderId)
 
   const items: BreadcrumbItemData[] = [
     { label: "Root", href: "/root", active: folderId === 'root' }
   ];
+
   if (folderPath && folderPath.length > 0) {
     folderPath.forEach((folder, index) => {
       const isLast = index === folderPath.length - 1;
@@ -54,6 +45,14 @@ export function Header() {
       });
     });
   }
+
+  const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && search.trim()) {
+      navigate(`/search?q=${encodeURIComponent(search.trim())}`)
+      setSearch("")
+    }
+  }
+
   const renderBreadcrumbs = () => {
     if (items.length <= 3) {
       return items.map((item, index) => (
@@ -73,6 +72,7 @@ export function Header() {
     }
     const first = items[0]
     const lastTwo = items.slice(-2)
+
     return (
       <>
         <BreadcrumbItem>
