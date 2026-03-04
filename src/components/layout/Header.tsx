@@ -12,7 +12,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Menu } from "lucide-react"
 import React, { useState } from "react"
-import { Link, useNavigate, useParams } from "react-router-dom"
+import { Link, useNavigate, useLocation } from "react-router-dom"
 import { useAppStore } from "@/store/useAppStore"
 import { useFolderPath } from "@/lib/queries"
 
@@ -26,9 +26,10 @@ export function Header() {
   const toggleSidebar = useAppStore(state => state.toggleSidebar)
 
   const navigate = useNavigate()
+  const location = useLocation()
   const [search, setSearch] = useState("")
-  const { folderId: folderIdParam } = useParams<{ folderId: string }>()
-  const folderId: number | 'root' = folderIdParam ? parseInt(folderIdParam, 10) : 'root'
+  const [, segment, id] = location.pathname.split("/")
+  const folderId = (segment === "folder" && Number(id)) || 'root'
   const { data: folderPath, isLoading } = useFolderPath(folderId)
 
   const items: BreadcrumbItemData[] = [

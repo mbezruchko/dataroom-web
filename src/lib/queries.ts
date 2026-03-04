@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 import { api } from './api';
 import type { FolderDetailed, SearchResponse, FolderData, FileData, FolderBreadcrumb } from './api';
 import type { AxiosRequestConfig } from 'axios';
@@ -84,6 +85,10 @@ export const useCreateFolder = () => {
       queryClient.invalidateQueries({ queryKey: ['folder'] });
       queryClient.invalidateQueries({ queryKey: ['favorites'] });
       queryClient.invalidateQueries({ queryKey: ['search'] });
+      toast.success('Folder created');
+    },
+    onError: () => {
+      toast.error('Failed to create folder');
     },
   });
 };
@@ -100,6 +105,10 @@ export const useDeleteFolder = () => {
       queryClient.invalidateQueries({ queryKey: ['folder', cacheId] });
       queryClient.invalidateQueries({ queryKey: ['favorites'] });
       queryClient.invalidateQueries({ queryKey: ['search'] });
+      toast.success('Folder deleted');
+    },
+    onError: () => {
+      toast.error('Failed to delete folder');
     },
   });
 };
@@ -131,9 +140,14 @@ export const useUploadFile = () => {
       const { data } = await api.post<FileData[]>('/files/upload', formData, config);
       return { data, folder_id };
     },
-    onSuccess: () => {
+    onSuccess: (_, { files }) => {
       queryClient.invalidateQueries({ queryKey: ['folder'] });
       queryClient.invalidateQueries({ queryKey: ['search'] });
+      const count = files.length;
+      toast.success(count === 1 ? 'File uploaded' : `Uploaded files: ${count}`);
+    },
+    onError: () => {
+      toast.error('Failed to upload file(s)');
     },
   });
 };
@@ -150,6 +164,10 @@ export const useDeleteFile = () => {
       queryClient.invalidateQueries({ queryKey: ['favorites'] });
       queryClient.invalidateQueries({ queryKey: ['search'] });
       queryClient.invalidateQueries({ queryKey: ['trash'] });
+      toast.success('File deleted');
+    },
+    onError: () => {
+      toast.error('Failed to delete file');
     },
   });
 };
@@ -162,10 +180,14 @@ export const useToggleFavoriteFolder = () => {
       const { data } = await api.patch(`/folders/${id}/favorite`, { is_favorite });
       return { id, is_favorite, data };
     },
-    onSuccess: () => {
+    onSuccess: (_, { is_favorite }) => {
       queryClient.invalidateQueries({ queryKey: ['folder'] });
       queryClient.invalidateQueries({ queryKey: ['favorites'] });
       queryClient.invalidateQueries({ queryKey: ['search'] });
+      toast.success(is_favorite ? 'Folder added to favorites' : 'Folder removed from favorites');
+    },
+    onError: () => {
+      toast.error('Failed to change favorite');
     },
   });
 };
@@ -177,10 +199,14 @@ export const useToggleFavoriteFile = () => {
       const { data } = await api.patch(`/files/${id}/favorite`, { is_favorite });
       return { id, is_favorite, data };
     },
-    onSuccess: () => {
+    onSuccess: (_, { is_favorite }) => {
       queryClient.invalidateQueries({ queryKey: ['folder'] });
       queryClient.invalidateQueries({ queryKey: ['favorites'] });
       queryClient.invalidateQueries({ queryKey: ['search'] });
+      toast.success(is_favorite ? 'File added to favorites' : 'File removed from favorites');
+    },
+    onError: () => {
+      toast.error('Failed to change favorite');
     },
   });
 };
@@ -197,6 +223,10 @@ export const useRestoreFile = () => {
       queryClient.invalidateQueries({ queryKey: ['favorites'] });
       queryClient.invalidateQueries({ queryKey: ['trash'] });
       queryClient.invalidateQueries({ queryKey: ['search'] });
+      toast.success('File restored');
+    },
+    onError: () => {
+      toast.error('Failed to restore file');
     },
   });
 };
@@ -210,8 +240,13 @@ export const useRenameFolder = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['folder'] });
+      queryClient.invalidateQueries({ queryKey: ['folderPath'] });
       queryClient.invalidateQueries({ queryKey: ['search'] });
       queryClient.invalidateQueries({ queryKey: ['favorites'] });
+      toast.success('Папка переименована');
+    },
+    onError: () => {
+      toast.error('Не удалось переименовать папку');
     },
   });
 };

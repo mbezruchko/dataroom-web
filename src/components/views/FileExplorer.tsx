@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react"
 import { useLocation } from "react-router-dom"
+import axios from "axios"
 import { Loader2, Pencil, Check, X } from "lucide-react"
 import { useFolder, useRenameFolder } from "@/lib/queries"
+import { NotFound } from "./NotFound"
 import type { FolderData, FileData } from "@/lib/api"
 import { CreateFolderDialog } from "@/components/ui/CreateFolderDialog"
 import { UploadFileDialog } from "@/components/ui/UploadFileDialog"
@@ -16,7 +18,8 @@ export const FileExplorer = () => {
   const folderIdString = pathParts[0] === 'folder' ? pathParts[1] : 'root';
   const folderId = folderIdString === 'root' ? 'root' : parseInt(folderIdString, 10);
 
-  const { data: folder, isLoading, isError } = useFolder(folderId);
+  const { data: folder, isLoading, isError, error } = useFolder(folderId);
+  const isNotFound = folderId !== 'root' && isError && axios.isAxiosError(error) && error.response?.status === 404;
   const renameFolder = useRenameFolder();
   const {
     getFolderFavoriteHandler,
@@ -58,6 +61,10 @@ export const FileExplorer = () => {
         <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
       </div>
     );
+  }
+
+  if (isNotFound) {
+    return <NotFound />;
   }
 
   if (isError) {
