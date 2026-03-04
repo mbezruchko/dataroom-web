@@ -9,6 +9,7 @@ export const api = axios.create({
 
 export interface FileData {
   id: number;
+  guid: string;
   name: string;
   size: number;
   folder_id: number;
@@ -20,6 +21,7 @@ export interface FileData {
 
 export interface FolderData {
   id: number;
+  guid: string;
   name: string;
   parent_id: number | null;
   is_deleted: boolean;
@@ -36,6 +38,7 @@ export interface FolderDetailed extends FolderData {
 
 export interface FolderBreadcrumb {
   id: number;
+  guid: string;
   name: string;
 }
 

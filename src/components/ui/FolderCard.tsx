@@ -11,7 +11,7 @@ interface FolderCardProps {
 
 export const FolderCard = ({ folder, onFavoriteToggle, onDelete }: FolderCardProps) => {
   return (
-    <Link to={`/folder/${folder.id}`} className="group relative">
+    <Link to={`/folder/${folder.guid}`} className="group relative">
       <div className="p-4 border rounded-lg shadow-sm hover:bg-accent cursor-pointer transition-colors flex items-center justify-between gap-3 h-20">
         <div className="flex items-center gap-3 truncate min-w-0">
           <span className="text-2xl shrink-0"><FolderClosed className="text-sidebar-foreground" /></span>

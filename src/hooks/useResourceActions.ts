@@ -9,15 +9,15 @@ export const useResourceActions = () => {
   const deleteFile = useDeleteFile();
   const renameFile = useRenameFile();
 
-  const handleDownload = (fileId: number) => {
-    window.open(`/api/v1/files/${fileId}/download`, '_blank');
+  const handleDownload = (guid: string) => {
+    window.open(`/api/v1/files/${guid}/download`, '_blank');
   };
 
   const getFolderFavoriteHandler = (folder: FolderData, overrideValue?: boolean) => (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     toggleFavFolder.mutate({
-      id: folder.id,
+      guid: folder.guid,
       is_favorite: overrideValue !== undefined ? overrideValue : !folder.is_favorite
     });
   };
@@ -26,34 +26,34 @@ export const useResourceActions = () => {
     e.preventDefault();
     e.stopPropagation();
     toggleFavFile.mutate({
-      id: file.id,
+      guid: file.guid,
       is_favorite: overrideValue !== undefined ? overrideValue : !file.is_favorite
     });
   };
 
-  const getFolderDeleteHandler = (folder: FolderData, parentId?: number | 'root' | null) => (e: React.MouseEvent) => {
+  const getFolderDeleteHandler = (folder: FolderData, parentGuid?: string | 'root' | null) => (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     if (window.confirm(`Delete folder "${folder.name}"?`)) {
-      deleteFolder.mutate({ id: folder.id, parent_id: parentId === 'root' ? null : parentId });
+      deleteFolder.mutate({ guid: folder.guid, parent_id: parentGuid === 'root' ? null : parentGuid });
     }
   };
 
-  const getFileDeleteHandler = (file: FileData, currentFolderId?: number | 'root' | null) => (e: React.MouseEvent) => {
+  const getFileDeleteHandler = (file: FileData, currentFolderGuid?: string | 'root' | null) => (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     if (window.confirm(`Delete file "${file.name}"?`)) {
-      deleteFile.mutate({ id: file.id, folder_id: currentFolderId === 'root' ? null : (currentFolderId || null) });
+      deleteFile.mutate({ guid: file.guid, folder_id: currentFolderGuid === 'root' ? null : (currentFolderGuid || null) });
     }
   };
-  const getDownloadHandler = (fileId: number) => (e: React.MouseEvent) => {
+  const getDownloadHandler = (guid: string) => (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    handleDownload(fileId);
+    handleDownload(guid);
   };
 
   const getFileRenameHandler = (file: FileData) => (newName: string) => {
-    renameFile.mutate({ id: file.id, name: newName });
+    renameFile.mutate({ guid: file.guid, name: newName });
   };
 
   return {

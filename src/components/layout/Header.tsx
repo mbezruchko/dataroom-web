@@ -28,12 +28,12 @@ export function Header() {
   const navigate = useNavigate()
   const location = useLocation()
   const [search, setSearch] = useState("")
-  const [, segment, id] = location.pathname.split("/")
-  const folderId = (segment === "folder" && Number(id)) || 'root'
-  const { data: folderPath, isLoading } = useFolderPath(folderId)
+  const [, segment, folderGuidFromPath] = location.pathname.split("/")
+  const folderGuid = segment === "folder" ? folderGuidFromPath : 'root'
+  const { data: folderPath, isLoading } = useFolderPath(folderGuid)
 
   const items: BreadcrumbItemData[] = [
-    { label: "Root", href: "/root", active: folderId === 'root' }
+    { label: "Root", href: "/root", active: folderGuid === 'root' }
   ];
 
   if (folderPath && folderPath.length > 0) {
@@ -41,7 +41,7 @@ export function Header() {
       const isLast = index === folderPath.length - 1;
       items.push({
         label: folder.name,
-        href: `/folder/${folder.id}`,
+        href: `/folder/${folder.guid}`,
         active: isLast
       });
     });

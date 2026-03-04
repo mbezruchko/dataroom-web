@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input"
 import { FolderPlus, Loader2 } from "lucide-react"
 
 interface CreateFolderDialogProps {
-  parentId?: number | null | 'root'
+  parentId?: string | null | 'root'
 }
 
 export function CreateFolderDialog({ parentId }: CreateFolderDialogProps) {
@@ -29,7 +29,7 @@ export function CreateFolderDialog({ parentId }: CreateFolderDialogProps) {
     const normalizedParentId = parentId === 'root' ? null : parentId
 
     createFolder.mutate(
-      { name: name.trim(), parent_id: normalizedParentId },
+      { name: name.trim(), parent_guid: normalizedParentId },
       {
         onSuccess: () => {
           setOpen(false)

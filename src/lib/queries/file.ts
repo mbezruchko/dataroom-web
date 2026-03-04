@@ -6,27 +6,27 @@ import type { AxiosRequestConfig } from 'axios';
 
 interface UploadVariables {
   files: File[];
-  folder_id: number | null;
+  folder_guid: string | null;
   onUploadProgress?: (progressEvent: any) => void;
 }
 
 export const useUploadFile = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ files, folder_id, onUploadProgress }: UploadVariables) => {
+    mutationFn: async ({ files, folder_guid, onUploadProgress }: UploadVariables) => {
       const formData = new FormData();
       files.forEach(file => {
         formData.append('files', file);
       });
-      if (folder_id !== null) {
-        formData.append('folder_id', folder_id.toString());
+      if (folder_guid !== null) {
+        formData.append('folder_guid', folder_guid);
       }
       const config: AxiosRequestConfig = {
         headers: { 'Content-Type': 'multipart/form-data' },
         onUploadProgress,
       };
       const { data } = await api.post<FileData[]>('/files/upload', formData, config);
-      return { data, folder_id };
+      return { data, folder_guid };
     },
     onSuccess: (_, { files }) => {
       queryClient.invalidateQueries({ queryKey: ['folder'] });
@@ -43,9 +43,9 @@ export const useUploadFile = () => {
 export const useDeleteFile = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, folder_id }: { id: number; folder_id: number | null }) => {
-      await api.delete(`/files/${id}`);
-      return { id, folder_id };
+    mutationFn: async ({ guid, folder_id }: { guid: string; folder_id: string | null }) => {
+      await api.delete(`/files/${guid}`);
+      return { guid, folder_id };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['folder'] });
@@ -63,9 +63,9 @@ export const useDeleteFile = () => {
 export const useToggleFavoriteFile = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, is_favorite }: { id: number; is_favorite: boolean }) => {
-      const { data } = await api.patch(`/files/${id}/favorite`, { is_favorite });
-      return { id, is_favorite, data };
+    mutationFn: async ({ guid, is_favorite }: { guid: string; is_favorite: boolean }) => {
+      const { data } = await api.patch(`/files/${guid}/favorite`, { is_favorite });
+      return { guid, is_favorite, data };
     },
     onSuccess: (_, { is_favorite }) => {
       queryClient.invalidateQueries({ queryKey: ['folder'] });
@@ -82,9 +82,9 @@ export const useToggleFavoriteFile = () => {
 export const useRenameFile = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, name }: { id: number; name: string }) => {
+    mutationFn: async ({ guid, name }: { guid: string; name: string }) => {
       const normalizedName = name.trim().toLowerCase().endsWith('.pdf') ? name.trim() : `${name.trim()}.pdf`;
-      const { data } = await api.patch<FileData>(`/files/${id}`, { name: normalizedName });
+      const { data } = await api.patch<FileData>(`/files/${guid}`, { name: normalizedName });
       return data;
     },
     onSuccess: () => {
@@ -103,8 +103,8 @@ export const useRenameFile = () => {
 export const useRestoreFile = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id }: { id: number }) => {
-      const { data } = await api.post(`/files/${id}/restore`);
+    mutationFn: async ({ guid }: { guid: string }) => {
+      const { data } = await api.post(`/files/${guid}/restore`);
       return data;
     },
     onSuccess: () => {

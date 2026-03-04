@@ -14,11 +14,11 @@ const App = () => {
         <Routes>
           <Route path="/" element={<Navigate to="/root" replace />} />
           <Route path="/root" element={<FileExplorer />} />
-          <Route path="/folder/:folderId" element={<FileExplorer />} />
+          <Route path="/folder/:folderGuid" element={<FileExplorer />} />
           <Route path="/favorites" element={<Favorites />} />
           <Route path="/trash" element={<Trash />} />
           <Route path="/search" element={<SearchResults />} />
-        <Route path="*" element={<NotFound variant="page" />} />
+          <Route path="*" element={<NotFound variant="page" />} />
         </Routes>
       </Layout>
       <Toaster />

@@ -28,7 +28,7 @@ export const Trash = () => {
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {data.files.map((file: FileData) => (
-                <div key={file.id} className="group relative p-4 border rounded-lg shadow-sm hover:bg-accent transition-colors flex items-center justify-between gap-3 h-20">
+                <div key={file.guid} className="group relative p-4 border rounded-lg shadow-sm hover:bg-accent transition-colors flex items-center justify-between gap-3 h-20">
                   <div className="flex items-center gap-3 truncate min-w-0">
                     <span className="text-2xl shrink-0 opacity-50"><FileText className="color-sidebar-foreground" /></span>
                     <div className="flex flex-col truncate">
@@ -41,7 +41,7 @@ export const Trash = () => {
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
-                        restoreFile.mutate({ id: file.id });
+                        restoreFile.mutate({ guid: file.guid });
                       }}
                       className="p-2 hover:bg-primary/10 rounded-full transition-all"
                       title="Restore file"

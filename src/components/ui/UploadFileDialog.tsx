@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button"
 import { Upload, Loader2, FileUp, Trash2 } from "lucide-react"
 
 interface UploadFileDialogProps {
-  folderId: number | 'root'
+  folderId: string | 'root' | null
 }
 
 export function UploadFileDialog({ folderId }: UploadFileDialogProps) {
@@ -38,7 +38,7 @@ export function UploadFileDialog({ folderId }: UploadFileDialogProps) {
     uploadFile.mutate(
       {
         files,
-        folder_id: targetFolderId,
+        folder_guid: targetFolderId,
         onUploadProgress: (progressEvent) => {
           if (progressEvent.total) {
             const percentCompleted = Math.round(
@@ -112,7 +112,7 @@ export function UploadFileDialog({ folderId }: UploadFileDialogProps) {
             Select a PDF file to upload to the current folder.
           </DialogDescription>
         </DialogHeader>
-        
+
         <div className="flex flex-col items-center justify-center space-y-4 py-4 w-full min-w-0">
           <input
             type="file"
@@ -188,7 +188,7 @@ export function UploadFileDialog({ folderId }: UploadFileDialogProps) {
             </p>
           )}
         </div>
-        
+
         {renderFooter()}
 
       </DialogContent>

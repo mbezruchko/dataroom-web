@@ -64,7 +64,7 @@ export const SearchResults = () => {
               <ResourceSection title="Folders">
                 {data.folders.map((sub: FolderData) => (
                   <FolderCard
-                    key={sub.id}
+                    key={sub.guid}
                     folder={sub}
                     onFavoriteToggle={getFolderFavoriteHandler(sub)}
                     onDelete={getFolderDeleteHandler(sub, null)}
@@ -77,9 +77,9 @@ export const SearchResults = () => {
               <ResourceSection title="Files">
                 {data.files.map((file: FileData) => (
                   <FileCard
-                    key={file.id}
+                    key={file.guid}
                     file={file}
-                    onDownload={getDownloadHandler(file.id)}
+                    onDownload={getDownloadHandler(file.guid)}
                     onFavoriteToggle={getFileFavoriteHandler(file)}
                     onDelete={getFileDeleteHandler(file, null)}
                     onRename={getFileRenameHandler(file)}

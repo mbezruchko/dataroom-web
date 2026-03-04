@@ -36,7 +36,7 @@ export const Favorites = () => {
           <ResourceSection title="Folders">
             {data.folders.map((sub: FolderData) => (
               <FolderCard
-                key={sub.id}
+                key={sub.guid}
                 folder={sub}
                 onFavoriteToggle={getFolderFavoriteHandler(sub, false)}
                 onDelete={getFolderDeleteHandler(sub, null)}
@@ -48,9 +48,9 @@ export const Favorites = () => {
           <ResourceSection title="Files">
             {data.files.map((file: FileData) => (
               <FileCard
-                key={file.id}
+                key={file.guid}
                 file={file}
-                onDownload={getDownloadHandler(file.id)}
+                onDownload={getDownloadHandler(file.guid)}
                 onFavoriteToggle={getFileFavoriteHandler(file, false)}
                 onDelete={getFileDeleteHandler(file, null)}
                 onRename={getFileRenameHandler(file)}

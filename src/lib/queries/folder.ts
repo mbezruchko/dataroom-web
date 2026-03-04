@@ -3,7 +3,7 @@ import { toast } from 'sonner';
 import { api } from '../api';
 import type { FolderDetailed, FolderData, FolderBreadcrumb, FileData } from '../api';
 
-export const useFolder = (folderId: number | 'root') => {
+export const useFolder = (folderId: string | 'root') => {
   return useQuery({
     queryKey: ['folder', folderId],
     queryFn: async () => {
@@ -12,6 +12,7 @@ export const useFolder = (folderId: number | 'root') => {
         const files = (await api.get<FileData[]>('/files')).data;
         return {
           id: 0,
+          guid: 'root',
           name: 'Storage',
           subfolders: folders,
           files: files,
@@ -29,7 +30,7 @@ export const useFolder = (folderId: number | 'root') => {
   });
 };
 
-export const useFolderPath = (folderId: number | 'root') => {
+export const useFolderPath = (folderId: string | 'root') => {
   return useQuery({
     queryKey: ['folderPath', folderId],
     queryFn: async () => {
@@ -43,9 +44,9 @@ export const useFolderPath = (folderId: number | 'root') => {
 export const useCreateFolder = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ name, parent_id }: { name: string; parent_id?: number | null }) => {
-      const { data } = await api.post<FolderData>('/folders', { name, parent_id });
-      return { data, parent_id };
+    mutationFn: async ({ name, parent_guid }: { name: string; parent_guid?: string | null }) => {
+      const { data } = await api.post<FolderData>('/folders', { name, parent_guid });
+      return { data, parent_guid };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['folder'] });
@@ -62,11 +63,11 @@ export const useCreateFolder = () => {
 export const useDeleteFolder = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, parent_id }: { id: number; parent_id?: number | null }) => {
-      await api.delete(`/folders/${id}`);
-      return { id, parent_id };
+    mutationFn: async ({ guid, parent_id }: { guid: string; parent_id?: string | null }) => {
+      await api.delete(`/folders/${guid}`);
+      return { guid, parent_id };
     },
-    onSuccess: ({ parent_id }: { parent_id?: number | null }) => {
+    onSuccess: ({ parent_id }: { parent_id?: string | null }) => {
       const cacheId = parent_id ?? 'root';
       queryClient.invalidateQueries({ queryKey: ['folder', cacheId] });
       queryClient.invalidateQueries({ queryKey: ['favorites'] });
@@ -82,9 +83,9 @@ export const useDeleteFolder = () => {
 export const useToggleFavoriteFolder = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, is_favorite }: { id: number; is_favorite: boolean }) => {
-      const { data } = await api.patch(`/folders/${id}/favorite`, { is_favorite });
-      return { id, is_favorite, data };
+    mutationFn: async ({ guid, is_favorite }: { guid: string; is_favorite: boolean }) => {
+      const { data } = await api.patch(`/folders/${guid}/favorite`, { is_favorite });
+      return { guid, is_favorite, data };
     },
     onSuccess: (_, { is_favorite }) => {
       queryClient.invalidateQueries({ queryKey: ['folder'] });
@@ -101,8 +102,8 @@ export const useToggleFavoriteFolder = () => {
 export const useRenameFolder = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, name }: { id: number; name: string }) => {
-      const { data } = await api.patch<FolderData>(`/folders/${id}`, { name });
+    mutationFn: async ({ guid, name }: { guid: string; name: string }) => {
+      const { data } = await api.patch<FolderData>(`/folders/${guid}`, { name });
       return data;
     },
     onSuccess: () => {

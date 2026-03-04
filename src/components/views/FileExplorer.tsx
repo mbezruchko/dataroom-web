@@ -15,11 +15,10 @@ import { useResourceActions } from "@/hooks/useResourceActions"
 export const FileExplorer = () => {
   const location = useLocation();
   const pathParts = location.pathname.split('/').filter(Boolean);
-  const folderIdString = pathParts[0] === 'folder' ? pathParts[1] : 'root';
-  const folderId = folderIdString === 'root' ? 'root' : parseInt(folderIdString, 10);
+  const folderGuid = pathParts[0] === 'folder' ? pathParts[1] : 'root';
 
-  const { data: folder, isLoading, isError, error } = useFolder(folderId);
-  const isNotFound = folderId !== 'root' && isError && axios.isAxiosError(error) && error.response?.status === 404;
+  const { data: folder, isLoading, isError, error } = useFolder(folderGuid);
+  const isNotFound = folderGuid !== 'root' && isError && axios.isAxiosError(error) && error.response?.status === 404;
   const renameFolder = useRenameFolder();
   const {
     getFolderFavoriteHandler,
@@ -40,8 +39,8 @@ export const FileExplorer = () => {
   }, [folder]);
 
   const handleRename = () => {
-    if (folderId !== 'root' && tempName && tempName !== folder?.name) {
-      renameFolder.mutate({ id: folderId as number, name: tempName });
+    if (folderGuid !== 'root' && tempName && tempName !== folder?.name) {
+      renameFolder.mutate({ guid: folderGuid, name: tempName });
     }
     setIsEditingName(false);
   };
@@ -115,7 +114,7 @@ export const FileExplorer = () => {
               <h2 className="text-2xl font-bold tracking-tight">
                 {folder?.name || 'Storage'}
               </h2>
-              {folderId !== 'root' && (
+              {folderGuid !== 'root' && (
                 <button
                   onClick={() => setIsEditingName(true)}
                   className="opacity-0 group-hover:opacity-100 p-1.5 hover:bg-muted rounded-md transition-all text-muted-foreground"
@@ -129,8 +128,8 @@ export const FileExplorer = () => {
         </div>
 
         <div className="flex items-center gap-2">
-          <CreateFolderDialog parentId={folderId} />
-          <UploadFileDialog folderId={folderId} />
+          <CreateFolderDialog parentId={folderGuid === 'root' ? null : folderGuid} />
+          <UploadFileDialog folderId={folderGuid === 'root' ? null : folderGuid} />
         </div>
       </div>
 
@@ -139,10 +138,10 @@ export const FileExplorer = () => {
           <ResourceSection title="Folders">
             {sortedSubfolders.map((sub: FolderData) => (
               <FolderCard
-                key={sub.id}
+                key={sub.guid}
                 folder={sub}
                 onFavoriteToggle={getFolderFavoriteHandler(sub)}
-                onDelete={getFolderDeleteHandler(sub, folderId)}
+                onDelete={getFolderDeleteHandler(sub, folderGuid)}
               />
             ))}
           </ResourceSection>
@@ -152,11 +151,11 @@ export const FileExplorer = () => {
           <ResourceSection title="Files">
             {sortedFiles.map((file: FileData) => (
               <FileCard
-                key={file.id}
+                key={file.guid}
                 file={file}
-                onDownload={getDownloadHandler(file.id)}
+                onDownload={getDownloadHandler(file.guid)}
                 onFavoriteToggle={getFileFavoriteHandler(file)}
-                onDelete={getFileDeleteHandler(file, folderId)}
+                onDelete={getFileDeleteHandler(file, folderGuid)}
                 onRename={getFileRenameHandler(file)}
               />
             ))}
