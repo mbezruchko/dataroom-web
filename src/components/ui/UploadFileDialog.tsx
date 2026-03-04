@@ -69,10 +69,38 @@ export function UploadFileDialog({ folderId }: UploadFileDialogProps) {
       }
     }
   }
+
+  const renderFooter = () => {
+    return (
+      <DialogFooter>
+        <Button
+          type="button"
+          variant="outline"
+          className="cursor-pointer"
+          onClick={() => handleOpenChange(false)}
+          disabled={uploadFile.isPending}
+        >
+          Cancel
+        </Button>
+        <Button
+          type="button"
+          onClick={handleUpload}
+          className="cursor-pointer"
+          disabled={files.length === 0 || uploadFile.isPending}
+        >
+          {uploadFile.isPending && (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          )}
+          Upload {progress > 0 ? `${progress}%` : ''}
+        </Button>
+      </DialogFooter>
+    )
+  }
+
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button size="sm" className="gap-2">
+        <Button size="sm" className="gap-2 cursor-pointer">
           <Upload className="size-4" />
           Upload File
         </Button>
@@ -84,6 +112,7 @@ export function UploadFileDialog({ folderId }: UploadFileDialogProps) {
             Select a PDF file to upload to the current folder.
           </DialogDescription>
         </DialogHeader>
+        
         <div className="flex flex-col items-center justify-center space-y-4 py-4 w-full min-w-0">
           <input
             type="file"
@@ -159,26 +188,9 @@ export function UploadFileDialog({ folderId }: UploadFileDialogProps) {
             </p>
           )}
         </div>
-        <DialogFooter>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => handleOpenChange(false)}
-            disabled={uploadFile.isPending}
-          >
-            Cancel
-          </Button>
-          <Button
-            type="button"
-            onClick={handleUpload}
-            disabled={files.length === 0 || uploadFile.isPending}
-          >
-            {uploadFile.isPending && (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            )}
-            Upload {progress > 0 ? `${progress}%` : ''}
-          </Button>
-        </DialogFooter>
+        
+        {renderFooter()}
+
       </DialogContent>
     </Dialog>
   )

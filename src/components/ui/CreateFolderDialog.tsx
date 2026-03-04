@@ -42,7 +42,7 @@ export function CreateFolderDialog({ parentId }: CreateFolderDialogProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className="gap-2">
+        <Button variant="outline" size="sm" className="gap-2 cursor-pointer">
           <FolderPlus className="size-4" />
           New Folder
         </Button>

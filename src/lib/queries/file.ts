@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 import { api } from '../api';
 import type { FileData } from '../api';
 import type { AxiosRequestConfig } from 'axios';
@@ -27,9 +28,14 @@ export const useUploadFile = () => {
       const { data } = await api.post<FileData[]>('/files/upload', formData, config);
       return { data, folder_id };
     },
-    onSuccess: () => {
+    onSuccess: (_, { files }) => {
       queryClient.invalidateQueries({ queryKey: ['folder'] });
       queryClient.invalidateQueries({ queryKey: ['search'] });
+      const count = files.length;
+      toast.success(count === 1 ? 'File uploaded' : `Uploaded files: ${count}`);
+    },
+    onError: () => {
+      toast.error('Failed to upload file(s)');
     },
   });
 };
@@ -46,6 +52,10 @@ export const useDeleteFile = () => {
       queryClient.invalidateQueries({ queryKey: ['favorites'] });
       queryClient.invalidateQueries({ queryKey: ['search'] });
       queryClient.invalidateQueries({ queryKey: ['trash'] });
+      toast.success('File deleted');
+    },
+    onError: () => {
+      toast.error('Failed to delete file');
     },
   });
 };
@@ -57,10 +67,14 @@ export const useToggleFavoriteFile = () => {
       const { data } = await api.patch(`/files/${id}/favorite`, { is_favorite });
       return { id, is_favorite, data };
     },
-    onSuccess: () => {
+    onSuccess: (_, { is_favorite }) => {
       queryClient.invalidateQueries({ queryKey: ['folder'] });
       queryClient.invalidateQueries({ queryKey: ['favorites'] });
       queryClient.invalidateQueries({ queryKey: ['search'] });
+      toast.success(is_favorite ? 'File added to favorites' : 'File removed from favorites');
+    },
+    onError: () => {
+      toast.error('Failed to change favorite');
     },
   });
 };
@@ -77,6 +91,10 @@ export const useRestoreFile = () => {
       queryClient.invalidateQueries({ queryKey: ['favorites'] });
       queryClient.invalidateQueries({ queryKey: ['trash'] });
       queryClient.invalidateQueries({ queryKey: ['search'] });
+      toast.success('File restored');
+    },
+    onError: () => {
+      toast.error('Failed to restore file');
     },
   });
 };

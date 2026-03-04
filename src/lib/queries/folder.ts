@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 import { api } from '../api';
 import type { FolderDetailed, FolderData, FolderBreadcrumb, FileData } from '../api';
 
@@ -50,6 +51,10 @@ export const useCreateFolder = () => {
       queryClient.invalidateQueries({ queryKey: ['folder'] });
       queryClient.invalidateQueries({ queryKey: ['favorites'] });
       queryClient.invalidateQueries({ queryKey: ['search'] });
+      toast.success('Folder created');
+    },
+    onError: () => {
+      toast.error('Failed to create folder');
     },
   });
 };
@@ -66,6 +71,10 @@ export const useDeleteFolder = () => {
       queryClient.invalidateQueries({ queryKey: ['folder', cacheId] });
       queryClient.invalidateQueries({ queryKey: ['favorites'] });
       queryClient.invalidateQueries({ queryKey: ['search'] });
+      toast.success('Folder deleted');
+    },
+    onError: () => {
+      toast.error('Failed to delete folder');
     },
   });
 };
@@ -77,10 +86,14 @@ export const useToggleFavoriteFolder = () => {
       const { data } = await api.patch(`/folders/${id}/favorite`, { is_favorite });
       return { id, is_favorite, data };
     },
-    onSuccess: () => {
+    onSuccess: (_, { is_favorite }) => {
       queryClient.invalidateQueries({ queryKey: ['folder'] });
       queryClient.invalidateQueries({ queryKey: ['favorites'] });
       queryClient.invalidateQueries({ queryKey: ['search'] });
+      toast.success(is_favorite ? 'Folder added to favorites' : 'Folder removed from favorites');
+    },
+    onError: () => {
+      toast.error('Failed to change favorite');
     },
   });
 };
@@ -94,8 +107,13 @@ export const useRenameFolder = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['folder'] });
+      queryClient.invalidateQueries({ queryKey: ['folderPath'] });
       queryClient.invalidateQueries({ queryKey: ['search'] });
       queryClient.invalidateQueries({ queryKey: ['favorites'] });
+      toast.success('Папка переименована');
+    },
+    onError: () => {
+      toast.error('Не удалось переименовать папку');
     },
   });
 };
