@@ -18,7 +18,8 @@ export const SearchResults = () => {
     getFileFavoriteHandler,
     getFolderDeleteHandler,
     getFileDeleteHandler,
-    getDownloadHandler
+    getDownloadHandler,
+    getFileRenameHandler
   } = useResourceActions();
 
   if (isLoading) {
@@ -81,6 +82,7 @@ export const SearchResults = () => {
                     onDownload={getDownloadHandler(file.id)}
                     onFavoriteToggle={getFileFavoriteHandler(file)}
                     onDelete={getFileDeleteHandler(file, null)}
+                    onRename={getFileRenameHandler(file)}
                   />
                 ))}
               </ResourceSection>

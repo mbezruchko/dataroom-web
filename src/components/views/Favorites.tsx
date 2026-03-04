@@ -13,7 +13,8 @@ export const Favorites = () => {
     getFileFavoriteHandler,
     getFolderDeleteHandler,
     getFileDeleteHandler,
-    getDownloadHandler
+    getDownloadHandler,
+    getFileRenameHandler
   } = useResourceActions();
 
   if (isLoading) {
@@ -52,6 +53,7 @@ export const Favorites = () => {
                 onDownload={getDownloadHandler(file.id)}
                 onFavoriteToggle={getFileFavoriteHandler(file, false)}
                 onDelete={getFileDeleteHandler(file, null)}
+                onRename={getFileRenameHandler(file)}
               />
             ))}
           </ResourceSection>

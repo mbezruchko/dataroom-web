@@ -1,4 +1,4 @@
-import { useToggleFavoriteFolder, useToggleFavoriteFile, useDeleteFolder, useDeleteFile } from "@/lib/queries"
+import { useToggleFavoriteFolder, useToggleFavoriteFile, useDeleteFolder, useDeleteFile, useRenameFile } from "@/lib/queries"
 import type { FolderData, FileData } from "@/lib/api"
 import React from "react"
 
@@ -7,6 +7,7 @@ export const useResourceActions = () => {
   const toggleFavFile = useToggleFavoriteFile();
   const deleteFolder = useDeleteFolder();
   const deleteFile = useDeleteFile();
+  const renameFile = useRenameFile();
 
   const handleDownload = (fileId: number) => {
     window.open(`/api/v1/files/${fileId}/download`, '_blank');
@@ -50,12 +51,18 @@ export const useResourceActions = () => {
     e.stopPropagation();
     handleDownload(fileId);
   };
+
+  const getFileRenameHandler = (file: FileData) => (newName: string) => {
+    renameFile.mutate({ id: file.id, name: newName });
+  };
+
   return {
     handleDownload,
     getDownloadHandler,
     getFolderFavoriteHandler,
     getFileFavoriteHandler,
     getFolderDeleteHandler,
-    getFileDeleteHandler
+    getFileDeleteHandler,
+    getFileRenameHandler
   };
 };

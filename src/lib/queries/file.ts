@@ -79,6 +79,27 @@ export const useToggleFavoriteFile = () => {
   });
 };
 
+export const useRenameFile = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, name }: { id: number; name: string }) => {
+      const normalizedName = name.trim().toLowerCase().endsWith('.pdf') ? name.trim() : `${name.trim()}.pdf`;
+      const { data } = await api.patch<FileData>(`/files/${id}`, { name: normalizedName });
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['folder'] });
+      queryClient.invalidateQueries({ queryKey: ['favorites'] });
+      queryClient.invalidateQueries({ queryKey: ['search'] });
+      queryClient.invalidateQueries({ queryKey: ['trash'] });
+      toast.success('File renamed');
+    },
+    onError: () => {
+      toast.error('Failed to rename file');
+    },
+  });
+};
+
 export const useRestoreFile = () => {
   const queryClient = useQueryClient();
   return useMutation({

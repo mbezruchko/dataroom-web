@@ -26,7 +26,8 @@ export const FileExplorer = () => {
     getFileFavoriteHandler,
     getFolderDeleteHandler,
     getFileDeleteHandler,
-    getDownloadHandler
+    getDownloadHandler,
+    getFileRenameHandler
   } = useResourceActions();
 
   const [isEditingName, setIsEditingName] = useState(false);
@@ -156,6 +157,7 @@ export const FileExplorer = () => {
                 onDownload={getDownloadHandler(file.id)}
                 onFavoriteToggle={getFileFavoriteHandler(file)}
                 onDelete={getFileDeleteHandler(file, folderId)}
+                onRename={getFileRenameHandler(file)}
               />
             ))}
           </ResourceSection>
