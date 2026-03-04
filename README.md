@@ -1,73 +1,108 @@
-# React + TypeScript + Vite
+# DataRoom Web
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Web frontend for **DataRoom** — a file and folder management application. Browse folders, upload files, manage favorites, search, and restore items from trash.
 
-Currently, two official plugins are available:
+## Tech Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **React 19** + **TypeScript**
+- **Vite** — dev server and build
+- **React Router v7** — routing
+- **TanStack Query** — server state and caching
+- **Zustand** — client state
+- **Tailwind CSS** — styling
+- **Radix UI** — accessible components
+- **Axios** — HTTP client
+- **Lucide React** — icons
+- **Sonner** — toasts
 
-## React Compiler
+## Prerequisites
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Node.js** 18+ (or 20+ recommended)
+- **npm** or **pnpm** or **yarn**
 
-## Expanding the ESLint configuration
+A running **DataRoom API** backend is required (e.g. at `http://localhost:8000`). The frontend talks to it via `/api/v1` by default.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Getting Started
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### Install dependencies
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Run development server
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run dev
 ```
+
+The app will be available at **http://localhost:5173** (or the next free port Vite reports).
+
+In development, requests to `/api` are proxied to `http://localhost:8000` (see `vite.config.ts`). Ensure the backend is running so folders and files load correctly.
+
+### Build for production
+
+```bash
+npm run build
+```
+
+Output goes to the `dist/` folder. Serve it with any static file server.
+
+### Preview production build locally
+
+```bash
+npm run preview
+```
+
+### Lint
+
+```bash
+npm run lint
+```
+
+## Environment Variables
+
+| Variable              | Description                                      | Default   |
+|-----------------------|--------------------------------------------------|-----------|
+| `VITE_API_BASE_URL`   | Base URL for the DataRoom API (e.g. `/api/v1`)   | `/api/v1` |
+
+Create a `.env` file in the project root if you need to override the API URL (e.g. for a different backend host in production).
+
+## Main Features
+
+- **File explorer** — navigate folders, view files and subfolders, breadcrumbs
+- **Create folders** — new folders inside the current folder
+- **Upload files** — upload one or more files into the current folder
+- **Rename** — rename folders inline
+- **Favorites** — mark folders and files as favorites; view them in **Favorites**
+- **Trash** — deleted items go to trash; **Trash** view allows restore or permanent delete
+- **Search** — full-text search across folders and files
+- **Download** — download files via the API
+
+## Project Structure (overview)
+
+```
+src/
+├── components/
+│   ├── layout/     # Layout, Header
+│   ├── ui/         # Buttons, cards, dialogs, shared UI
+│   └── views/      # FileExplorer, Favorites, Trash, SearchResults, NotFound
+├── hooks/          # useResourceActions and other hooks
+├── lib/
+│   ├── api.ts      # Axios instance, API types
+│   └── queries.ts  # TanStack Query hooks for folders, files, search
+└── App.tsx         # Routes and root layout
+```
+
+## Routes
+
+| Path              | Description                    |
+|-------------------|--------------------------------|
+| `/`               | Redirects to `/root`           |
+| `/root`           | Root folder (file explorer)    |
+| `/folder/:folderId` | Folder by ID (file explorer) |
+| `/favorites`      | Favorites list                 |
+| `/trash`          | Trash (deleted items)          |
+| `/search`         | Search results                 |
+
+All other paths show a 404 page.
