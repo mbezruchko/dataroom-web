@@ -1,0 +1,68 @@
+import { Loader2, Star } from "lucide-react"
+import { useFavorites } from "@/lib/queries"
+import type { FolderData, FileData } from "@/lib/api"
+import { FolderCard } from "@/components/ui/FolderCard"
+import { FileCard } from "@/components/ui/FileCard"
+import { ResourceSection } from "@/components/ui/ResourceSection"
+import { useResourceActions } from "@/hooks/useResourceActions"
+
+export const Favorites = () => {
+  const { data, isLoading } = useFavorites();
+  const {
+    getFolderFavoriteHandler,
+    getFileFavoriteHandler,
+    getFolderDeleteHandler,
+    getFileDeleteHandler,
+    getDownloadHandler
+  } = useResourceActions();
+
+  if (isLoading) {
+    return (
+      <div className="flex h-full w-full items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex h-full flex-col p-6 space-y-4">
+      <div className="flex items-center justify-between mb-2">
+        <h2 className="text-2xl font-bold tracking-tight">Favorites</h2>
+      </div>
+
+      <div className="space-y-8 mt-6">
+        {data?.folders && data.folders.length > 0 && (
+          <ResourceSection title="Folders">
+            {data.folders.map((sub: FolderData) => (
+              <FolderCard
+                key={sub.id}
+                folder={sub}
+                onFavoriteToggle={getFolderFavoriteHandler(sub, false)}
+                onDelete={getFolderDeleteHandler(sub, null)}
+              />
+            ))}
+          </ResourceSection>
+        )}
+        {data?.files && data.files.length > 0 && (
+          <ResourceSection title="Files">
+            {data.files.map((file: FileData) => (
+              <FileCard
+                key={file.id}
+                file={file}
+                onDownload={getDownloadHandler(file.id)}
+                onFavoriteToggle={getFileFavoriteHandler(file, false)}
+                onDelete={getFileDeleteHandler(file, null)}
+              />
+            ))}
+          </ResourceSection>
+        )}
+        {(!data?.folders?.length && !data?.files?.length) && (
+          <div className="flex flex-col items-center justify-center py-12 text-muted-foreground w-full">
+            <Star className="h-12 w-12 mb-4 text-muted/30" />
+            <p>No favorites yet.</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
