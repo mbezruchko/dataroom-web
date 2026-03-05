@@ -6,11 +6,11 @@ export const ViewSwitcher = () => {
   const { viewMode, setViewMode } = useAppStore()
 
   return (
-    <div className="flex items-center gap-1 bg-muted/30 p-1 rounded-lg border">
+    <div className="flex items-center outline outline-1 outline-border rounded-md shadow-sm">
       <Button
         variant={viewMode === 'grid' ? 'secondary' : 'ghost'}
         size="icon"
-        className="h-8 w-8 cursor-pointer"
+        className="h-8 w-8 cursor-pointer rounded-r-none border-r border-border"
         onClick={() => setViewMode('grid')}
         title="Grid view"
       >
@@ -19,7 +19,7 @@ export const ViewSwitcher = () => {
       <Button
         variant={viewMode === 'list' ? 'secondary' : 'ghost'}
         size="icon"
-        className="h-8 w-8 cursor-pointer"
+        className="h-8 w-8 cursor-pointer rounded-l-none"
         onClick={() => setViewMode('list')}
         title="List view"
       >

@@ -1,13 +1,12 @@
 import * as React from "react"
 import { useNavigate, useParams } from "react-router-dom"
-import { ChevronsUpDown, GalleryVerticalEnd, Pencil, Trash2, MoreVertical, Loader2 } from "lucide-react"
+import { ChevronsUpDown, GalleryVerticalEnd, Pencil, Trash2, MoreVertical } from "lucide-react"
 import { useWorkspaces, useDeleteWorkspace, useUpdateWorkspace } from "@/lib/queries/workspace"
 import { CreateWorkspaceDialog } from "@/components/ui/CreateWorkspaceDialog"
 import { DeleteConfirmationDialog } from "@/components/ui/DeleteConfirmationDialog"
+import { RenameDialog } from "@/components/ui/RenameDialog"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 
 
 export function WorkspaceSwitcher() {
@@ -20,7 +19,6 @@ export function WorkspaceSwitcher() {
   const [mainMenuOpen, setMainMenuOpen] = React.useState(false)
   const [workspaceToDelete, setWorkspaceToDelete] = React.useState<{ guid: string, name: string } | null>(null)
   const [workspaceToRename, setWorkspaceToRename] = React.useState<{ guid: string, name: string } | null>(null)
-  const [newName, setNewName] = React.useState("")
 
   const activeWorkspace = workspaces?.find(
     (workspace) => workspace.guid === workspaceGuid
@@ -49,13 +47,11 @@ export function WorkspaceSwitcher() {
     }
   }
 
-  const handleRename = (e?: React.FormEvent) => {
-    e?.preventDefault()
-    if (workspaceToRename && newName.trim()) {
-      updateWorkspace({ guid: workspaceToRename.guid, name: newName.trim() }, {
+  const handleRename = (name: string) => {
+    if (workspaceToRename && name.trim()) {
+      updateWorkspace({ guid: workspaceToRename.guid, name: name.trim() }, {
         onSuccess: () => {
           setWorkspaceToRename(null)
-          setNewName("")
         }
       })
     }
@@ -108,7 +104,6 @@ export function WorkspaceSwitcher() {
                       onClick={(e) => {
                         e.stopPropagation()
                         setWorkspaceToRename({ guid: workspace.guid, name: workspace.name })
-                        setNewName(workspace.name)
                         setMainMenuOpen(false)
                       }}
                       className="cursor-pointer"
@@ -147,35 +142,15 @@ export function WorkspaceSwitcher() {
         description={<>Are you sure you want to delete <span className="font-bold">"{workspaceToDelete?.name}"</span>? <br /> All files and folders inside will be lost.</>}
       />
 
-      <Dialog open={!!workspaceToRename} onOpenChange={(open) => !open && setWorkspaceToRename(null)}>
-        <DialogContent className="sm:max-w-[425px]">
-          <form onSubmit={handleRename}>
-            <DialogHeader>
-              <DialogTitle>Rename Workspace</DialogTitle>
-              <DialogDescription>
-                Enter a new name for this workspace.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <Input
-                autoFocus
-                placeholder="Workspace name"
-                value={newName}
-                onChange={(e) => setNewName(e.target.value)}
-              />
-            </div>
-            <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setWorkspaceToRename(null)}>
-                Cancel
-              </Button>
-              <Button type="submit" disabled={!newName.trim() || isUpdating}>
-                {isUpdating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Save changes
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
+      <RenameDialog
+        open={!!workspaceToRename}
+        onOpenChange={(open) => !open && setWorkspaceToRename(null)}
+        onConfirm={handleRename}
+        title="Rename Workspace"
+        description="Enter a new name for this workspace."
+        initialValue={workspaceToRename?.name || ""}
+        isPending={isUpdating}
+      />
     </>
   )
 }

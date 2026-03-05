@@ -21,7 +21,7 @@ import React, { useState, useMemo, useCallback } from "react"
 import { Link, useNavigate, useLocation, useParams } from "react-router-dom"
 import { useAppStore } from "@/store/useAppStore"
 import { useFolderPath } from "@/lib/queries"
-import { ViewSwitcher } from "@/components/ui/ViewSwitcher"
+
 
 interface BreadcrumbItemData {
   label: string
@@ -148,19 +148,23 @@ export function Header() {
         </Breadcrumb>
       </div>
 
-      <div className="flex items-center gap-3 shrink-0">
-        <ViewSwitcher />
-        <div className="relative w-full max-w-sm hidden sm:block">
+      {/* Centered Search */}
+      <div className="absolute left-1/2 -translate-x-1/2 hidden sm:block w-full max-w-[250px] lg:max-w-[400px]">
+        <div className="relative">
           <Search className="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
           <Input
             type="search"
             placeholder="Search documents..."
-            className="w-full bg-background pl-8 sm:w-[250px]"
+            className="w-full bg-background/50 pl-8 focus-visible:bg-background transition-colors"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             onKeyDown={handleSearch}
           />
         </div>
+      </div>
+
+      <div className="flex items-center gap-3 shrink-0">
+        {/* Actions/Profile can go here if any */}
       </div>
     </header>
   )
