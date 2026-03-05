@@ -9,6 +9,12 @@ import {
   BreadcrumbSeparator,
   BreadcrumbEllipsis,
 } from "@/components/ui/breadcrumb"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
 import { Menu } from "lucide-react"
 import React, { useState } from "react"
@@ -59,47 +65,62 @@ export function Header() {
   }
 
   const renderBreadcrumbs = () => {
+    const BreadcrumbContent = ({ item }: { item: BreadcrumbItemData }) => {
+      const content = item.active ? (
+        <BreadcrumbPage className="max-w-[150px] truncate" title={item.label}>
+          {item.label}
+        </BreadcrumbPage>
+      ) : (
+        <BreadcrumbLink asChild className="max-w-[150px] truncate" title={item.label}>
+          <Link to={item.href}>{item.label}</Link>
+        </BreadcrumbLink>
+      )
+      return content
+    }
+
     if (items.length <= 3) {
       return items.map((item, index) => (
         <React.Fragment key={index}>
           <BreadcrumbItem>
-            {item.active ? (
-              <BreadcrumbPage>{item.label}</BreadcrumbPage>
-            ) : (
-              <BreadcrumbLink asChild>
-                <Link to={item.href}>{item.label}</Link>
-              </BreadcrumbLink>
-            )}
+            <BreadcrumbContent item={item} />
           </BreadcrumbItem>
           {index < items.length - 1 && <BreadcrumbSeparator />}
         </React.Fragment>
       ))
     }
+
     const first = items[0]
+    const middle = items.slice(1, -2)
     const lastTwo = items.slice(-2)
 
     return (
       <>
         <BreadcrumbItem>
-          <BreadcrumbLink asChild>
-            <Link to={first.href}>{first.label}</Link>
-          </BreadcrumbLink>
+          <BreadcrumbContent item={first} />
         </BreadcrumbItem>
         <BreadcrumbSeparator />
         <BreadcrumbItem>
-          <BreadcrumbEllipsis />
+          <DropdownMenu>
+            <DropdownMenuTrigger className="flex items-center gap-1">
+              <BreadcrumbEllipsis className="h-4 w-4" />
+              <span className="sr-only">Toggle menu</span>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start">
+              {middle.map((item, index) => (
+                <DropdownMenuItem key={index} asChild>
+                  <Link to={item.href} className="cursor-pointer truncate max-w-[200px]">
+                    {item.label}
+                  </Link>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </BreadcrumbItem>
         <BreadcrumbSeparator />
         {lastTwo.map((item, index) => (
           <React.Fragment key={index}>
             <BreadcrumbItem>
-              {item.active ? (
-                <BreadcrumbPage>{item.label}</BreadcrumbPage>
-              ) : (
-                <BreadcrumbLink asChild>
-                  <Link to={item.href}>{item.label}</Link>
-                </BreadcrumbLink>
-              )}
+              <BreadcrumbContent item={item} />
             </BreadcrumbItem>
             {index === 0 && <BreadcrumbSeparator />}
           </React.Fragment>
@@ -107,6 +128,7 @@ export function Header() {
       </>
     )
   }
+
   return (
     <header className="flex h-14 items-center gap-4 border-b bg-background px-4 lg:px-6">
       <div className="flex items-center gap-4 flex-1">
