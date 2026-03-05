@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../api';
 import type { SearchResponse } from '../api';
 
@@ -35,6 +35,20 @@ export const useTrash = (workspaceGuid?: string) => {
         params: { workspace_guid: workspaceGuid }
       });
       return data;
+    },
+  });
+};
+
+export const useEmptyTrash = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (workspaceGuid: string) => {
+      await api.delete(`/search/trash/empty`, {
+        params: { workspace_guid: workspaceGuid }
+      });
+    },
+    onSuccess: (_, workspaceGuid) => {
+      queryClient.invalidateQueries({ queryKey: ['trash', workspaceGuid] });
     },
   });
 };
