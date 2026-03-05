@@ -35,7 +35,9 @@ export const useAppStore = create<AppState>()(
     }),
     {
       name: 'dataroom-storage',
-      partialize: (state) => ({ viewMode: state.viewMode }),
+      partialize: (state) => ({
+        viewMode: state.viewMode,
+      }),
     }
   )
 );

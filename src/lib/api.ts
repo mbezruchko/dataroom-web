@@ -2,6 +2,7 @@ import axios from 'axios';
 
 export const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL ?? '/api/v1',
+  withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -50,6 +51,7 @@ export interface SearchResponse {
 export interface WorkspaceData {
   id: number;
   guid: string;
+  session_guid: string | null;
   name: string;
   description: string | null;
   is_deleted: boolean;
