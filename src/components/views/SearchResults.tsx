@@ -34,7 +34,10 @@ export const SearchResults = () => {
     );
   }
 
-  const hasResults = (data?.folders?.length || 0) > 0 || (data?.files?.length || 0) > 0;
+  const hasResults =
+    (data?.folders?.length || 0) > 0 ||
+    (data?.files?.length || 0) > 0 ||
+    (data?.deleted_files?.length || 0) > 0;
 
   return (
     <div className="flex h-full flex-col p-6 space-y-4">
@@ -71,6 +74,19 @@ export const SearchResults = () => {
                     key={file.guid}
                     file={file}
                     contextFolderGuid={null}
+                  />
+                ))}
+              </ResourceSection>
+            )}
+
+            {data?.deleted_files && data.deleted_files.length > 0 && (
+              <ResourceSection title="Deleted files">
+                {data.deleted_files.map((file: FileData) => (
+                  <FileCard
+                    key={file.guid}
+                    file={file}
+                    contextFolderGuid={null}
+                    isTrash={true}
                   />
                 ))}
               </ResourceSection>

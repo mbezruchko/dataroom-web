@@ -46,6 +46,7 @@ export interface FolderBreadcrumb {
 export interface SearchResponse {
   folders: FolderData[];
   files: FileData[];
+  deleted_files: FileData[];
 }
 
 export interface WorkspaceData {
