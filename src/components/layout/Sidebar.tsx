@@ -1,3 +1,4 @@
+import { useMemo } from "react"
 import { cn } from "@/lib/utils"
 import { FolderOpen, Star, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -19,11 +20,11 @@ export function Sidebar() {
 
   if (!sidebarOpen) return null;
 
-  const folderLinks = [
+  const folderLinks = useMemo(() => [
     { icon: FolderOpen, label: "Storage", href: `/${workspaceGuid}/root` },
     { icon: Star, label: "Favorites", href: `/${workspaceGuid}/favorites` },
     { icon: Trash2, label: "Trash", href: `/${workspaceGuid}/trash` },
-  ]
+  ], [workspaceGuid]);
 
   return (
     <div className="flex w-64 flex-col border-r bg-sidebar text-sidebar-foreground transition-all duration-300">

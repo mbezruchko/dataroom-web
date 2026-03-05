@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo, useCallback } from "react"
 import { useParams } from "react-router-dom"
 import axios from "axios"
 import { Loader2, Pencil, Check, X } from "lucide-react"
@@ -28,22 +28,28 @@ export const FileExplorer = () => {
     }
   }, [folder]);
 
-  const handleRename = () => {
+  const handleRename = useCallback(() => {
     if (folderGuid !== 'root' && tempName && tempName !== folder?.name) {
       renameFolder.mutate({ guid: folderGuid, name: tempName });
     }
     setIsEditingName(false);
-  };
+  }, [folderGuid, tempName, folder?.name, renameFolder]);
 
-  const sortedSubfolders = folder?.subfolders ? [...folder.subfolders].sort((a, b) => {
-    if (a.is_favorite !== b.is_favorite) return a.is_favorite ? -1 : 1;
-    return a.name.localeCompare(b.name);
-  }) : [];
+  const sortedSubfolders = useMemo(() => {
+    if (!folder?.subfolders) return [];
+    return [...folder.subfolders].sort((a, b) => {
+      if (a.is_favorite !== b.is_favorite) return a.is_favorite ? -1 : 1;
+      return a.name.localeCompare(b.name);
+    });
+  }, [folder?.subfolders]);
 
-  const sortedFiles = folder?.files ? [...folder.files].sort((a, b) => {
-    if (a.is_favorite !== b.is_favorite) return a.is_favorite ? -1 : 1;
-    return a.name.localeCompare(b.name);
-  }) : [];
+  const sortedFiles = useMemo(() => {
+    if (!folder?.files) return [];
+    return [...folder.files].sort((a, b) => {
+      if (a.is_favorite !== b.is_favorite) return a.is_favorite ? -1 : 1;
+      return a.name.localeCompare(b.name);
+    });
+  }, [folder?.files]);
 
   if (isLoading) {
     return (

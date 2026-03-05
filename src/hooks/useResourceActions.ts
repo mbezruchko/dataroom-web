@@ -1,3 +1,4 @@
+import { useCallback, useMemo } from "react"
 import {
   useToggleFavoriteFolder,
   useToggleFavoriteFile,
@@ -23,69 +24,69 @@ export const useResourceActions = () => {
   const restoreFile = useRestoreFile();
   const permanentDeleteFile = usePermanentDeleteFile();
 
-  const handleDownload = (guid: string) => {
+  const handleDownload = useCallback((guid: string) => {
     const baseUrl = import.meta.env.VITE_API_BASE_URL ?? '/api/v1';
     const sessionId = ensureSessionId();
     window.open(`${baseUrl}/files/${guid}/download?session-guid=${sessionId}`, '_blank');
-  };
+  }, []);
 
-  const getFolderFavoriteHandler = (folder: FolderData, overrideValue?: boolean) => (e: React.MouseEvent) => {
+  const getFolderFavoriteHandler = useCallback((folder: FolderData, overrideValue?: boolean) => (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     toggleFavFolder.mutate({
       guid: folder.guid,
       is_favorite: overrideValue !== undefined ? overrideValue : !folder.is_favorite
     });
-  };
+  }, [toggleFavFolder]);
 
-  const getFileFavoriteHandler = (file: FileData, overrideValue?: boolean) => (e: React.MouseEvent) => {
+  const getFileFavoriteHandler = useCallback((file: FileData, overrideValue?: boolean) => (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     toggleFavFile.mutate({
       guid: file.guid,
       is_favorite: overrideValue !== undefined ? overrideValue : !file.is_favorite
     });
-  };
+  }, [toggleFavFile]);
 
-  const getFolderDeleteHandler = (folder: FolderData, parentGuid?: string | 'root' | null) => (e: React.MouseEvent) => {
+  const getFolderDeleteHandler = useCallback((folder: FolderData, parentGuid?: string | 'root' | null) => (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     deleteFolder.mutate({ guid: folder.guid, parent_id: parentGuid === 'root' ? null : parentGuid });
-  };
+  }, [deleteFolder]);
 
-  const getFileDeleteHandler = (file: FileData, currentFolderGuid?: string | 'root' | null) => (e: React.MouseEvent) => {
+  const getFileDeleteHandler = useCallback((file: FileData, currentFolderGuid?: string | 'root' | null) => (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     deleteFile.mutate({ guid: file.guid, folder_id: currentFolderGuid === 'root' ? null : (currentFolderGuid || null) });
-  };
+  }, [deleteFile]);
 
-  const getFileRestoreHandler = (file: FileData) => (e: React.MouseEvent) => {
+  const getFileRestoreHandler = useCallback((file: FileData) => (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     restoreFile.mutate({ guid: file.guid });
-  };
+  }, [restoreFile]);
 
-  const getFilePermanentDeleteHandler = (file: FileData) => (e: React.MouseEvent) => {
+  const getFilePermanentDeleteHandler = useCallback((file: FileData) => (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     permanentDeleteFile.mutate({ guid: file.guid });
-  };
+  }, [permanentDeleteFile]);
 
-  const getDownloadHandler = (guid: string) => (e: React.MouseEvent) => {
+  const getDownloadHandler = useCallback((guid: string) => (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     handleDownload(guid);
-  };
+  }, [handleDownload]);
 
-  const getFileRenameHandler = (file: FileData) => (newName: string) => {
+  const getFileRenameHandler = useCallback((file: FileData) => (newName: string) => {
     renameFile.mutate({ guid: file.guid, name: newName });
-  };
+  }, [renameFile]);
 
-  const getFolderRenameHandler = (folder: FolderData) => (newName: string) => {
+  const getFolderRenameHandler = useCallback((folder: FolderData) => (newName: string) => {
     renameFolder.mutate({ guid: folder.guid, name: newName });
-  };
+  }, [renameFolder]);
 
-  return {
+  return useMemo(() => ({
     handleDownload,
     getDownloadHandler,
     getFolderFavoriteHandler,
@@ -96,5 +97,16 @@ export const useResourceActions = () => {
     getFilePermanentDeleteHandler,
     getFileRenameHandler,
     getFolderRenameHandler
-  };
+  }), [
+    handleDownload,
+    getDownloadHandler,
+    getFolderFavoriteHandler,
+    getFileFavoriteHandler,
+    getFolderDeleteHandler,
+    getFileDeleteHandler,
+    getFileRestoreHandler,
+    getFilePermanentDeleteHandler,
+    getFileRenameHandler,
+    getFolderRenameHandler
+  ]);
 };

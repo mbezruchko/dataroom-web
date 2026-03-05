@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
 import { Menu } from "lucide-react"
-import React, { useState } from "react"
+import React, { useState, useMemo, useCallback } from "react"
 import { Link, useNavigate, useLocation, useParams } from "react-router-dom"
 import { useAppStore } from "@/store/useAppStore"
 import { useFolderPath } from "@/lib/queries"
@@ -42,27 +42,30 @@ export function Header() {
 
   const { data: folderPath, isLoading } = useFolderPath(folderGuid)
 
-  const items: BreadcrumbItemData[] = [
-    { label: "Root", href: `/${workspaceGuid}/root`, active: folderGuid === 'root' }
-  ];
+  const items = useMemo((): BreadcrumbItemData[] => {
+    const breadcrumbs: BreadcrumbItemData[] = [
+      { label: "Root", href: `/${workspaceGuid}/root`, active: folderGuid === 'root' }
+    ];
 
-  if (folderPath && folderPath.length > 0) {
-    folderPath.forEach((folder, index) => {
-      const isLast = index === folderPath.length - 1;
-      items.push({
-        label: folder.name,
-        href: `/${workspaceGuid}/folder/${folder.guid}`,
-        active: isLast
+    if (folderPath && folderPath.length > 0) {
+      folderPath.forEach((folder, index) => {
+        const isLast = index === folderPath.length - 1;
+        breadcrumbs.push({
+          label: folder.name,
+          href: `/${workspaceGuid}/folder/${folder.guid}`,
+          active: isLast
+        });
       });
-    });
-  }
+    }
+    return breadcrumbs;
+  }, [workspaceGuid, folderGuid, folderPath]);
 
-  const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleSearch = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && search.trim()) {
       navigate(`/${workspaceGuid}/search?q=${encodeURIComponent(search.trim())}`)
       setSearch("")
     }
-  }
+  }, [workspaceGuid, search, navigate]);
 
   const renderBreadcrumbs = () => {
     const BreadcrumbContent = ({ item }: { item: BreadcrumbItemData }) => {
