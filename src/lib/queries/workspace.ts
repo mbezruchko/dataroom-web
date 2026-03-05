@@ -61,3 +61,16 @@ export const useDeleteWorkspace = () => {
         },
     });
 };
+
+export const useWorkspace = (guid?: string) => {
+    return useQuery({
+        queryKey: ['workspace', guid],
+        queryFn: async () => {
+            if (!guid) return null;
+            const { data } = await api.get<WorkspaceData>(`/workspaces/${guid}`);
+            return data;
+        },
+        enabled: !!guid,
+        retry: false,
+    });
+};

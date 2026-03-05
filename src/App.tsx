@@ -14,7 +14,6 @@ const App = () => {
       <Routes>
         <Route path="/" element={<WorkspaceRedirect />} />
 
-        {/* Workspace Layout Route */}
         <Route path="/:workspaceGuid" element={<Layout />}>
           <Route index element={<Navigate to="root" replace />} />
           <Route path="root" element={<FileExplorer />} />
@@ -24,13 +23,6 @@ const App = () => {
           <Route path="search" element={<SearchResults />} />
           <Route path="*" element={<NotFound variant="page" />} />
         </Route>
-
-        {/* Support legacy paths by redirecting to default workspace */}
-        <Route path="/root" element={<WorkspaceRedirect />} />
-        <Route path="/folder/:folderGuid" element={<WorkspaceRedirect />} />
-        <Route path="/favorites" element={<WorkspaceRedirect />} />
-        <Route path="/trash" element={<WorkspaceRedirect />} />
-        <Route path="/search" element={<WorkspaceRedirect />} />
 
         <Route path="*" element={<NotFound variant="page" />} />
       </Routes>
