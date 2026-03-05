@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { FileText, Star, Trash2, Download, Pencil, Check, X, Eye, MoreVertical } from "lucide-react"
+import { FileText, Star, Trash2, Download, Pencil, Check, X, Eye, MoreVertical, RotateCcw } from "lucide-react"
 import type { FileData } from "@/lib/api"
 import React from "react"
 import { DeleteConfirmationDialog } from "./DeleteConfirmationDialog"
@@ -17,21 +17,31 @@ import { useAppStore } from "@/store/useAppStore"
 interface FileCardProps {
   file: FileData
   contextFolderGuid?: string | null
+  isTrash?: boolean
 }
 
-export const FileCard = ({ file, contextFolderGuid }: FileCardProps) => {
+export const FileCard = ({ file, contextFolderGuid, isTrash }: FileCardProps) => {
   const viewMode = useAppStore(state => state.viewMode)
   const [isEditingName, setIsEditingName] = useState(false)
   const [tempName, setTempName] = useState(file.name)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [isPreviewOpen, setIsPreviewOpen] = useState(false)
 
-  const { getDownloadHandler, getFileFavoriteHandler, getFileDeleteHandler, getFileRenameHandler } = useResourceActions()
+  const {
+    getDownloadHandler,
+    getFileFavoriteHandler,
+    getFileDeleteHandler,
+    getFileRenameHandler,
+    getFileRestoreHandler,
+    getFilePermanentDeleteHandler
+  } = useResourceActions()
 
   const onDownload = getDownloadHandler(file.guid)
   const onFavoriteToggle = getFileFavoriteHandler(file)
   const onDelete = getFileDeleteHandler(file, contextFolderGuid)
   const onRename = getFileRenameHandler(file)
+  const onRestore = getFileRestoreHandler(file)
+  const onPermanentDelete = getFilePermanentDeleteHandler(file)
 
   useEffect(() => {
     setTempName(file.name)
@@ -57,13 +67,18 @@ export const FileCard = ({ file, contextFolderGuid }: FileCardProps) => {
   }
 
   const handleConfirmDelete = () => {
-    onDelete({ preventDefault: () => { }, stopPropagation: () => { } } as React.MouseEvent)
+    if (isTrash) {
+      onPermanentDelete({ preventDefault: () => { }, stopPropagation: () => { } } as React.MouseEvent)
+    } else {
+      onDelete({ preventDefault: () => { }, stopPropagation: () => { } } as React.MouseEvent)
+    }
     setDeleteDialogOpen(false)
   }
 
   const handlePreviewClick = (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
+    if (isTrash) return
     setIsPreviewOpen(true)
   }
 
@@ -74,7 +89,7 @@ export const FileCard = ({ file, contextFolderGuid }: FileCardProps) => {
     <>
       <div
         onClick={handlePreviewClick}
-        className={`group relative p-3 border rounded-lg shadow-sm hover:bg-accent cursor-pointer transition-colors flex items-center justify-between gap-3 ${isGrid ? 'h-20' : 'h-12'}`}
+        className={`group relative p-3 border rounded-lg shadow-sm transition-colors flex items-center justify-between gap-3 ${isGrid ? 'h-20' : 'h-12'} ${isTrash ? 'cursor-default opacity-80' : 'hover:bg-accent cursor-pointer'}`}
       >
         <div className="flex items-center gap-3 truncate min-w-0 flex-1">
           <span className={`${isGrid ? 'text-2xl' : 'text-xl'} shrink-0`}><FileText className="text-sidebar-foreground" /></span>
@@ -119,13 +134,15 @@ export const FileCard = ({ file, contextFolderGuid }: FileCardProps) => {
         </div>
         {!isEditingName && (
           <div className="flex items-center gap-1">
-            <button
-              onClick={onFavoriteToggle}
-              className={`p-2 hover:bg-yellow-500/10 rounded-full transition-all shrink-0 ${file.is_favorite ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
-              title={file.is_favorite ? "Remove from favorites" : "Add to favorites"}
-            >
-              <Star className={`h-4 w-4 ${file.is_favorite ? 'fill-yellow-400 text-yellow-500' : 'text-muted-foreground'}`} />
-            </button>
+            {!isTrash && (
+              <button
+                onClick={onFavoriteToggle}
+                className={`p-2 hover:bg-yellow-500/10 rounded-full transition-all shrink-0 ${file.is_favorite ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
+                title={file.is_favorite ? "Remove from favorites" : "Add to favorites"}
+              >
+                <Star className={`h-4 w-4 ${file.is_favorite ? 'fill-yellow-400 text-yellow-500' : 'text-muted-foreground'}`} />
+              </button>
+            )}
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -139,37 +156,58 @@ export const FileCard = ({ file, contextFolderGuid }: FileCardProps) => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-40">
-                <DropdownMenuItem
-                  onClick={(e) => handlePreviewClick(e as any)}
-                  className="cursor-pointer"
-                >
-                  <Eye className="mr-2 size-4" />
-                  Preview
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={(e) => onDownload(e as any)}
-                  className="cursor-pointer"
-                >
-                  <Download className="mr-2 size-4" />
-                  Download
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setIsEditingName(true);
-                  }}
-                  className="cursor-pointer"
-                >
-                  <Pencil className="mr-2 size-4" />
-                  Rename
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={(e) => handleDeleteClick(e as any)}
-                  className="text-destructive focus:text-destructive cursor-pointer"
-                >
-                  <Trash2 className="mr-2 size-4" />
-                  Delete
-                </DropdownMenuItem>
+                {isTrash ? (
+                  <>
+                    <DropdownMenuItem
+                      onClick={onRestore}
+                      className="cursor-pointer"
+                    >
+                      <RotateCcw className="mr-2 size-4" />
+                      Restore
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={handleDeleteClick}
+                      className="text-destructive focus:text-destructive cursor-pointer"
+                    >
+                      <Trash2 className="mr-2 size-4" />
+                      Delete
+                    </DropdownMenuItem>
+                  </>
+                ) : (
+                  <>
+                    <DropdownMenuItem
+                      onClick={handlePreviewClick}
+                      className="cursor-pointer"
+                    >
+                      <Eye className="mr-2 size-4" />
+                      Preview
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={onDownload}
+                      className="cursor-pointer"
+                    >
+                      <Download className="mr-2 size-4" />
+                      Download
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setIsEditingName(true);
+                      }}
+                      className="cursor-pointer"
+                    >
+                      <Pencil className="mr-2 size-4" />
+                      Rename
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={handleDeleteClick}
+                      className="text-destructive focus:text-destructive cursor-pointer"
+                    >
+                      <Trash2 className="mr-2 size-4" />
+                      Delete
+                    </DropdownMenuItem>
+                  </>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -180,16 +218,24 @@ export const FileCard = ({ file, contextFolderGuid }: FileCardProps) => {
         open={deleteDialogOpen}
         onOpenChange={setDeleteDialogOpen}
         onConfirm={handleConfirmDelete}
-        title="Delete File"
-        description={<>Are you sure you want to delete <span className="font-bold">"{file.name}"</span>? It will be moved to Trash.</>}
+        title={isTrash ? "Permanently Delete" : "Delete File"}
+        description={
+          isTrash ? (
+            <>Are you sure you want to permanently delete <span className="font-bold">"{file.name}"</span>? This action cannot be undone.</>
+          ) : (
+            <>Are you sure you want to delete <span className="font-bold">"{file.name}"</span>? It will be moved to Trash.</>
+          )
+        }
       />
 
-      <PDFPreviewDialog
-        isOpen={isPreviewOpen}
-        onOpenChange={setIsPreviewOpen}
-        fileUrl={fileUrl}
-        fileName={file.name}
-      />
+      {!isTrash && (
+        <PDFPreviewDialog
+          isOpen={isPreviewOpen}
+          onOpenChange={setIsPreviewOpen}
+          fileUrl={fileUrl}
+          fileName={file.name}
+        />
+      )}
     </>
   )
 }

@@ -1,4 +1,13 @@
-import { useToggleFavoriteFolder, useToggleFavoriteFile, useDeleteFolder, useDeleteFile, useRenameFile, useRenameFolder } from "@/lib/queries"
+import {
+  useToggleFavoriteFolder,
+  useToggleFavoriteFile,
+  useDeleteFolder,
+  useDeleteFile,
+  useRenameFile,
+  useRenameFolder,
+  useRestoreFile,
+  usePermanentDeleteFile
+} from "@/lib/queries"
 import type { FolderData, FileData } from "@/lib/api"
 import React from "react"
 
@@ -9,6 +18,8 @@ export const useResourceActions = () => {
   const deleteFile = useDeleteFile();
   const renameFile = useRenameFile();
   const renameFolder = useRenameFolder();
+  const restoreFile = useRestoreFile();
+  const permanentDeleteFile = usePermanentDeleteFile();
 
   const handleDownload = (guid: string) => {
     window.open(`/api/v1/files/${guid}/download`, '_blank');
@@ -43,6 +54,19 @@ export const useResourceActions = () => {
     e.stopPropagation();
     deleteFile.mutate({ guid: file.guid, folder_id: currentFolderGuid === 'root' ? null : (currentFolderGuid || null) });
   };
+
+  const getFileRestoreHandler = (file: FileData) => (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    restoreFile.mutate({ guid: file.guid });
+  };
+
+  const getFilePermanentDeleteHandler = (file: FileData) => (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    permanentDeleteFile.mutate({ guid: file.guid });
+  };
+
   const getDownloadHandler = (guid: string) => (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -64,6 +88,8 @@ export const useResourceActions = () => {
     getFileFavoriteHandler,
     getFolderDeleteHandler,
     getFileDeleteHandler,
+    getFileRestoreHandler,
+    getFilePermanentDeleteHandler,
     getFileRenameHandler,
     getFolderRenameHandler
   };

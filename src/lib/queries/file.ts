@@ -123,3 +123,20 @@ export const useRestoreFile = () => {
     },
   });
 };
+
+export const usePermanentDeleteFile = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ guid }: { guid: string }) => {
+      await api.delete(`/files/${guid}/permanent`);
+      return guid;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['trash'] });
+      toast.success('File permanently deleted');
+    },
+    onError: () => {
+      toast.error('Failed to permanently delete file');
+    },
+  });
+};

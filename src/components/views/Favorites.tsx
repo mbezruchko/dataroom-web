@@ -24,7 +24,7 @@ export const Favorites = () => {
         <h2 className="text-2xl font-bold tracking-tight">Favorites</h2>
       </div>
 
-      <div className="space-y-8 mt-6">
+      <div className="space-y-8 mt-6 h-full">
         {data?.folders && data.folders.length > 0 && (
           <ResourceSection title="Folders">
             {data.folders.map((sub: FolderData) => (
@@ -48,8 +48,7 @@ export const Favorites = () => {
           </ResourceSection>
         )}
         {(!data?.folders?.length && !data?.files?.length) && (
-          <div className="flex flex-col items-center justify-center py-12 text-muted-foreground w-full">
-            <Star className="h-12 w-12 mb-4 text-muted/30" />
+          <div className="flex flex-col items-center justify-center py-12 text-muted-foreground w-full h-full">
             <p>No favorites yet.</p>
           </div>
         )}

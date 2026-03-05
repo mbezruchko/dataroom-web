@@ -1,5 +1,5 @@
 import * as React from "react"
-import { ChevronsUpDown, LayoutGrid } from "lucide-react"
+import { ChevronsUpDown, GalleryVerticalEnd } from "lucide-react"
 import { useWorkspaces } from "@/lib/queries/workspace"
 import { CreateWorkspaceDialog } from "../ui/CreateWorkspaceDialog"
 import { useNavigate, useParams } from "react-router-dom"
@@ -32,11 +32,11 @@ export function WorkspaceSwitcher() {
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
-          className="w-full justify-between gap-2 px-2 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+          className="w-full justify-between gap-2 px-2 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground cursor-pointer"
         >
           <div className="flex items-center gap-2 truncate">
             <div className="flex size-6 items-center justify-center rounded-sm bg-primary/10 text-primary shrink-0">
-              <LayoutGrid className="size-4" />
+              <GalleryVerticalEnd className="size-4" />
             </div>
             <span className="font-semibold truncate">
               {isLoading ? "Loading..." : activeWorkspace?.name || "Select Workspace"}
@@ -56,7 +56,7 @@ export function WorkspaceSwitcher() {
             className="flex items-center gap-2 cursor-pointer"
           >
             <div className="flex size-6 items-center justify-center rounded-sm border bg-background">
-              <LayoutGrid className="size-3" />
+              <GalleryVerticalEnd className="size-3" />
             </div>
             <span className="flex-1 truncate">{workspace.name}</span>
           </DropdownMenuItem>
