@@ -28,3 +28,36 @@ export const useCreateWorkspace = () => {
         },
     });
 };
+export const useUpdateWorkspace = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: async ({ guid, name }: { guid: string; name: string }) => {
+            const { data } = await api.patch<WorkspaceData>(`/workspaces/${guid}`, { name });
+            return data;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['workspaces'] });
+            toast.success('Workspace renamed');
+        },
+        onError: () => {
+            toast.error('Failed to rename workspace');
+        },
+    });
+};
+
+export const useDeleteWorkspace = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: async (guid: string) => {
+            await api.delete(`/workspaces/${guid}`);
+            return guid;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['workspaces'] });
+            toast.success('Workspace deleted');
+        },
+        onError: () => {
+            toast.error('Failed to delete workspace');
+        },
+    });
+};
