@@ -4,11 +4,18 @@ import { Button } from "@/components/ui/button"
 import { Link, useLocation, useParams } from "react-router-dom"
 import { useAppStore } from "@/store/useAppStore"
 import { WorkspaceSwitcher } from "./WorkspaceSwitcher"
+import { useTrash, useFavorites } from "@/lib/queries/search"
 
 export function Sidebar() {
   const location = useLocation()
   const { workspaceGuid } = useParams<{ workspaceGuid: string }>()
   const sidebarOpen = useAppStore(state => state.sidebarOpen)
+
+  const { data: trashData } = useTrash(workspaceGuid)
+  const trashCount = trashData?.files?.length || 0
+
+  const { data: favoritesData } = useFavorites(workspaceGuid)
+  const favoritesCount = (favoritesData?.files?.length || 0) + (favoritesData?.folders?.length || 0)
 
   if (!sidebarOpen) return null;
 
@@ -39,9 +46,21 @@ export function Sidebar() {
                   isActive ? "bg-secondary text-secondary-foreground" : "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                 )}
               >
-                <Link to={item.href}>
-                  <item.icon className="size-4" />
-                  {item.label}
+                <Link to={item.href} className="flex-1 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <item.icon className="size-4" />
+                    {item.label}
+                  </div>
+                  {item.label === "Trash" && trashCount > 0 && (
+                    <span className="flex size-5 items-center justify-center rounded-full bg-muted text-[10px] font-medium text-muted-foreground group-hover:bg-sidebar-accent-foreground group-hover:text-sidebar-accent">
+                      {trashCount}
+                    </span>
+                  )}
+                  {item.label === "Favorites" && favoritesCount > 0 && (
+                    <span className="flex size-5 items-center justify-center rounded-full bg-muted text-[10px] font-medium text-muted-foreground group-hover:bg-sidebar-accent-foreground group-hover:text-sidebar-accent">
+                      {favoritesCount}
+                    </span>
+                  )}
                 </Link>
               </Button>
             )

@@ -78,7 +78,6 @@ export const FileCard = ({ file, contextFolderGuid, isTrash }: FileCardProps) =>
   const handlePreviewClick = (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    if (isTrash) return
     setIsPreviewOpen(true)
   }
 
@@ -89,7 +88,7 @@ export const FileCard = ({ file, contextFolderGuid, isTrash }: FileCardProps) =>
     <>
       <div
         onClick={handlePreviewClick}
-        className={`group relative p-3 border rounded-lg shadow-sm transition-colors flex items-center justify-between gap-3 ${isGrid ? 'h-20' : 'h-12'} ${isTrash ? 'cursor-default opacity-80' : 'hover:bg-accent cursor-pointer'}`}
+        className={`group relative p-3 border rounded-lg shadow-sm transition-colors flex items-center justify-between gap-3 cursor-pointer hover:bg-accent ${isGrid ? 'h-20' : 'h-12'} ${isTrash ? 'opacity-80' : ''}`}
       >
         <div className="flex items-center gap-3 truncate min-w-0 flex-1">
           <span className={`${isGrid ? 'text-2xl' : 'text-xl'} shrink-0`}><FileText className="text-sidebar-foreground" /></span>
@@ -158,6 +157,13 @@ export const FileCard = ({ file, contextFolderGuid, isTrash }: FileCardProps) =>
               <DropdownMenuContent align="end" className="w-40">
                 {isTrash ? (
                   <>
+                    <DropdownMenuItem
+                      onClick={handlePreviewClick}
+                      className="cursor-pointer"
+                    >
+                      <Eye className="mr-2 size-4" />
+                      Preview
+                    </DropdownMenuItem>
                     <DropdownMenuItem
                       onClick={onRestore}
                       className="cursor-pointer"
@@ -228,14 +234,12 @@ export const FileCard = ({ file, contextFolderGuid, isTrash }: FileCardProps) =>
         }
       />
 
-      {!isTrash && (
-        <PDFPreviewDialog
-          isOpen={isPreviewOpen}
-          onOpenChange={setIsPreviewOpen}
-          fileUrl={fileUrl}
-          fileName={file.name}
-        />
-      )}
+      <PDFPreviewDialog
+        isOpen={isPreviewOpen}
+        onOpenChange={setIsPreviewOpen}
+        fileUrl={fileUrl}
+        fileName={file.name}
+      />
     </>
   )
 }

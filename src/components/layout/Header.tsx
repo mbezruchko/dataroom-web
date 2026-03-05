@@ -38,7 +38,6 @@ export function Header() {
   const [search, setSearch] = useState("")
 
   const pathParts = location.pathname.split("/").filter(Boolean)
-  // URL is /:workspaceGuid/folder/:folderGuid or /:workspaceGuid/root
   const folderGuid = pathParts[1] === "folder" ? pathParts[2] : (pathParts[1] === "root" ? "root" : "root")
 
   const { data: folderPath, isLoading } = useFolderPath(folderGuid)
@@ -145,6 +144,7 @@ export function Header() {
           )}
         </Breadcrumb>
       </div>
+
       <div className="flex items-center gap-3 shrink-0">
         <ViewSwitcher />
         <div className="relative w-full max-w-sm hidden sm:block">
