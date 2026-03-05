@@ -179,7 +179,7 @@ export const FolderCard = ({ folder, contextFolderGuid }: FolderCardProps) => {
         onOpenChange={setDeleteDialogOpen}
         onConfirm={handleConfirmDelete}
         title="Delete Folder"
-        description={<>Are you sure you want to delete <span className="font-bold">"{folder.name}"</span>? All files inside will be moved to Trash.</>}
+        description={<>Are you sure you want to delete <span className="font-bold">"{folder.name}"</span>? <br /> All files inside will be moved to Trash.</>}
       />
     </>
   )

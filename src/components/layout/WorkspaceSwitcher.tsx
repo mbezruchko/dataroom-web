@@ -144,7 +144,7 @@ export function WorkspaceSwitcher() {
         onOpenChange={(open) => !open && setWorkspaceToDelete(null)}
         onConfirm={handleDelete}
         title="Delete Workspace"
-        description={<>Are you sure you want to delete <span className="font-bold">"{workspaceToDelete?.name}"</span>? All files and folders inside will be lost.</>}
+        description={<>Are you sure you want to delete <span className="font-bold">"{workspaceToDelete?.name}"</span>? <br /> All files and folders inside will be lost.</>}
       />
 
       {workspaceToRename && (

@@ -228,9 +228,9 @@ export const FileCard = ({ file, contextFolderGuid, isTrash }: FileCardProps) =>
         title={isTrash ? "Permanently Delete" : "Delete File"}
         description={
           isTrash ? (
-            <>Are you sure you want to permanently delete <span className="font-bold">"{file.name}"</span>? This action cannot be undone.</>
+            <>Are you sure you want to permanently delete <span className="font-bold">"{file.name}"</span>? <br /> This action cannot be undone.</>
           ) : (
-            <>Are you sure you want to delete <span className="font-bold">"{file.name}"</span>? It will be moved to Trash.</>
+            <>Are you sure you want to delete <span className="font-bold">"{file.name}"</span>? <br /> It will be moved to Trash.</>
           )
         }
       />
