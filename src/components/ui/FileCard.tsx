@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react"
-import { FileText, Star, Trash2, Download, Pencil, Check, X } from "lucide-react"
+import { FileText, Star, Trash2, Download, Pencil, Check, X, Eye } from "lucide-react"
 import type { FileData } from "@/lib/api"
 import React from "react"
 import { DeleteConfirmationDialog } from "./DeleteConfirmationDialog"
+import { PDFPreviewDialog } from "./PDFPreviewDialog"
 
 interface FileCardProps {
   file: FileData
@@ -16,6 +17,7 @@ export const FileCard = ({ file, onDownload, onFavoriteToggle, onDelete, onRenam
   const [isEditingName, setIsEditingName] = useState(false)
   const [tempName, setTempName] = useState(file.name)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false)
 
   useEffect(() => {
     setTempName(file.name)
@@ -45,9 +47,20 @@ export const FileCard = ({ file, onDownload, onFavoriteToggle, onDelete, onRenam
     setDeleteDialogOpen(false)
   }
 
+  const handlePreviewClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsPreviewOpen(true)
+  }
+
+  const fileUrl = `/api/v1/files/${file.guid}/download`
+
   return (
     <>
-      <div className="group relative p-4 border rounded-lg shadow-sm hover:bg-accent cursor-pointer transition-colors flex items-center justify-between gap-3 h-20">
+      <div
+        onClick={handlePreviewClick}
+        className="group relative p-4 border rounded-lg shadow-sm hover:bg-accent cursor-pointer transition-colors flex items-center justify-between gap-3 h-20"
+      >
         <div className="flex items-center gap-3 truncate min-w-0 flex-1">
           <span className="text-2xl shrink-0"><FileText className="text-sidebar-foreground" /></span>
           {isEditingName ? (
@@ -92,6 +105,13 @@ export const FileCard = ({ file, onDownload, onFavoriteToggle, onDelete, onRenam
         {!isEditingName && (
           <div className="flex items-center gap-1">
             <button
+              onClick={handlePreviewClick}
+              className="p-2 hover:bg-primary/10 rounded-full transition-all opacity-0 group-hover:opacity-100"
+              title="Preview PDF"
+            >
+              <Eye className="h-4 w-4 text-primary" />
+            </button>
+            <button
               onClick={onDownload}
               className="p-2 hover:bg-primary/10 rounded-full transition-all opacity-0 group-hover:opacity-100"
               title="Download file"
@@ -131,6 +151,13 @@ export const FileCard = ({ file, onDownload, onFavoriteToggle, onDelete, onRenam
         onConfirm={handleConfirmDelete}
         title="Delete File"
         description={`Are you sure you want to delete "${file.name}"? It will be moved to Trash.`}
+      />
+
+      <PDFPreviewDialog
+        isOpen={isPreviewOpen}
+        onOpenChange={setIsPreviewOpen}
+        fileUrl={fileUrl}
+        fileName={file.name}
       />
     </>
   )
