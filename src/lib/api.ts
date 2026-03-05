@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { ensureSessionId } from './cookies';
 
 export const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL ?? '/api/v1',
@@ -6,6 +7,14 @@ export const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+});
+
+api.interceptors.request.use((config) => {
+  const sessionId = ensureSessionId();
+  if (sessionId) {
+    config.headers['session-guid'] = sessionId;
+  }
+  return config;
 });
 
 export interface FileData {
