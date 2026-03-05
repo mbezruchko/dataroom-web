@@ -5,7 +5,6 @@ import type { FolderData, FileData } from "@/lib/api"
 import { FolderCard } from "@/components/ui/FolderCard"
 import { FileCard } from "@/components/ui/FileCard"
 import { ResourceSection } from "@/components/ui/ResourceSection"
-import { useResourceActions } from "@/hooks/useResourceActions"
 
 export const SearchResults = () => {
   const { workspaceGuid } = useParams<{ workspaceGuid: string }>();
@@ -14,14 +13,6 @@ export const SearchResults = () => {
   const query = queryParams.get('q') || "";
 
   const { data, isLoading } = useSearch(query, workspaceGuid);
-  const {
-    getFolderFavoriteHandler,
-    getFileFavoriteHandler,
-    getFolderDeleteHandler,
-    getFileDeleteHandler,
-    getDownloadHandler,
-    getFileRenameHandler
-  } = useResourceActions();
 
   if (isLoading) {
     return (
@@ -67,8 +58,7 @@ export const SearchResults = () => {
                   <FolderCard
                     key={sub.guid}
                     folder={sub}
-                    onFavoriteToggle={getFolderFavoriteHandler(sub)}
-                    onDelete={getFolderDeleteHandler(sub, null)}
+                    contextFolderGuid={null}
                   />
                 ))}
               </ResourceSection>
@@ -80,10 +70,7 @@ export const SearchResults = () => {
                   <FileCard
                     key={file.guid}
                     file={file}
-                    onDownload={getDownloadHandler(file.guid)}
-                    onFavoriteToggle={getFileFavoriteHandler(file)}
-                    onDelete={getFileDeleteHandler(file, null)}
-                    onRename={getFileRenameHandler(file)}
+                    contextFolderGuid={null}
                   />
                 ))}
               </ResourceSection>

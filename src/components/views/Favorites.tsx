@@ -5,19 +5,10 @@ import type { FolderData, FileData } from "@/lib/api"
 import { FolderCard } from "@/components/ui/FolderCard"
 import { FileCard } from "@/components/ui/FileCard"
 import { ResourceSection } from "@/components/ui/ResourceSection"
-import { useResourceActions } from "@/hooks/useResourceActions"
 
 export const Favorites = () => {
   const { workspaceGuid } = useParams<{ workspaceGuid: string }>();
   const { data, isLoading } = useFavorites(workspaceGuid);
-  const {
-    getFolderFavoriteHandler,
-    getFileFavoriteHandler,
-    getFolderDeleteHandler,
-    getFileDeleteHandler,
-    getDownloadHandler,
-    getFileRenameHandler
-  } = useResourceActions();
 
   if (isLoading) {
     return (
@@ -40,8 +31,7 @@ export const Favorites = () => {
               <FolderCard
                 key={sub.guid}
                 folder={sub}
-                onFavoriteToggle={getFolderFavoriteHandler(sub, false)}
-                onDelete={getFolderDeleteHandler(sub, null)}
+                contextFolderGuid={null}
               />
             ))}
           </ResourceSection>
@@ -52,10 +42,7 @@ export const Favorites = () => {
               <FileCard
                 key={file.guid}
                 file={file}
-                onDownload={getDownloadHandler(file.guid)}
-                onFavoriteToggle={getFileFavoriteHandler(file, false)}
-                onDelete={getFileDeleteHandler(file, null)}
-                onRename={getFileRenameHandler(file)}
+                contextFolderGuid={null}
               />
             ))}
           </ResourceSection>

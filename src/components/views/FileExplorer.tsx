@@ -10,7 +10,6 @@ import { UploadFileDialog } from "@/components/ui/UploadFileDialog"
 import { FolderCard } from "@/components/ui/FolderCard"
 import { FileCard } from "@/components/ui/FileCard"
 import { ResourceSection } from "@/components/ui/ResourceSection"
-import { useResourceActions } from "@/hooks/useResourceActions"
 
 export const FileExplorer = () => {
   const { workspaceGuid, folderGuid: folderGuidParam } = useParams<{ workspaceGuid: string, folderGuid?: string }>();
@@ -19,14 +18,6 @@ export const FileExplorer = () => {
   const { data: folder, isLoading, isError, error } = useFolder(folderGuid, workspaceGuid);
   const isNotFound = folderGuid !== 'root' && isError && axios.isAxiosError(error) && error.response?.status === 404;
   const renameFolder = useRenameFolder();
-  const {
-    getFolderFavoriteHandler,
-    getFileFavoriteHandler,
-    getFolderDeleteHandler,
-    getFileDeleteHandler,
-    getDownloadHandler,
-    getFileRenameHandler
-  } = useResourceActions();
 
   const [isEditingName, setIsEditingName] = useState(false);
   const [tempName, setTempName] = useState("");
@@ -139,8 +130,7 @@ export const FileExplorer = () => {
               <FolderCard
                 key={sub.guid}
                 folder={sub}
-                onFavoriteToggle={getFolderFavoriteHandler(sub)}
-                onDelete={getFolderDeleteHandler(sub, folderGuid)}
+                contextFolderGuid={folderGuid}
               />
             ))}
           </ResourceSection>
@@ -152,10 +142,7 @@ export const FileExplorer = () => {
               <FileCard
                 key={file.guid}
                 file={file}
-                onDownload={getDownloadHandler(file.guid)}
-                onFavoriteToggle={getFileFavoriteHandler(file)}
-                onDelete={getFileDeleteHandler(file, folderGuid)}
-                onRename={getFileRenameHandler(file)}
+                contextFolderGuid={folderGuid}
               />
             ))}
           </ResourceSection>

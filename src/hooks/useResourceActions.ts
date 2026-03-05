@@ -1,4 +1,4 @@
-import { useToggleFavoriteFolder, useToggleFavoriteFile, useDeleteFolder, useDeleteFile, useRenameFile } from "@/lib/queries"
+import { useToggleFavoriteFolder, useToggleFavoriteFile, useDeleteFolder, useDeleteFile, useRenameFile, useRenameFolder } from "@/lib/queries"
 import type { FolderData, FileData } from "@/lib/api"
 import React from "react"
 
@@ -8,6 +8,7 @@ export const useResourceActions = () => {
   const deleteFolder = useDeleteFolder();
   const deleteFile = useDeleteFile();
   const renameFile = useRenameFile();
+  const renameFolder = useRenameFolder();
 
   const handleDownload = (guid: string) => {
     window.open(`/api/v1/files/${guid}/download`, '_blank');
@@ -34,14 +35,12 @@ export const useResourceActions = () => {
   const getFolderDeleteHandler = (folder: FolderData, parentGuid?: string | 'root' | null) => (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    // Confirmation is now handled by DeleteConfirmationDialog in the component
     deleteFolder.mutate({ guid: folder.guid, parent_id: parentGuid === 'root' ? null : parentGuid });
   };
 
   const getFileDeleteHandler = (file: FileData, currentFolderGuid?: string | 'root' | null) => (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    // Confirmation is now handled by DeleteConfirmationDialog in the component
     deleteFile.mutate({ guid: file.guid, folder_id: currentFolderGuid === 'root' ? null : (currentFolderGuid || null) });
   };
   const getDownloadHandler = (guid: string) => (e: React.MouseEvent) => {
@@ -54,6 +53,10 @@ export const useResourceActions = () => {
     renameFile.mutate({ guid: file.guid, name: newName });
   };
 
+  const getFolderRenameHandler = (folder: FolderData) => (newName: string) => {
+    renameFolder.mutate({ guid: folder.guid, name: newName });
+  };
+
   return {
     handleDownload,
     getDownloadHandler,
@@ -61,6 +64,7 @@ export const useResourceActions = () => {
     getFileFavoriteHandler,
     getFolderDeleteHandler,
     getFileDeleteHandler,
-    getFileRenameHandler
+    getFileRenameHandler,
+    getFolderRenameHandler
   };
 };

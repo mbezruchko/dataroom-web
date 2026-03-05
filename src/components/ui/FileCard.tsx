@@ -1,23 +1,34 @@
 import { useState, useEffect } from "react"
-import { FileText, Star, Trash2, Download, Pencil, Check, X, Eye } from "lucide-react"
+import { FileText, Star, Trash2, Download, Pencil, Check, X, Eye, MoreVertical } from "lucide-react"
 import type { FileData } from "@/lib/api"
 import React from "react"
 import { DeleteConfirmationDialog } from "./DeleteConfirmationDialog"
 import { PDFPreviewDialog } from "./PDFPreviewDialog"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Button } from "@/components/ui/button"
+import { useResourceActions } from "@/hooks/useResourceActions"
 
 interface FileCardProps {
   file: FileData
-  onDownload: (e: React.MouseEvent) => void
-  onFavoriteToggle: (e: React.MouseEvent) => void
-  onDelete: (e: React.MouseEvent) => void
-  onRename?: (newName: string) => void
+  contextFolderGuid?: string | null
 }
 
-export const FileCard = ({ file, onDownload, onFavoriteToggle, onDelete, onRename }: FileCardProps) => {
+export const FileCard = ({ file, contextFolderGuid }: FileCardProps) => {
   const [isEditingName, setIsEditingName] = useState(false)
   const [tempName, setTempName] = useState(file.name)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [isPreviewOpen, setIsPreviewOpen] = useState(false)
+
+  const { getDownloadHandler, getFileFavoriteHandler, getFileDeleteHandler, getFileRenameHandler } = useResourceActions()
+  const onDownload = getDownloadHandler(file.guid)
+  const onFavoriteToggle = getFileFavoriteHandler(file)
+  const onDelete = getFileDeleteHandler(file, contextFolderGuid)
+  const onRename = getFileRenameHandler(file)
 
   useEffect(() => {
     setTempName(file.name)
@@ -105,42 +116,58 @@ export const FileCard = ({ file, onDownload, onFavoriteToggle, onDelete, onRenam
         {!isEditingName && (
           <div className="flex items-center gap-1">
             <button
-              onClick={handlePreviewClick}
-              className="p-2 hover:bg-primary/10 rounded-full transition-all opacity-0 group-hover:opacity-100"
-              title="Preview PDF"
-            >
-              <Eye className="h-4 w-4 text-primary" />
-            </button>
-            <button
-              onClick={onDownload}
-              className="p-2 hover:bg-primary/10 rounded-full transition-all opacity-0 group-hover:opacity-100"
-              title="Download file"
-            >
-              <Download className="h-4 w-4 text-primary" />
-            </button>
-            {onRename && (
-              <button
-                onClick={(e) => { e.stopPropagation(); setIsEditingName(true); }}
-                className="opacity-0 group-hover:opacity-100 p-2 hover:bg-muted rounded-full transition-all text-muted-foreground"
-                title="Rename file"
-              >
-                <Pencil className="h-4 w-4" />
-              </button>
-            )}
-            <button
               onClick={onFavoriteToggle}
-              className={`p-2 hover:bg-yellow-500/10 rounded-full transition-all ${file.is_favorite ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
+              className={`p-2 hover:bg-yellow-500/10 rounded-full transition-all shrink-0 ${file.is_favorite ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
               title={file.is_favorite ? "Remove from favorites" : "Add to favorites"}
             >
               <Star className={`h-4 w-4 ${file.is_favorite ? 'fill-yellow-400 text-yellow-500' : 'text-muted-foreground'}`} />
             </button>
-            <button
-              onClick={handleDeleteClick}
-              className="opacity-0 group-hover:opacity-100 p-2 hover:bg-destructive/10 rounded-full transition-all"
-              title="Delete file"
-            >
-              <Trash2 className="h-4 w-4 text-destructive" />
-            </button>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="size-8 rounded-full opacity-0 group-hover:opacity-100 transition-all shrink-0 cursor-pointer"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <MoreVertical className="size-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-40">
+                <DropdownMenuItem
+                  onClick={(e) => handlePreviewClick(e as any)}
+                  className="cursor-pointer"
+                >
+                  <Eye className="mr-2 size-4" />
+                  Preview
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={(e) => onDownload(e as any)}
+                  className="cursor-pointer"
+                >
+                  <Download className="mr-2 size-4" />
+                  Download
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsEditingName(true);
+                  }}
+                  className="cursor-pointer"
+                >
+                  <Pencil className="mr-2 size-4" />
+                  Rename
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={(e) => handleDeleteClick(e as any)}
+                  className="text-destructive focus:text-destructive cursor-pointer"
+                >
+                  <Trash2 className="mr-2 size-4" />
+                  Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         )}
       </div>
@@ -150,7 +177,7 @@ export const FileCard = ({ file, onDownload, onFavoriteToggle, onDelete, onRenam
         onOpenChange={setDeleteDialogOpen}
         onConfirm={handleConfirmDelete}
         title="Delete File"
-        description={`Are you sure you want to delete "${file.name}"? It will be moved to Trash.`}
+        description={<>Are you sure you want to delete <span className="font-bold">"{file.name}"</span>? It will be moved to Trash.</>}
       />
 
       <PDFPreviewDialog
