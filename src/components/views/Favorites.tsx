@@ -1,4 +1,4 @@
-import { Loader2, Star } from "lucide-react"
+import { Loader2 } from "lucide-react"
 import { useFavorites } from "@/lib/queries"
 import { useParams } from "react-router-dom"
 import type { FolderData, FileData } from "@/lib/api"

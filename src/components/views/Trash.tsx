@@ -1,4 +1,4 @@
-import { Loader2, Trash2 } from "lucide-react"
+import { Loader2 } from "lucide-react"
 import { useTrash } from "@/lib/queries"
 import { useParams } from "react-router-dom"
 import type { FileData } from "@/lib/api"
