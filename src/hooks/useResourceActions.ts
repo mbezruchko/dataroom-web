@@ -22,7 +22,8 @@ export const useResourceActions = () => {
   const permanentDeleteFile = usePermanentDeleteFile();
 
   const handleDownload = (guid: string) => {
-    window.open(`/api/v1/files/${guid}/download`, '_blank');
+    const baseUrl = import.meta.env.VITE_API_BASE_URL ?? '/api/v1';
+    window.open(`${baseUrl}/files/${guid}/download`, '_blank');
   };
 
   const getFolderFavoriteHandler = (folder: FolderData, overrideValue?: boolean) => (e: React.MouseEvent) => {

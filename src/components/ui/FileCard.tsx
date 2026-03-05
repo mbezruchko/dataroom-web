@@ -81,7 +81,8 @@ export const FileCard = ({ file, contextFolderGuid, isTrash }: FileCardProps) =>
     setIsPreviewOpen(true)
   }
 
-  const fileUrl = `/api/v1/files/${file.guid}/download`
+  const baseUrl = import.meta.env.VITE_API_BASE_URL ?? '/api/v1'
+  const fileUrl = `${baseUrl}/files/${file.guid}/download`
   const isGrid = viewMode === "grid"
 
   return (
