@@ -49,7 +49,8 @@ export const Favorites = () => {
         )}
         {(!data?.folders?.length && !data?.files?.length) && (
           <div className="flex flex-col items-center justify-center py-12 text-muted-foreground w-full h-full">
-            <p>No favorites yet.</p>
+            <p className="text-lg font-medium">No favorites yet</p>
+            <p className="text-sm">Click the star icon to save items for later.</p>
           </div>
         )}
       </div>

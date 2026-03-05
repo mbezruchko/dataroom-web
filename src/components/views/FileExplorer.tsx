@@ -157,7 +157,8 @@ export const FileExplorer = () => {
 
       {(!folder?.subfolders?.length && !folder?.files?.length) && (
         <div className="flex flex-col items-center justify-center py-12 text-muted-foreground w-full h-full">
-          <p>This folder is empty.</p>
+          <p className="text-lg font-medium">This folder is empty</p>
+          <p className="text-sm">Upload files or create folders to get started.</p>
         </div>
       )}
     </div>

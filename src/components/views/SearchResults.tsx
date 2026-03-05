@@ -47,11 +47,12 @@ export const SearchResults = () => {
         </h2>
       </div>
 
-      <div className="space-y-8 mt-6">
+      <div className="space-y-8 mt-6 h-full">
         {!hasResults ? (
-          <div className="flex flex-col items-center justify-center py-12 text-muted-foreground w-full">
+          <div className="flex flex-col items-center justify-center py-12 text-muted-foreground w-full h-full">
             <Search className="h-12 w-12 mb-4 text-muted/30" />
-            <p>No results found for your search.</p>
+            <p className="text-lg font-medium">No results found</p>
+            <p className="text-sm">Try searching for something else.</p>
           </div>
         ) : (
           <>
