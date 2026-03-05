@@ -2,6 +2,7 @@ import { useState, useEffect } from "react"
 import { FileText, Star, Trash2, Download, Pencil, Check, X, Eye, MoreVertical, RotateCcw } from "lucide-react"
 import type { FileData } from "@/lib/api"
 import React from "react"
+import { ensureSessionId } from "@/lib/cookies"
 import { DeleteConfirmationDialog } from "./DeleteConfirmationDialog"
 import { PDFPreviewDialog } from "./PDFPreviewDialog"
 import {
@@ -82,7 +83,8 @@ export const FileCard = ({ file, contextFolderGuid, isTrash }: FileCardProps) =>
   }
 
   const baseUrl = import.meta.env.VITE_API_BASE_URL ?? '/api/v1'
-  const fileUrl = `${baseUrl}/files/${file.guid}/download`
+  const sessionId = ensureSessionId()
+  const fileUrl = `${baseUrl}/files/${file.guid}/download?session-guid=${sessionId}`
   const isGrid = viewMode === "grid"
 
   return (

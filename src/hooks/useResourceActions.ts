@@ -11,6 +11,8 @@ import {
 import type { FolderData, FileData } from "@/lib/api"
 import React from "react"
 
+import { ensureSessionId } from "@/lib/cookies"
+
 export const useResourceActions = () => {
   const toggleFavFolder = useToggleFavoriteFolder();
   const toggleFavFile = useToggleFavoriteFile();
@@ -23,7 +25,8 @@ export const useResourceActions = () => {
 
   const handleDownload = (guid: string) => {
     const baseUrl = import.meta.env.VITE_API_BASE_URL ?? '/api/v1';
-    window.open(`${baseUrl}/files/${guid}/download`, '_blank');
+    const sessionId = ensureSessionId();
+    window.open(`${baseUrl}/files/${guid}/download?session-guid=${sessionId}`, '_blank');
   };
 
   const getFolderFavoriteHandler = (folder: FolderData, overrideValue?: boolean) => (e: React.MouseEvent) => {
