@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
 import { useResourceActions } from "@/hooks/useResourceActions"
+import { useAppStore } from "@/store/useAppStore"
 
 interface FileCardProps {
   file: FileData
@@ -19,12 +20,14 @@ interface FileCardProps {
 }
 
 export const FileCard = ({ file, contextFolderGuid }: FileCardProps) => {
+  const viewMode = useAppStore(state => state.viewMode)
   const [isEditingName, setIsEditingName] = useState(false)
   const [tempName, setTempName] = useState(file.name)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [isPreviewOpen, setIsPreviewOpen] = useState(false)
 
   const { getDownloadHandler, getFileFavoriteHandler, getFileDeleteHandler, getFileRenameHandler } = useResourceActions()
+
   const onDownload = getDownloadHandler(file.guid)
   const onFavoriteToggle = getFileFavoriteHandler(file)
   const onDelete = getFileDeleteHandler(file, contextFolderGuid)
@@ -65,15 +68,16 @@ export const FileCard = ({ file, contextFolderGuid }: FileCardProps) => {
   }
 
   const fileUrl = `/api/v1/files/${file.guid}/download`
+  const isGrid = viewMode === "grid"
 
   return (
     <>
       <div
         onClick={handlePreviewClick}
-        className="group relative p-4 border rounded-lg shadow-sm hover:bg-accent cursor-pointer transition-colors flex items-center justify-between gap-3 h-20"
+        className={`group relative p-3 border rounded-lg shadow-sm hover:bg-accent cursor-pointer transition-colors flex items-center justify-between gap-3 ${isGrid ? 'h-20' : 'h-12'}`}
       >
         <div className="flex items-center gap-3 truncate min-w-0 flex-1">
-          <span className="text-2xl shrink-0"><FileText className="text-sidebar-foreground" /></span>
+          <span className={`${isGrid ? 'text-2xl' : 'text-xl'} shrink-0`}><FileText className="text-sidebar-foreground" /></span>
           {isEditingName ? (
             <div className="flex items-center gap-1 flex-1 min-w-0">
               <input
@@ -92,7 +96,7 @@ export const FileCard = ({ file, contextFolderGuid }: FileCardProps) => {
               <button
                 type="button"
                 onMouseDown={(e) => { e.preventDefault(); handleRename(); }}
-                className="p-1.5 hover:bg-muted rounded-md text-green-500 shrink-0"
+                className="p-1 hover:bg-muted rounded-md text-green-500 shrink-0"
                 title="Save"
               >
                 <Check className="size-4" />
@@ -100,14 +104,14 @@ export const FileCard = ({ file, contextFolderGuid }: FileCardProps) => {
               <button
                 type="button"
                 onMouseDown={(e) => { e.preventDefault(); handleCancelRename(); }}
-                className="p-1.5 hover:bg-muted rounded-md text-destructive shrink-0"
+                className="p-1 hover:bg-muted rounded-md text-destructive shrink-0"
                 title="Cancel"
               >
                 <X className="size-4" />
               </button>
             </div>
           ) : (
-            <div className="flex flex-col truncate min-w-0">
+            <div className={`flex ${isGrid ? 'flex-col' : 'flex-row items-center gap-2'} truncate min-w-0`}>
               <span className="font-medium truncate">{file.name}</span>
               <span className="text-xs text-muted-foreground truncate">{(file.size / 1024 / 1024).toFixed(2)} MB</span>
             </div>

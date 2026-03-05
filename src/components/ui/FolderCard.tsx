@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
 import { useResourceActions } from "@/hooks/useResourceActions"
+import { useAppStore } from "@/store/useAppStore"
 
 interface FolderCardProps {
   folder: FolderData
@@ -19,11 +20,13 @@ interface FolderCardProps {
 
 export const FolderCard = ({ folder, contextFolderGuid }: FolderCardProps) => {
   const { workspaceGuid } = useParams<{ workspaceGuid: string }>()
+  const viewMode = useAppStore(state => state.viewMode)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [isEditingName, setIsEditingName] = useState(false)
   const [tempName, setTempName] = useState(folder.name)
 
   const { getFolderFavoriteHandler, getFolderDeleteHandler, getFolderRenameHandler } = useResourceActions()
+
   const onFavoriteToggle = getFolderFavoriteHandler(folder)
   const onDelete = getFolderDeleteHandler(folder, contextFolderGuid)
   const onRename = getFolderRenameHandler(folder)
@@ -56,6 +59,8 @@ export const FolderCard = ({ folder, contextFolderGuid }: FolderCardProps) => {
     setDeleteDialogOpen(false)
   }
 
+  const isGrid = viewMode === "grid"
+
   return (
     <>
       <Link
@@ -68,9 +73,9 @@ export const FolderCard = ({ folder, contextFolderGuid }: FolderCardProps) => {
           }
         }}
       >
-        <div className="p-4 border rounded-lg shadow-sm hover:bg-accent cursor-pointer transition-colors flex items-center justify-between gap-3 h-20">
+        <div className={`p-3 border rounded-lg shadow-sm hover:bg-accent cursor-pointer transition-colors flex items-center justify-between gap-3 ${isGrid ? 'h-20' : 'h-12'}`}>
           <div className="flex items-center gap-3 truncate min-w-0 flex-1">
-            <span className="text-2xl shrink-0"><FolderClosed className="text-sidebar-foreground" /></span>
+            <span className={`${isGrid ? 'text-2xl' : 'text-xl'} shrink-0`}><FolderClosed className="text-sidebar-foreground" /></span>
 
             {isEditingName ? (
               <div className="flex items-center gap-1 flex-1 min-w-0">
@@ -93,7 +98,7 @@ export const FolderCard = ({ folder, contextFolderGuid }: FolderCardProps) => {
                 <button
                   type="button"
                   onMouseDown={(e) => { e.preventDefault(); handleRename(); }}
-                  className="p-1.5 hover:bg-muted rounded-md text-green-500 shrink-0"
+                  className="p-1 hover:bg-muted rounded-md text-green-500 shrink-0"
                   title="Save"
                 >
                   <Check className="size-4" />
@@ -101,14 +106,14 @@ export const FolderCard = ({ folder, contextFolderGuid }: FolderCardProps) => {
                 <button
                   type="button"
                   onMouseDown={(e) => { e.preventDefault(); handleCancelRename(); }}
-                  className="p-1.5 hover:bg-muted rounded-md text-destructive shrink-0"
+                  className="p-1 hover:bg-muted rounded-md text-destructive shrink-0"
                   title="Cancel"
                 >
                   <X className="size-4" />
                 </button>
               </div>
             ) : (
-              <div className="flex flex-col truncate">
+              <div className={`flex ${isGrid ? 'flex-col' : 'flex-row items-center gap-2'} truncate`}>
                 <span className="font-medium truncate">{folder.name}</span>
                 <span className="text-xs text-muted-foreground truncate">
                   {folder.files_count === 0 ? 'empty' :
