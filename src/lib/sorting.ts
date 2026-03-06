@@ -36,6 +36,10 @@ export const sortResources = <T extends FileData | FolderData>(
       }
     }
 
+    if (comparison === 0) {
+      comparison = a.name.localeCompare(b.name);
+    }
+
     return order === 'asc' ? comparison : -comparison;
   });
 };
