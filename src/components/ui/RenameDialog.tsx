@@ -70,6 +70,7 @@ export function RenameDialog({
                                 id="rename-field"
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
+                                maxLength={MAX_NAME_LENGTH}
                                 className={cn(
                                     "col-span-3 transition-colors",
                                     isTooLong && "border-destructive focus-visible:ring-destructive"
@@ -82,7 +83,7 @@ export function RenameDialog({
                                     {isTooLong && (
                                         <span className="text-[11px] text-destructive flex items-center gap-1 font-medium animate-in fade-in slide-in-from-top-1">
                                             <AlertCircle className="size-3" />
-                                            Maximum 60 characters
+                                            Maximum 30 characters
                                         </span>
                                     )}
                                 </div>
