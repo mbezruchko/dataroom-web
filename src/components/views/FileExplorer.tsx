@@ -1,7 +1,7 @@
-import { useState, useMemo } from "react"
-import { useParams } from "react-router-dom"
+import { useState, useMemo, useEffect } from "react"
+import { useParams, useLocation } from "react-router-dom"
 import axios from "axios"
-import { Loader2, Pencil } from "lucide-react"
+import { Loader2, Search } from "lucide-react"
 import { useFolder, useRenameFolder } from "@/lib/queries"
 import { NotFound } from "./NotFound"
 import type { FolderData, FileData } from "@/lib/api"
@@ -15,17 +15,23 @@ import { ResourceFilters } from "@/components/ui/ResourceFilters"
 import { RenameDialog } from "@/components/ui/RenameDialog"
 import { useAppStore } from "@/store/useAppStore"
 import { sortResources } from "@/lib/sorting"
+import { SmartSearch } from "@/components/ui/SmartSearch"
 
 export const FileExplorer = () => {
   const { workspaceGuid, folderGuid: folderGuidParam } = useParams<{ workspaceGuid: string, folderGuid?: string }>();
   const folderGuid = folderGuidParam || 'root';
+  const location = useLocation();
 
   const { data: folder, isLoading, isError, error } = useFolder(folderGuid, workspaceGuid);
   const isNotFound = folderGuid !== 'root' && isError && axios.isAxiosError(error) && error.response?.status === 404;
   const renameFolder = useRenameFolder();
 
-  const { sortField, sortOrder, resourceFilter, viewMode } = useAppStore();
+  const { sortField, sortOrder, resourceFilter, localSearch, setLocalSearch } = useAppStore();
   const [renameDialogOpen, setRenameDialogOpen] = useState(false);
+
+  useEffect(() => {
+    setLocalSearch("");
+  }, [location.pathname, setLocalSearch]);
 
   const handleRenameConfirm = (newName: string) => {
     if (folderGuid !== 'root' && newName && newName !== folder?.name) {
@@ -34,15 +40,25 @@ export const FileExplorer = () => {
     setRenameDialogOpen(false);
   };
 
-  const sortedSubfolders = useMemo(() => {
-    if (!folder?.subfolders || resourceFilter === 'files') return [];
-    return sortResources(folder.subfolders, sortField, sortOrder);
-  }, [folder?.subfolders, sortField, sortOrder, resourceFilter]);
 
-  const sortedFiles = useMemo(() => {
-    if (!folder?.files || resourceFilter === 'folders') return [];
-    return sortResources(folder.files, sortField, sortOrder);
-  }, [folder?.files, sortField, sortOrder, resourceFilter]);
+  const combinedItems = useMemo(() => {
+    const folders = folder?.subfolders || [];
+    const files = folder?.files || [];
+
+    let all: (FolderData | FileData)[] = [...folders, ...files];
+
+    if (localSearch) {
+      all = all.filter(item => item.name.toLowerCase().includes(localSearch.toLowerCase()));
+    }
+
+    if (resourceFilter === 'folders') {
+      all = all.filter(item => !('size' in item));
+    } else if (resourceFilter === 'files') {
+      all = all.filter(item => 'size' in item);
+    }
+
+    return sortResources(all, sortField, sortOrder);
+  }, [folder?.subfolders, folder?.files, localSearch, resourceFilter, sortField, sortOrder]);
 
   if (isLoading) {
     return (
@@ -71,80 +87,53 @@ export const FileExplorer = () => {
           <h2 className="text-2xl font-bold tracking-tight">
             {<span className="mr-4">{folder?.name || 'Storage'}</span>}
           </h2>
-          {/* {folderGuid !== 'root' && (
-            <button
-              onClick={() => setRenameDialogOpen(true)}
-              className="opacity-0 group-hover:opacity-100 p-1.5 hover:bg-muted rounded-md transition-all text-muted-foreground cursor-pointer"
-              title="Rename folder"
-            >
-              <Pencil className="size-4" />
-            </button>
-          )} */}
           <CreateFolderDialog parentId={folderGuid === 'root' ? null : folderGuid} />
           <UploadFileDialog folderId={folderGuid === 'root' ? null : folderGuid} />
         </div>
 
-        <div className="flex items-center gap-2">
-          <ResourceFilters />
-          <ViewSwitcher />
+        <div className="flex items-center gap-4 flex-1 justify-end">
+          <SmartSearch />
+          <div className="flex items-center gap-2 shrink-0">
+            <ResourceFilters />
+            <ViewSwitcher />
+          </div>
         </div>
       </div>
 
-      <div className="space-y-8 mt-6">
-        {viewMode === 'list' ? (
-          (sortedSubfolders.length > 0 || sortedFiles.length > 0) && (
-            <ResourceSection title="All items">
-              {sortedSubfolders.map((sub: FolderData) => (
-                <FolderCard
-                  key={sub.guid}
-                  folder={sub}
-                  contextFolderGuid={folderGuid}
-                />
-              ))}
-              {sortedFiles.map((file: FileData) => (
-                <FileCard
-                  key={file.guid}
-                  file={file}
-                  contextFolderGuid={folderGuid}
-                />
-              ))}
-            </ResourceSection>
-          )
-        ) : (
-          <>
-            {sortedSubfolders.length > 0 && (
-              <ResourceSection title="Folders">
-                {sortedSubfolders.map((sub: FolderData) => (
-                  <FolderCard
-                    key={sub.guid}
-                    folder={sub}
-                    contextFolderGuid={folderGuid}
-                  />
-                ))}
-              </ResourceSection>
-            )}
-
-            {sortedFiles.length > 0 && (
-              <ResourceSection title="Files">
-                {sortedFiles.map((file: FileData) => (
+      <div className="mt-6 flex-1 overflow-auto">
+        {combinedItems.length > 0 ? (
+          <ResourceSection>
+            {combinedItems.map((item) => {
+              if ('size' in item) {
+                return (
                   <FileCard
-                    key={file.guid}
-                    file={file}
+                    key={item.guid}
+                    file={item}
                     contextFolderGuid={folderGuid}
                   />
-                ))}
-              </ResourceSection>
-            )}
-          </>
+                );
+              }
+              return (
+                <FolderCard
+                  key={item.guid}
+                  folder={item}
+                  contextFolderGuid={folderGuid}
+                />
+              );
+            })}
+          </ResourceSection>
+        ) : (
+          <div className="flex flex-col items-center justify-center py-12 text-muted-foreground w-full h-full">
+            <Search className="size-12 mb-4 opacity-20" />
+            <p className="text-lg font-medium">{localSearch ? "No matches found" : "This folder is empty"}</p>
+            <p className="text-sm">
+              {localSearch
+                ? `We couldn't find anything matching "${localSearch}"`
+                : "Upload files or create folders to get started."}
+            </p>
+          </div>
         )}
       </div>
-
-      {(!folder?.subfolders?.length && !folder?.files?.length) && (
-        <div className="flex flex-col items-center justify-center py-12 text-muted-foreground w-full h-full">
-          <p className="text-lg font-medium">This folder is empty</p>
-          <p className="text-sm">Upload files or create folders to get started.</p>
-        </div>
-      )}
 
       {folder && (
         <RenameDialog

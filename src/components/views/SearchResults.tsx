@@ -1,6 +1,6 @@
 import { useLocation, useParams } from "react-router-dom"
 import { Loader2, Search } from "lucide-react"
-import { useMemo } from "react"
+import { useMemo, useEffect } from "react"
 import { useSearch } from "@/lib/queries"
 import type { FolderData, FileData } from "@/lib/api"
 import { FolderCard } from "@/components/ui/FolderCard"
@@ -10,30 +10,41 @@ import { ViewSwitcher } from "@/components/ui/ViewSwitcher"
 import { ResourceFilters } from "@/components/ui/ResourceFilters"
 import { useAppStore } from "@/store/useAppStore"
 import { sortResources } from "@/lib/sorting"
+import { SmartSearch } from "../ui/SmartSearch"
 
 export const SearchResults = () => {
   const { workspaceGuid } = useParams<{ workspaceGuid: string }>();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const query = queryParams.get('q') || "";
+  const folderId = queryParams.get('f') || undefined;
 
-  const { data, isLoading } = useSearch(query, workspaceGuid);
-  const { sortField, sortOrder, resourceFilter, viewMode } = useAppStore();
+  const { data, isLoading } = useSearch(query, workspaceGuid, folderId);
+  const { sortField, sortOrder, resourceFilter, localSearch, setLocalSearch } = useAppStore();
 
-  const sortedFolders = useMemo(() => {
-    if (!data?.folders || resourceFilter === 'files') return [];
-    return sortResources(data.folders, sortField, sortOrder);
-  }, [data?.folders, sortField, sortOrder, resourceFilter]);
+  useEffect(() => {
+    setLocalSearch("");
+  }, [location.pathname, location.search, setLocalSearch]);
 
-  const sortedFiles = useMemo(() => {
-    if (!data?.files || resourceFilter === 'folders') return [];
-    return sortResources(data.files, sortField, sortOrder);
-  }, [data?.files, sortField, sortOrder, resourceFilter]);
+  const combinedItems = useMemo(() => {
+    const folders = data?.folders || [];
+    const files = data?.files || [];
+    const deletedFiles = data?.deleted_files || [];
 
-  const sortedDeletedFiles = useMemo(() => {
-    if (!data?.deleted_files || resourceFilter === 'folders') return [];
-    return sortResources(data.deleted_files, sortField, sortOrder);
-  }, [data?.deleted_files, sortField, sortOrder, resourceFilter]);
+    let all: (FolderData | FileData)[] = [...folders, ...files, ...deletedFiles];
+
+    if (localSearch) {
+      all = all.filter(item => item.name.toLowerCase().includes(localSearch.toLowerCase()));
+    }
+
+    if (resourceFilter === 'folders') {
+      all = all.filter(item => !('size' in item));
+    } else if (resourceFilter === 'files') {
+      all = all.filter(item => 'size' in item);
+    }
+
+    return sortResources(all, sortField, sortOrder);
+  }, [data?.folders, data?.files, data?.deleted_files, localSearch, resourceFilter, sortField, sortOrder]);
 
   if (isLoading) {
     return (
@@ -55,7 +66,7 @@ export const SearchResults = () => {
     );
   }
 
-  const hasResults =
+  const hasPhysicalResults =
     (data?.folders?.length || 0) > 0 ||
     (data?.files?.length || 0) > 0 ||
     (data?.deleted_files?.length || 0) > 0;
@@ -66,83 +77,51 @@ export const SearchResults = () => {
         <h2 className="text-2xl font-bold tracking-tight">
           Search results for "{query}"
         </h2>
-        <div className="flex items-center gap-2">
-          <ResourceFilters />
-          <ViewSwitcher />
+        <div className="flex items-center gap-4 flex-1 justify-end">
+          <SmartSearch />
+          <div className="flex items-center gap-2 shrink-0">
+            <ResourceFilters />
+            <ViewSwitcher />
+          </div>
         </div>
       </div>
 
-      <div className="space-y-8 mt-6 h-full overflow-auto">
-        {!hasResults ? (
+      <div className="mt-6 flex-1 overflow-auto">
+        {!hasPhysicalResults ? (
           <div className="flex flex-col items-center justify-center py-12 text-muted-foreground w-full h-full">
             <Search className="h-12 w-12 mb-4 text-muted/30" />
             <p className="text-lg font-medium">No results found</p>
             <p className="text-sm">Try searching for something else.</p>
           </div>
-        ) : viewMode === 'list' ? (
-          <ResourceSection title="All results">
-            {sortedFolders.map((sub: FolderData) => (
-              <FolderCard
-                key={sub.guid}
-                folder={sub}
-                contextFolderGuid={null}
-              />
-            ))}
-            {sortedFiles.map((file: FileData) => (
-              <FileCard
-                key={file.guid}
-                file={file}
-                contextFolderGuid={null}
-              />
-            ))}
-            {sortedDeletedFiles.map((file: FileData) => (
-              <FileCard
-                key={file.guid}
-                file={file}
-                contextFolderGuid={null}
-                isTrash={true}
-              />
-            ))}
-          </ResourceSection>
+        ) : combinedItems.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-12 text-muted-foreground w-full h-full">
+            <Search className="h-12 w-12 mb-4 text-muted/30" />
+            <p className="text-lg font-medium">No matches in results</p>
+            <p className="text-sm">We couldn't find anything matching "{localSearch}" among the search results.</p>
+          </div>
         ) : (
-          <>
-            {sortedFolders.length > 0 && (
-              <ResourceSection title="Folders">
-                {sortedFolders.map((sub: FolderData) => (
-                  <FolderCard
-                    key={sub.guid}
-                    folder={sub}
-                    contextFolderGuid={null}
-                  />
-                ))}
-              </ResourceSection>
-            )}
-
-            {sortedFiles.length > 0 && (
-              <ResourceSection title="Files">
-                {sortedFiles.map((file: FileData) => (
+          <ResourceSection>
+            {combinedItems.map((item) => {
+              const isDeleted = data?.deleted_files?.some(df => df.guid === item.guid);
+              if ('size' in item) {
+                return (
                   <FileCard
-                    key={file.guid}
-                    file={file}
+                    key={item.guid}
+                    file={item}
                     contextFolderGuid={null}
+                    isTrash={isDeleted}
                   />
-                ))}
-              </ResourceSection>
-            )}
-
-            {sortedDeletedFiles.length > 0 && (
-              <ResourceSection title="Deleted files">
-                {sortedDeletedFiles.map((file: FileData) => (
-                  <FileCard
-                    key={file.guid}
-                    file={file}
-                    contextFolderGuid={null}
-                    isTrash={true}
-                  />
-                ))}
-              </ResourceSection>
-            )}
-          </>
+                );
+              }
+              return (
+                <FolderCard
+                  key={item.guid}
+                  folder={item}
+                  contextFolderGuid={null}
+                />
+              );
+            })}
+          </ResourceSection>
         )}
       </div>
     </div>

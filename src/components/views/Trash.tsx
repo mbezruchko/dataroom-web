@@ -1,28 +1,46 @@
-import { Loader2, Trash2 } from "lucide-react"
+import { Loader2, Trash2, Search } from "lucide-react"
 import { useTrash, useEmptyTrash } from "@/lib/queries/search"
-import { useParams } from "react-router-dom"
+import { useParams, useLocation } from "react-router-dom"
 import type { FileData } from "@/lib/api"
 import { ResourceSection } from "@/components/ui/ResourceSection"
 import { FileCard } from "@/components/ui/FileCard"
 import { Button } from "@/components/ui/button"
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { DeleteConfirmationDialog } from "@/components/ui/DeleteConfirmationDialog"
 import { ViewSwitcher } from "@/components/ui/ViewSwitcher"
 import { ResourceFilters } from "@/components/ui/ResourceFilters"
 import { useAppStore } from "@/store/useAppStore"
 import { sortResources } from "@/lib/sorting"
+import { SmartSearch } from "@/components/ui/SmartSearch"
 
 export const Trash = () => {
   const { workspaceGuid } = useParams<{ workspaceGuid: string }>();
   const { data, isLoading } = useTrash(workspaceGuid);
+  const location = useLocation();
   const emptyTrash = useEmptyTrash();
   const [showConfirm, setShowConfirm] = useState(false);
-  const { sortField, sortOrder, resourceFilter, viewMode } = useAppStore();
+  const { sortField, sortOrder, resourceFilter, localSearch, setLocalSearch } = useAppStore();
 
-  const sortedFiles = useMemo(() => {
-    if (!data?.files || resourceFilter === 'folders') return [];
-    return sortResources(data.files, sortField, sortOrder);
-  }, [data?.files, sortField, sortOrder, resourceFilter]);
+  useEffect(() => {
+    setLocalSearch("");
+  }, [location.pathname, setLocalSearch]);
+
+  const combinedItems = useMemo(() => {
+    const files = data?.files || [];
+
+    let all: FileData[] = [...files];
+
+    if (localSearch) {
+      all = all.filter(item => item.name.toLowerCase().includes(localSearch.toLowerCase()));
+    }
+
+    if (resourceFilter === 'folders') {
+      // Trash currently only contains files, but for future-proofing:
+      return [];
+    }
+
+    return sortResources(all, sortField, sortOrder);
+  }, [data?.files, localSearch, resourceFilter, sortField, sortOrder]);
 
   if (isLoading) {
     return (
@@ -32,7 +50,7 @@ export const Trash = () => {
     );
   }
 
-  const hasContent = data?.files && data.files.length > 0;
+  const hasPhysicalContent = data?.files && data.files.length > 0;
 
   const handleEmptyTrash = () => {
     if (workspaceGuid) {
@@ -46,43 +64,46 @@ export const Trash = () => {
     <div className="flex h-full flex-col p-6 space-y-4">
       <div className="flex items-center justify-between mb-2">
         <h2 className="text-2xl font-bold tracking-tight">Trash</h2>
-        <div className="flex items-center gap-2">
-          <ResourceFilters />
-          <ViewSwitcher />
-          {hasContent && (
-            <Button
-              variant="destructive"
-              size="sm"
-              onClick={() => setShowConfirm(true)}
-              disabled={emptyTrash.isPending}
-              className="cursor-pointer"
-            >
-              {emptyTrash.isPending ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <Trash2 className="mr-2 h-4 w-4" />
-              )}
-              Empty Trash
-            </Button>
-          )}
+        <div className="flex items-center gap-4 flex-1 justify-end">
+          <SmartSearch />
+          <div className="flex items-center gap-2 shrink-0">
+            <ResourceFilters />
+            <ViewSwitcher />
+            {hasPhysicalContent && (
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={() => setShowConfirm(true)}
+                disabled={emptyTrash.isPending}
+                className="cursor-pointer"
+              >
+                {emptyTrash.isPending ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <Trash2 className="mr-2 h-4 w-4" />
+                )}
+                Empty Trash
+              </Button>
+            )}
+          </div>
         </div>
       </div>
 
       <div className="mt-6 flex-1 overflow-auto">
-        {!hasContent ? (
+        {!hasPhysicalContent ? (
           <div className="flex flex-col items-center justify-center py-12 text-muted-foreground w-full h-full">
             <p className="text-lg font-medium">Trash is empty</p>
             <p className="text-sm">Deleted files will appear here.</p>
           </div>
-        ) : viewMode === 'list' ? (
-          <ResourceSection title="All deleted items">
-            {sortedFiles.map((file: FileData) => (
-              <FileCard key={file.guid} file={file} isTrash={true} />
-            ))}
-          </ResourceSection>
+        ) : combinedItems.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-12 text-muted-foreground w-full h-full">
+            <Search className="size-12 mb-4 opacity-20" />
+            <p className="text-lg font-medium">No matches found in trash</p>
+            <p className="text-sm">We couldn't find anything matching "{localSearch}" in your deleted files</p>
+          </div>
         ) : (
-          <ResourceSection title="Deleted Files">
-            {sortedFiles.map((file: FileData) => (
+          <ResourceSection>
+            {combinedItems.map((file: FileData) => (
               <FileCard key={file.guid} file={file} isTrash={true} />
             ))}
           </ResourceSection>

@@ -1,7 +1,7 @@
-import { Loader2 } from "lucide-react"
+import { Loader2, Search } from "lucide-react"
 import { useFavorites } from "@/lib/queries"
-import { useParams } from "react-router-dom"
-import { useMemo } from "react"
+import { useParams, useLocation } from "react-router-dom"
+import { useMemo, useEffect } from "react"
 import type { FolderData, FileData } from "@/lib/api"
 import { FolderCard } from "@/components/ui/FolderCard"
 import { FileCard } from "@/components/ui/FileCard"
@@ -10,21 +10,36 @@ import { ViewSwitcher } from "@/components/ui/ViewSwitcher"
 import { ResourceFilters } from "@/components/ui/ResourceFilters"
 import { useAppStore } from "@/store/useAppStore"
 import { sortResources } from "@/lib/sorting"
+import { SmartSearch } from "@/components/ui/SmartSearch"
 
 export const Favorites = () => {
   const { workspaceGuid } = useParams<{ workspaceGuid: string }>();
   const { data, isLoading } = useFavorites(workspaceGuid);
-  const { sortField, sortOrder, resourceFilter, viewMode } = useAppStore();
+  const location = useLocation();
+  const { sortField, sortOrder, resourceFilter, localSearch, setLocalSearch } = useAppStore();
 
-  const sortedFolders = useMemo(() => {
-    if (!data?.folders || resourceFilter === 'files') return [];
-    return sortResources(data.folders, sortField, sortOrder);
-  }, [data?.folders, sortField, sortOrder, resourceFilter]);
+  useEffect(() => {
+    setLocalSearch("");
+  }, [location.pathname, setLocalSearch]);
 
-  const sortedFiles = useMemo(() => {
-    if (!data?.files || resourceFilter === 'folders') return [];
-    return sortResources(data.files, sortField, sortOrder);
-  }, [data?.files, sortField, sortOrder, resourceFilter]);
+  const combinedItems = useMemo(() => {
+    const folders = data?.folders || [];
+    const files = data?.files || [];
+
+    let all: (FolderData | FileData)[] = [...folders, ...files];
+
+    if (localSearch) {
+      all = all.filter(item => item.name.toLowerCase().includes(localSearch.toLowerCase()));
+    }
+
+    if (resourceFilter === 'folders') {
+      all = all.filter(item => !('size' in item));
+    } else if (resourceFilter === 'files') {
+      all = all.filter(item => 'size' in item);
+    }
+
+    return sortResources(all, sortField, sortOrder);
+  }, [data?.folders, data?.files, localSearch, resourceFilter, sortField, sortOrder]);
 
   if (isLoading) {
     return (
@@ -38,62 +53,46 @@ export const Favorites = () => {
     <div className="flex h-full flex-col p-6 space-y-4">
       <div className="flex items-center justify-between mb-2">
         <h2 className="text-2xl font-bold tracking-tight">Favorites</h2>
-        <div className="flex items-center gap-2">
-          <ResourceFilters />
-          <ViewSwitcher />
+        <div className="flex items-center gap-4 flex-1 justify-end">
+          <SmartSearch />
+          <div className="flex items-center gap-2 shrink-0">
+            <ResourceFilters />
+            <ViewSwitcher />
+          </div>
         </div>
       </div>
 
-      <div className="space-y-8 mt-6 h-full">
-        {viewMode === 'list' ? (
-          (sortedFolders.length > 0 || sortedFiles.length > 0) && (
-            <ResourceSection title="All favorites">
-              {sortedFolders.map((sub: FolderData) => (
-                <FolderCard
-                  key={sub.guid}
-                  folder={sub}
-                  contextFolderGuid={null}
-                />
-              ))}
-              {sortedFiles.map((file: FileData) => (
-                <FileCard
-                  key={file.guid}
-                  file={file}
-                  contextFolderGuid={null}
-                />
-              ))}
-            </ResourceSection>
-          )
-        ) : (
-          <>
-            {sortedFolders.length > 0 && (
-              <ResourceSection title="Folders">
-                {sortedFolders.map((sub: FolderData) => (
-                  <FolderCard
-                    key={sub.guid}
-                    folder={sub}
-                    contextFolderGuid={null}
-                  />
-                ))}
-              </ResourceSection>
-            )}
-            {sortedFiles.length > 0 && (
-              <ResourceSection title="Files">
-                {sortedFiles.map((file: FileData) => (
+      <div className="space-y-8 mt-6 h-full flex-1 overflow-auto">
+        {combinedItems.length > 0 ? (
+          <ResourceSection>
+            {combinedItems.map((item) => {
+              if ('size' in item) {
+                return (
                   <FileCard
-                    key={file.guid}
-                    file={file}
+                    key={item.guid}
+                    file={item}
                     contextFolderGuid={null}
                   />
-                ))}
-              </ResourceSection>
-            )}
-          </>
-        )}
-        {(!data?.folders?.length && !data?.files?.length) && (
+                );
+              }
+              return (
+                <FolderCard
+                  key={item.guid}
+                  folder={item}
+                  contextFolderGuid={null}
+                />
+              );
+            })}
+          </ResourceSection>
+        ) : (
           <div className="flex flex-col items-center justify-center py-12 text-muted-foreground w-full h-full">
-            <p className="text-lg font-medium">No favorites yet</p>
-            <p className="text-sm">Click the star icon to save items for later.</p>
+            <Search className="size-12 mb-4 opacity-20" />
+            <p className="text-lg font-medium">{localSearch ? "No matches found" : "No favorites yet"}</p>
+            <p className="text-sm">
+              {localSearch
+                ? `We couldn't find anything matching "${localSearch}" in your favorites`
+                : "Click the star icon to save items for later."}
+            </p>
           </div>
         )}
       </div>

@@ -10,12 +10,14 @@ interface AppState {
   clearFileSelection: () => void;
   viewMode: 'grid' | 'list';
   setViewMode: (mode: 'grid' | 'list') => void;
-  sortField: 'name' | 'date' | 'size';
-  setSortField: (field: 'name' | 'date' | 'size') => void;
+  sortField: 'type' | 'name' | 'date' | 'size';
+  setSortField: (field: 'type' | 'name' | 'date' | 'size') => void;
   sortOrder: 'asc' | 'desc';
   setSortOrder: (order: 'asc' | 'desc') => void;
   resourceFilter: 'all' | 'folders' | 'files';
   setResourceFilter: (filter: 'all' | 'folders' | 'files') => void;
+  localSearch: string;
+  setLocalSearch: (query: string) => void;
 }
 
 export const useAppStore = create<AppState>()(
@@ -39,13 +41,16 @@ export const useAppStore = create<AppState>()(
       viewMode: 'grid',
       setViewMode: (mode) => set({ viewMode: mode }),
 
-      sortField: 'name',
+      sortField: 'type',
       setSortField: (sortField) => set({ sortField }),
       sortOrder: 'asc',
       setSortOrder: (sortOrder) => set({ sortOrder }),
 
       resourceFilter: 'all',
       setResourceFilter: (resourceFilter) => set({ resourceFilter }),
+
+      localSearch: "",
+      setLocalSearch: (localSearch) => set({ localSearch }),
     }),
     {
       name: 'dataroom-storage',

@@ -69,7 +69,7 @@ const FileCardList = ({
   onDownload,
   onRestore
 }: ViewProps) => (
-  <div onClick={handlePreviewClick} className={`group relative border-b border-border transition-colors h-12 grid grid-cols-[40px_1fr_180px_100px_48px] gap-3 px-3 items-center cursor-pointer hover:bg-muted ${isTrash ? 'opacity-80' : ''}`}>
+  <div onClick={handlePreviewClick} className={`group relative border-b border-border transition-colors h-12 grid grid-cols-[80px_1fr_180px_100px_48px] gap-3 px-3 items-center cursor-pointer hover:bg-muted ${isTrash ? 'opacity-80' : ''}`}>
     <div className="flex justify-center group-hover:scale-110 transition-transform">
       <FileText className="text-sidebar-foreground size-5" />
     </div>

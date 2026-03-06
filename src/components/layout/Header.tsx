@@ -1,5 +1,3 @@
-import { Search } from "lucide-react"
-import { Input } from "@/components/ui/input"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -17,11 +15,10 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
 import { Menu } from "lucide-react"
-import React, { useState, useMemo, useCallback } from "react"
-import { Link, useNavigate, useLocation, useParams } from "react-router-dom"
+import React, { useMemo } from "react"
+import { Link, useLocation, useParams } from "react-router-dom"
 import { useAppStore } from "@/store/useAppStore"
 import { useFolderPath } from "@/lib/queries"
-
 
 interface BreadcrumbItemData {
   label: string
@@ -31,11 +28,8 @@ interface BreadcrumbItemData {
 
 export function Header() {
   const toggleSidebar = useAppStore(state => state.toggleSidebar)
-
-  const navigate = useNavigate()
   const location = useLocation()
   const { workspaceGuid } = useParams<{ workspaceGuid: string }>()
-  const [search, setSearch] = useState("")
 
   const pathParts = location.pathname.split("/").filter(Boolean)
   const folderGuid = pathParts[1] === "folder" ? pathParts[2] : (pathParts[1] === "root" ? "root" : "root")
@@ -59,13 +53,6 @@ export function Header() {
     }
     return breadcrumbs;
   }, [workspaceGuid, folderGuid, folderPath]);
-
-  const handleSearch = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && search.trim()) {
-      navigate(`/${workspaceGuid}/search?q=${encodeURIComponent(search.trim())}`)
-      setSearch("")
-    }
-  }, [workspaceGuid, search, navigate]);
 
   const renderBreadcrumbs = () => {
     const BreadcrumbContent = ({ item }: { item: BreadcrumbItemData }) => {
@@ -146,21 +133,6 @@ export function Header() {
             <BreadcrumbList>{renderBreadcrumbs()}</BreadcrumbList>
           )}
         </Breadcrumb>
-      </div>
-
-      {/* Centered Search */}
-      <div className="absolute left-1/2 -translate-x-1/2 hidden sm:block w-full max-w-[250px] lg:max-w-[400px]">
-        <div className="relative">
-          <Search className="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
-          <Input
-            type="search"
-            placeholder="Search documents..."
-            className="w-full bg-background/50 pl-8 focus-visible:bg-background transition-colors"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            onKeyDown={handleSearch}
-          />
-        </div>
       </div>
 
       <div className="flex items-center gap-3 shrink-0">

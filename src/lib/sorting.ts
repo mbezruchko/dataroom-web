@@ -1,6 +1,6 @@
 import type { FileData, FolderData } from "./api";
 
-export type SortField = 'name' | 'date' | 'size';
+export type SortField = 'type' | 'name' | 'date' | 'size';
 export type SortOrder = 'asc' | 'desc';
 
 export const sortResources = <T extends FileData | FolderData>(
@@ -9,11 +9,16 @@ export const sortResources = <T extends FileData | FolderData>(
   order: SortOrder
 ): T[] => {
   return [...items].sort((a, b) => {
-    // Keep favorites on top
-    if (a.is_favorite !== b.is_favorite) return a.is_favorite ? -1 : 1;
-
     let comparison = 0;
     switch (field) {
+      case 'type': {
+        const isFolderA = !('size' in a);
+        const isFolderB = !('size' in b);
+        if (isFolderA !== isFolderB) {
+          comparison = isFolderA ? -1 : 1;
+        }
+        break;
+      }
       case 'name':
         comparison = a.name.localeCompare(b.name);
         break;

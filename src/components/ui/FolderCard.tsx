@@ -59,7 +59,7 @@ const FolderCardList = ({
   handleDeleteClick,
   handleRenameClick
 }: ViewProps) => (
-  <div className="h-12 border-b border-border hover:bg-muted cursor-pointer transition-colors grid grid-cols-[40px_1fr_180px_100px_48px] gap-3 px-3 items-center group">
+  <div className="h-12 border-b border-border hover:bg-muted cursor-pointer transition-colors grid grid-cols-[80px_1fr_180px_100px_48px] gap-3 px-3 items-center group">
     <div className="flex justify-center group-hover:scale-110 transition-transform">
       <FolderClosed className="text-sidebar-foreground size-5" />
     </div>

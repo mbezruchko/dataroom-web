@@ -3,15 +3,14 @@ import { useAppStore } from "@/store/useAppStore"
 import { ChevronUp, ChevronDown } from "lucide-react"
 
 interface ResourceSectionProps {
-  title: string
   children: React.ReactNode
 }
 
-export const ResourceSection = ({ title, children }: ResourceSectionProps) => {
+export const ResourceSection = ({ children }: ResourceSectionProps) => {
   const { viewMode, sortField, sortOrder, setSortField, setSortOrder } = useAppStore()
   const isGrid = viewMode === "grid"
 
-  const handleSort = (field: 'name' | 'date' | 'size') => {
+  const handleSort = (field: 'type' | 'name' | 'date' | 'size') => {
     if (sortField === field) {
       setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')
     } else {
@@ -20,7 +19,7 @@ export const ResourceSection = ({ title, children }: ResourceSectionProps) => {
     }
   }
 
-  const SortIndicator = ({ field }: { field: 'name' | 'date' | 'size' }) => {
+  const SortIndicator = ({ field }: { field: 'type' | 'name' | 'date' | 'size' }) => {
     if (sortField !== field) return null
     return sortOrder === 'asc' ? <ChevronUp className="size-3 ml-1" /> : <ChevronDown className="size-3 ml-1" />
   }
@@ -28,8 +27,13 @@ export const ResourceSection = ({ title, children }: ResourceSectionProps) => {
   return (
     <div className="space-y-3 mb-12">
       {!isGrid && (
-        <div className="grid grid-cols-[40px_1fr_180px_100px_48px] gap-3 px-3 py-2 text-xs font-medium text-muted-foreground border-b border-border uppercase tracking-wider select-none">
-          <div className="flex justify-center">Type</div>
+        <div className="grid grid-cols-[80px_1fr_180px_100px_48px] gap-3 px-3 py-2 text-xs font-medium text-muted-foreground border-b border-border uppercase tracking-wider select-none">
+          <div
+            className="flex justify-center items-center hover:text-foreground cursor-pointer transition-colors"
+            onClick={() => handleSort('type')}
+          >
+            Type <SortIndicator field="type" />
+          </div>
           <div
             className="flex items-center hover:text-foreground cursor-pointer transition-colors"
             onClick={() => handleSort('name')}
