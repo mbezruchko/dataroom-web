@@ -38,11 +38,14 @@ const FolderCardGrid = ({
   handleRenameClick
 }: ViewProps) => {
   const { workspaceGuid } = useParams<{ workspaceGuid: string }>()
+  const { isBulkMode } = useAppStore()
+  const activeBulk = isBulkMode || isSelected
 
   return (
     <div className={`h-20 p-3 border rounded-lg shadow-sm hover:bg-accent/80 cursor-pointer transition-all flex items-center justify-between gap-3 group/card relative overflow-hidden ${isSelected ? 'border-primary bg-primary/5' : 'bg-card'}`}>
       <div
-        className={`absolute left-3 top-1/2 -translate-y-1/2 z-20 transition-all duration-200 ease-in-out ${isSelected ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4 group-hover/card:opacity-100 group-hover/card:translate-x-0'}`}
+        className={`absolute left-3 top-1/2 -translate-y-1/2 size-8 flex items-center justify-center transition-all duration-300 ease-in-out z-20 
+          ${activeBulk ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'}`}
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
@@ -56,11 +59,13 @@ const FolderCardGrid = ({
 
       <Link
         to={`/${workspaceGuid}/folder/${folder.guid}`}
-        className={`flex items-center gap-3 truncate min-w-0 flex-1 transition-transform duration-200 ease-in-out ${isSelected ? 'translate-x-[26px]' : 'group-hover/card:translate-x-[26px]'} hover:no-underline`}
+        className={`flex items-center gap-3 truncate min-w-0 flex-1 transition-transform duration-300 ease-in-out hover:no-underline
+          ${activeBulk ? 'translate-x-[32px]' : ''}`}
       >
         <div className="shrink-0">
-          <span className="text-2xl"><FolderClosed className="text-sidebar-foreground" /></span>
+          <FolderClosed className="text-sidebar-foreground size-8" />
         </div>
+
         <div className="flex flex-col truncate">
           <span className="font-medium truncate text-foreground">{folder.name}</span>
           <span className="text-xs text-muted-foreground truncate">
@@ -91,15 +96,20 @@ const FolderCardList = ({
   handleRenameClick
 }: ViewProps) => {
   const { workspaceGuid } = useParams<{ workspaceGuid: string }>()
+  const { isBulkMode } = useAppStore()
+  const showCheckbox = isBulkMode || isSelected
+  const gridCols = showCheckbox ? 'grid-cols-[48px_80px_1fr_180px_100px_48px]' : 'grid-cols-[80px_1fr_180px_100px_48px]'
 
   return (
-    <div className={`h-12 border-b border-border hover:bg-muted transition-colors grid grid-cols-[48px_80px_1fr_180px_100px_48px] gap-3 px-3 items-center group/card ${isSelected ? 'bg-primary/5' : ''}`}>
-      <div className="flex justify-center relative z-20" onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
-        <Checkbox
-          checked={isSelected}
-          onCheckedChange={() => onSelect(folder.guid)}
-        />
-      </div>
+    <div className={`h-12 border-b border-border hover:bg-muted transition-colors grid ${gridCols} gap-3 px-3 items-center group/card ${isSelected ? 'bg-primary/5' : ''}`}>
+      {showCheckbox && (
+        <div className="flex justify-center relative z-20" onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
+          <Checkbox
+            checked={isSelected}
+            onCheckedChange={() => onSelect(folder.guid)}
+          />
+        </div>
+      )}
 
       <Link
         to={`/${workspaceGuid}/folder/${folder.guid}`}

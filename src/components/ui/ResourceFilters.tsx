@@ -1,4 +1,4 @@
-import { ListFilter, ArrowUp, ArrowDown } from "lucide-react"
+import { ListFilter, ArrowUp, ArrowDown, CheckSquare } from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,12 +12,23 @@ import { Button } from "@/components/ui/button"
 import { useAppStore } from "@/store/useAppStore"
 
 export const ResourceFilters = () => {
-  const { sortField, setSortField, sortOrder, setSortOrder } = useAppStore()
+  const { sortField, setSortField, sortOrder, setSortOrder, isBulkMode, setBulkMode } = useAppStore()
 
   const sortLabel = sortField === 'type' ? 'Type' : sortField === 'name' ? 'Name' : sortField === 'date' ? 'Date' : 'Size'
 
   return (
     <div className="flex items-center gap-1">
+      <Button
+        variant={isBulkMode ? "secondary" : "ghost"}
+        size="sm"
+        className={`h-9 px-3 gap-2 border ${isBulkMode ? 'border-primary/30 bg-primary/10 text-primary hover:bg-primary/20' : 'border-input bg-background/50'} transition-all duration-300 font-medium text-xs`}
+        onClick={() => setBulkMode(!isBulkMode)}
+        title={isBulkMode ? "Disable Bulk Mode" : "Enable Bulk Mode"}
+      >
+        <CheckSquare className={`size-4 ${isBulkMode ? 'text-primary' : 'text-muted-foreground'}`} />
+        <span className="hidden sm:inline">Bulk Actions</span>
+      </Button>
+
       <DropdownMenu>
         <div className="flex items-center h-9 border border-input rounded-md relative hover:bg-accent/50 transition-colors bg-background/50">
           <DropdownMenuTrigger asChild>

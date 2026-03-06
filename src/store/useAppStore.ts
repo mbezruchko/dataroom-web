@@ -18,6 +18,8 @@ interface AppState {
   setResourceFilter: (filter: 'all' | 'folders' | 'files') => void;
   localSearch: string;
   setLocalSearch: (query: string) => void;
+  isBulkMode: boolean;
+  setBulkMode: (val: boolean) => void;
 }
 
 export const useAppStore = create<AppState>()(
@@ -51,6 +53,12 @@ export const useAppStore = create<AppState>()(
 
       localSearch: "",
       setLocalSearch: (localSearch) => set({ localSearch }),
+
+      isBulkMode: false,
+      setBulkMode: (isBulkMode) => set((state) => ({
+        isBulkMode,
+        selectedResources: isBulkMode ? state.selectedResources : []
+      })),
     }),
     {
       name: 'dataroom-storage',
