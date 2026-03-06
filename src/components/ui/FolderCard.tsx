@@ -234,6 +234,7 @@ export const FolderCard = ({ folder, contextFolderGuid }: FolderCardProps) => {
         title="Rename Folder"
         initialValue={folder.name}
         onConfirm={handleRenameConfirm}
+        maxLength={30}
       />
     </>
   )

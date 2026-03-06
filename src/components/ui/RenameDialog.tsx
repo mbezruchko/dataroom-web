@@ -12,7 +12,6 @@ import { Input } from "@/components/ui/input"
 import { Loader2, AlertCircle } from "lucide-react"
 import { cn } from "@/lib/utils"
 
-const MAX_NAME_LENGTH = 30
 
 interface RenameDialogProps {
     open: boolean
@@ -22,6 +21,7 @@ interface RenameDialogProps {
     description?: string
     initialValue: string
     isPending?: boolean
+    maxLength?: number
 }
 
 export function RenameDialog({
@@ -31,10 +31,11 @@ export function RenameDialog({
     title,
     description,
     initialValue,
-    isPending
+    isPending,
+    maxLength
 }: RenameDialogProps) {
     const [name, setName] = useState(initialValue)
-    const isTooLong = name.length > MAX_NAME_LENGTH
+    const isTooLong = maxLength ? name.length > maxLength : false
 
     useEffect(() => {
         if (open) {
@@ -70,7 +71,7 @@ export function RenameDialog({
                                 id="rename-field"
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
-                                maxLength={MAX_NAME_LENGTH}
+                                maxLength={maxLength}
                                 className={cn(
                                     "col-span-3 transition-colors",
                                     isTooLong && "border-destructive focus-visible:ring-destructive"
@@ -80,19 +81,21 @@ export function RenameDialog({
                             />
                             <div className="flex items-center justify-between px-1">
                                 <div className="flex items-center gap-1.5 min-h-[16px]">
-                                    {isTooLong && (
+                                    {isTooLong && maxLength && (
                                         <span className="text-[11px] text-destructive flex items-center gap-1 font-medium animate-in fade-in slide-in-from-top-1">
                                             <AlertCircle className="size-3" />
-                                            Maximum 30 characters
+                                            Maximum {maxLength} characters
                                         </span>
                                     )}
                                 </div>
-                                <span className={cn(
-                                    "text-[10px] font-medium transition-colors",
-                                    isTooLong ? "text-destructive" : "text-muted-foreground"
-                                )}>
-                                    {name.length}/{MAX_NAME_LENGTH}
-                                </span>
+                                {maxLength && (
+                                    <span className={cn(
+                                        "text-[10px] font-medium transition-colors",
+                                        isTooLong ? "text-destructive" : "text-muted-foreground"
+                                    )}>
+                                        {name.length}/{maxLength}
+                                    </span>
+                                )}
                             </div>
                         </div>
                     </div>
