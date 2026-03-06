@@ -47,11 +47,11 @@ const FileCardGrid = ({
   onDownload,
   onRestore
 }: ViewProps) => (
-  <div onClick={handlePreviewClick} className={`group/card relative p-3 border rounded-lg shadow-sm transition-all flex items-center justify-between gap-3 cursor-pointer hover:bg-accent/80 h-20 overflow-hidden ${isTrash ? 'opacity-80' : ''} ${isSelected ? 'border-primary bg-primary/5' : 'bg-card'}`}>
-    {/* Checkbox - absolutely positioned relative to the card */}
+  <div className={`group/card relative p-3 border rounded-lg shadow-sm transition-all flex items-center justify-between gap-3 group/card overflow-hidden ${isTrash ? 'opacity-80' : ''} ${isSelected ? 'border-primary bg-primary/5' : 'bg-card'}`}>
     <div
-      className={`absolute left-3 top-1/2 -translate-y-1/2 z-10 transition-all duration-200 ease-in-out ${isSelected ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4 group-hover/card:opacity-100 group-hover/card:translate-x-0'}`}
+      className={`absolute left-3 top-1/2 -translate-y-1/2 z-20 transition-all duration-200 ease-in-out ${isSelected ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4 group-hover/card:opacity-100 group-hover/card:translate-x-0'}`}
       onClick={(e) => {
+        e.preventDefault();
         e.stopPropagation();
       }}
     >
@@ -61,20 +61,24 @@ const FileCardGrid = ({
       />
     </div>
 
-    {/* Content shifted when selected or hovered */}
-    <div className={`flex items-center gap-3 truncate min-w-0 flex-1 transition-transform duration-200 ease-in-out ${isSelected ? 'translate-x-[26px]' : 'group-hover/card:translate-x-[26px]'}`}>
+    <div
+      onClick={handlePreviewClick}
+      className={`flex items-center gap-3 truncate min-w-0 flex-1 transition-transform duration-200 ease-in-out cursor-pointer ${isSelected ? 'translate-x-[26px]' : 'group-hover/card:translate-x-[26px]'}`}
+    >
       <div className="shrink-0">
         <span className="text-2xl"><FileText className="text-sidebar-foreground" /></span>
       </div>
       <div className="flex flex-col truncate">
-        <span className="font-medium truncate">{file.name}</span>
+        <span className="font-medium truncate text-foreground">{file.name}</span>
         <span className="text-xs text-muted-foreground truncate">{(file.size / 1024 / 1024).toFixed(2)} MB</span>
       </div>
     </div>
+
     <FileActions
       file={file} isTrash={isTrash} onFavorite={onFavoriteToggle} onPreview={handlePreviewClick}
       onDownload={onDownload} onRename={handleRenameClick} onDelete={handleDeleteClick} onRestore={onRestore}
       isGrid={true}
+      className="relative z-10"
     />
   </div>
 )
@@ -92,27 +96,34 @@ const FileCardList = ({
   onDownload,
   onRestore
 }: ViewProps) => (
-  <div onClick={handlePreviewClick} className={`group/card relative border-b border-border transition-colors h-12 grid grid-cols-[48px_80px_1fr_180px_100px_48px] gap-3 px-3 items-center cursor-pointer hover:bg-muted ${isTrash ? 'opacity-80' : ''} ${isSelected ? 'bg-primary/5' : ''}`}>
-    <div className="flex justify-center">
+  <div className={`group/card relative border-b border-border transition-colors h-12 grid grid-cols-[48px_80px_1fr_180px_100px_48px] gap-3 px-3 items-center hover:bg-muted ${isTrash ? 'opacity-80' : ''} ${isSelected ? 'bg-primary/5' : ''}`}>
+    <div className="flex justify-center relative z-20" onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
       <Checkbox
         checked={isSelected}
         onCheckedChange={() => onSelect(file.guid)}
       />
     </div>
-    <div className="flex justify-center group-hover/card:scale-110 transition-transform">
-      <FileText className="text-sidebar-foreground size-5" />
+
+    <div
+      onClick={handlePreviewClick}
+      className="grid grid-cols-subgrid col-span-4 contents cursor-pointer"
+    >
+      <div className="flex justify-center group-hover/card:scale-110 transition-transform">
+        <FileText className="text-sidebar-foreground size-5" />
+      </div>
+      <div className="truncate min-w-0">
+        <span className="font-medium truncate text-foreground">{file.name}</span>
+      </div>
+      <div className="text-sm text-muted-foreground truncate">
+        {new Date(file.updated_at || file.created_at).toLocaleDateString([], { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+      </div>
+      <div className="text-sm text-muted-foreground truncate">{(file.size / 1024 / 1024).toFixed(2)} MB</div>
     </div>
-    <div className="truncate min-w-0">
-      <span className="font-medium truncate">{file.name}</span>
-    </div>
-    <div className="text-sm text-muted-foreground truncate">
-      {new Date(file.updated_at || file.created_at).toLocaleDateString([], { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
-    </div>
-    <div className="text-sm text-muted-foreground truncate">{(file.size / 1024 / 1024).toFixed(2)} MB</div>
+
     <FileActions
       file={file} isTrash={isTrash} onFavorite={onFavoriteToggle} onPreview={handlePreviewClick}
       onDownload={onDownload} onRename={handleRenameClick} onDelete={handleDeleteClick} onRestore={onRestore}
-      className="px-1"
+      className="px-1 relative z-20"
       isGrid={false}
     />
   </div>

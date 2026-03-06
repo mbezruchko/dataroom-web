@@ -36,37 +36,50 @@ const FolderCardGrid = ({
   onFavoriteToggle,
   handleDeleteClick,
   handleRenameClick
-}: ViewProps) => (
-  <div className={`h-20 p-3 border rounded-lg shadow-sm hover:bg-accent/80 cursor-pointer transition-all flex items-center justify-between gap-3 group/card relative overflow-hidden ${isSelected ? 'border-primary bg-primary/5' : 'bg-card'}`}>
-    {/* Checkbox - absolutely positioned relative to the card */}
-    <div className={`absolute left-3 top-1/2 -translate-y-1/2 z-10 transition-all duration-200 ease-in-out ${isSelected ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4 group-hover/card:opacity-100 group-hover/card:translate-x-0'}`}>
-      <Checkbox
-        checked={isSelected}
-        onCheckedChange={() => onSelect(folder.guid)}
+}: ViewProps) => {
+  const { workspaceGuid } = useParams<{ workspaceGuid: string }>()
+
+  return (
+    <div className={`h-20 p-3 border rounded-lg shadow-sm hover:bg-accent/80 cursor-pointer transition-all flex items-center justify-between gap-3 group/card relative overflow-hidden ${isSelected ? 'border-primary bg-primary/5' : 'bg-card'}`}>
+      <div
+        className={`absolute left-3 top-1/2 -translate-y-1/2 z-20 transition-all duration-200 ease-in-out ${isSelected ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4 group-hover/card:opacity-100 group-hover/card:translate-x-0'}`}
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+        }}
+      >
+        <Checkbox
+          checked={isSelected}
+          onCheckedChange={() => onSelect(folder.guid)}
+        />
+      </div>
+
+      <Link
+        to={`/${workspaceGuid}/folder/${folder.guid}`}
+        className={`flex items-center gap-3 truncate min-w-0 flex-1 transition-transform duration-200 ease-in-out ${isSelected ? 'translate-x-[26px]' : 'group-hover/card:translate-x-[26px]'} hover:no-underline`}
+      >
+        <div className="shrink-0">
+          <span className="text-2xl"><FolderClosed className="text-sidebar-foreground" /></span>
+        </div>
+        <div className="flex flex-col truncate">
+          <span className="font-medium truncate text-foreground">{folder.name}</span>
+          <span className="text-xs text-muted-foreground truncate">
+            {folder.files_count === 0 ? 'empty' : folder.files_count === 1 ? '1 file' : `${folder.files_count} files`}
+          </span>
+        </div>
+      </Link>
+
+      <FolderActions
+        isFavorite={folder.is_favorite}
+        onFavorite={onFavoriteToggle}
+        onRename={handleRenameClick}
+        onDelete={handleDeleteClick}
+        isGrid={true}
+        className="relative z-10"
       />
     </div>
-
-    {/* Content shifted when selected or hovered */}
-    <div className={`flex items-center gap-3 truncate min-w-0 flex-1 transition-transform duration-200 ease-in-out ${isSelected ? 'translate-x-[26px]' : 'group-hover/card:translate-x-[26px]'}`}>
-      <div className="shrink-0">
-        <span className="text-2xl"><FolderClosed className="text-sidebar-foreground" /></span>
-      </div>
-      <div className="flex flex-col truncate">
-        <span className="font-medium truncate">{folder.name}</span>
-        <span className="text-xs text-muted-foreground truncate">
-          {folder.files_count === 0 ? 'empty' : folder.files_count === 1 ? '1 file' : `${folder.files_count} files`}
-        </span>
-      </div>
-    </div>
-    <FolderActions
-      isFavorite={folder.is_favorite}
-      onFavorite={onFavoriteToggle}
-      onRename={handleRenameClick}
-      onDelete={handleDeleteClick}
-      isGrid={true}
-    />
-  </div>
-)
+  )
+}
 
 // --- LIST VIEW ---
 const FolderCardList = ({
@@ -76,36 +89,47 @@ const FolderCardList = ({
   onFavoriteToggle,
   handleDeleteClick,
   handleRenameClick
-}: ViewProps) => (
-  <div className={`h-12 border-b border-border hover:bg-muted cursor-pointer transition-colors grid grid-cols-[48px_80px_1fr_180px_100px_48px] gap-3 px-3 items-center group/card ${isSelected ? 'bg-primary/5' : ''}`}>
-    <div className="flex justify-center">
-      <Checkbox
-        checked={isSelected}
-        onCheckedChange={() => onSelect(folder.guid)}
+}: ViewProps) => {
+  const { workspaceGuid } = useParams<{ workspaceGuid: string }>()
+
+  return (
+    <div className={`h-12 border-b border-border hover:bg-muted transition-colors grid grid-cols-[48px_80px_1fr_180px_100px_48px] gap-3 px-3 items-center group/card ${isSelected ? 'bg-primary/5' : ''}`}>
+      <div className="flex justify-center relative z-20" onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
+        <Checkbox
+          checked={isSelected}
+          onCheckedChange={() => onSelect(folder.guid)}
+        />
+      </div>
+
+      <Link
+        to={`/${workspaceGuid}/folder/${folder.guid}`}
+        className="grid grid-cols-subgrid col-span-4 contents hover:no-underline"
+      >
+        <div className="flex justify-center group-hover/card:scale-110 transition-transform">
+          <FolderClosed className="text-sidebar-foreground size-5" />
+        </div>
+        <div className="truncate min-w-0">
+          <span className="font-medium truncate text-foreground">{folder.name}</span>
+        </div>
+        <div className="text-sm text-muted-foreground truncate">
+          {new Date(folder.updated_at || folder.created_at).toLocaleDateString([], { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+        </div>
+        <div className="text-sm text-muted-foreground truncate">
+          {folder.files_count === 0 ? '--' : folder.files_count === 1 ? '1 file' : `${folder.files_count} files`}
+        </div>
+      </Link>
+
+      <FolderActions
+        isFavorite={folder.is_favorite}
+        onFavorite={onFavoriteToggle}
+        onRename={handleRenameClick}
+        onDelete={handleDeleteClick}
+        className="px-1 relative z-20"
+        isGrid={false}
       />
     </div>
-    <div className="flex justify-center group-hover/card:scale-110 transition-transform">
-      <FolderClosed className="text-sidebar-foreground size-5" />
-    </div>
-    <div className="truncate min-w-0">
-      <span className="font-medium truncate">{folder.name}</span>
-    </div>
-    <div className="text-sm text-muted-foreground truncate">
-      {new Date(folder.updated_at || folder.created_at).toLocaleDateString([], { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
-    </div>
-    <div className="text-sm text-muted-foreground truncate">
-      {folder.files_count === 0 ? '--' : folder.files_count === 1 ? '1 file' : `${folder.files_count} files`}
-    </div>
-    <FolderActions
-      isFavorite={folder.is_favorite}
-      onFavorite={onFavoriteToggle}
-      onRename={handleRenameClick}
-      onDelete={handleDeleteClick}
-      className="px-1"
-      isGrid={false}
-    />
-  </div>
-)
+  )
+}
 
 // --- HELPERS ---
 const FolderActions = ({ isFavorite, onFavorite, onRename, onDelete, isGrid, className = "" }: any) => (
@@ -136,7 +160,6 @@ const FolderActions = ({ isFavorite, onFavorite, onRename, onDelete, isGrid, cla
 
 // --- MAIN COMPONENT ---
 export const FolderCard = ({ folder, contextFolderGuid }: FolderCardProps) => {
-  const { workspaceGuid } = useParams<{ workspaceGuid: string }>()
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [showRename, setShowRename] = useState(false)
   const { viewMode, selectedResources, toggleResourceSelection } = useAppStore()
@@ -171,13 +194,11 @@ export const FolderCard = ({ folder, contextFolderGuid }: FolderCardProps) => {
 
   return (
     <>
-      <Link to={`/${workspaceGuid}/folder/${folder.guid}`} className="block">
-        {isGrid ? (
-          <FolderCardGrid {...commonProps} />
-        ) : (
-          <FolderCardList {...commonProps} />
-        )}
-      </Link>
+      {isGrid ? (
+        <FolderCardGrid {...commonProps} />
+      ) : (
+        <FolderCardList {...commonProps} />
+      )}
 
       <DeleteConfirmationDialog
         open={showDeleteConfirm}
