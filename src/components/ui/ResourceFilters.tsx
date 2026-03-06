@@ -19,9 +19,9 @@ export const ResourceFilters = () => {
   return (
     <div className="flex items-center gap-1">
       <DropdownMenu>
-        <div className="flex items-center gap-1 outline outline-1 outline-border rounded-md relative shadow-sm hover:bg-accent/50 transition-colors">
+        <div className="flex items-center h-9 border border-input rounded-md relative hover:bg-accent/50 transition-colors bg-background/50">
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="sm" className="h-8 gap-1 cursor-pointer pr-1">
+            <Button variant="ghost" size="sm" className="h-full gap-1 cursor-pointer pr-1 border-0 focus-visible:ring-0">
               <ListFilter className="h-4 w-4" />
               <span className="sr-only sm:not-sr-only sm:whitespace-nowrap font-normal text-xs text-muted-foreground mr-1">
                 Sort by <span className="text-foreground font-medium">{sortLabel}</span>
@@ -32,7 +32,7 @@ export const ResourceFilters = () => {
           <Button
             variant="ghost"
             size="icon"
-            className="h-8 w-8 cursor-pointer rounded-l-none"
+            className="h-full w-8 cursor-pointer rounded-l-none border-0 focus-visible:ring-0"
             onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
             title={sortOrder === 'asc' ? 'Sort Ascending' : 'Sort Descending'}
           >

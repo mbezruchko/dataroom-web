@@ -69,7 +69,7 @@ export function SmartSearch({ className }: SmartSearchProps) {
       <Input
         type="search"
         placeholder={searchMode === 'workspace' ? "Search in workspace..." : "Search in current tab..."}
-        className={`w-full bg-background/50 focus-visible:bg-background transition-all duration-300 h-8 ${searchMode === 'workspace' ? 'pl-[122px]' : 'pl-[78px]'
+        className={`w-full bg-background/50 focus-visible:bg-background transition-all duration-300 h-9 ${searchMode === 'workspace' ? 'pl-[122px]' : 'pl-[78px]'
           }`}
         value={search}
         onChange={(e) => setSearch(e.target.value)}
