@@ -63,7 +63,7 @@ const FolderCardGrid = ({
           ${activeBulk ? 'translate-x-[32px]' : ''}`}
       >
         <div className="shrink-0">
-          <FolderClosed className="text-sidebar-foreground size-8" />
+          <FolderClosed className="text-sidebar-foreground size-7" />
         </div>
 
         <div className="flex flex-col truncate">

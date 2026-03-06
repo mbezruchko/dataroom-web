@@ -72,7 +72,7 @@ const FileCardGrid = ({
           ${activeBulk ? 'translate-x-[32px]' : ''}`}
       >
         <div className="shrink-0">
-          <FileText className="text-sidebar-foreground size-8" />
+          <FileText className="text-sidebar-foreground size-7" />
         </div>
         <div className="flex flex-col truncate">
           <span className="font-medium truncate text-foreground">{file.name}</span>
