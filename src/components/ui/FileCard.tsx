@@ -51,7 +51,7 @@ const FileCardGrid = ({
   const activeBulk = isBulkMode || isSelected
 
   return (
-    <div className={`group/card relative p-3 border rounded-lg shadow-sm transition-all flex items-center justify-between gap-3 group/card overflow-hidden ${isTrash ? 'opacity-80' : ''} ${isSelected ? 'border-primary bg-primary/5' : 'bg-card'}`}>
+    <div className={`h-20 group/card relative p-3 border rounded-lg shadow-sm transition-all flex items-center justify-between gap-3 group/card overflow-hidden ${isTrash ? 'opacity-80' : ''} ${isSelected ? 'border-primary bg-primary/5' : 'bg-card'}`}>
       <div
         className={`absolute left-3 top-1/2 -translate-y-1/2 size-8 flex items-center justify-center transition-all duration-300 ease-in-out z-20 
           ${activeBulk ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'}`}
@@ -164,28 +164,28 @@ const FileActions = ({ file, isTrash, onFavorite, onPreview, onDownload, onRenam
       <DropdownMenuContent align="end" className="w-40">
         {isTrash ? (
           <>
-            <DropdownMenuItem onClick={onPreview} className="cursor-pointer">
+            <DropdownMenuItem onSelect={() => onPreview()} className="cursor-pointer">
               <Eye className="mr-2 size-4" /> Preview
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={onRestore} className="cursor-pointer">
+            <DropdownMenuItem onSelect={() => onRestore()} className="cursor-pointer">
               <RotateCcw className="mr-2 size-4" /> Restore
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={onDelete} className="text-destructive focus:text-destructive cursor-pointer">
+            <DropdownMenuItem onSelect={() => onDelete()} className="text-destructive focus:text-destructive cursor-pointer">
               <Trash2 className="mr-2 size-4" /> Delete
             </DropdownMenuItem>
           </>
         ) : (
           <>
-            <DropdownMenuItem onClick={onPreview} className="cursor-pointer">
+            <DropdownMenuItem onSelect={() => onPreview()} className="cursor-pointer">
               <Eye className="mr-2 size-4" /> Preview
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={onDownload} className="cursor-pointer">
+            <DropdownMenuItem onSelect={() => onDownload()} className="cursor-pointer">
               <Download className="mr-2 size-4" /> Download
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={e => { e.stopPropagation(); onRename(); }} className="cursor-pointer">
+            <DropdownMenuItem onSelect={() => onRename()} className="cursor-pointer">
               <Pencil className="mr-2 size-4" /> Rename
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={onDelete} className="text-destructive focus:text-destructive cursor-pointer">
+            <DropdownMenuItem onSelect={() => onDelete()} className="text-destructive focus:text-destructive cursor-pointer">
               <Trash2 className="mr-2 size-4" /> Delete
             </DropdownMenuItem>
           </>
@@ -225,12 +225,18 @@ export const FileCard = ({ file, contextFolderGuid, isTrash }: FileCardProps) =>
     setRenameDialogOpen(false)
   }
 
-  const handleDeleteClick = (e: React.MouseEvent) => {
-    e.preventDefault(); e.stopPropagation(); setDeleteDialogOpen(true);
+  const handleDeleteClick = (e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault(); e.stopPropagation();
+    }
+    setDeleteDialogOpen(true);
   }
 
-  const handlePreviewClick = (e: React.MouseEvent) => {
-    e.preventDefault(); e.stopPropagation(); setIsPreviewOpen(true);
+  const handlePreviewClick = (e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault(); e.stopPropagation();
+    }
+    setIsPreviewOpen(true);
   }
 
   const baseUrl = import.meta.env.VITE_API_BASE_URL ?? '/api/v1'
@@ -256,7 +262,7 @@ export const FileCard = ({ file, contextFolderGuid, isTrash }: FileCardProps) =>
 
       <DeleteConfirmationDialog
         open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}
-        onConfirm={() => { if (isTrash) onPermanentDelete({} as any); else onDelete({} as any); setDeleteDialogOpen(false); }}
+        onConfirm={() => { if (isTrash) onPermanentDelete(); else onDelete(); setDeleteDialogOpen(false); }}
         title={isTrash ? "Permanently Delete" : "Delete File"}
         description={isTrash ? (
           <>Are you sure you want to permanently delete <span className="font-bold">"{file.name}"</span>? This cannot be undone.</>

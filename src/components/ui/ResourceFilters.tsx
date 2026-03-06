@@ -17,7 +17,7 @@ export const ResourceFilters = () => {
   const sortLabel = sortField === 'type' ? 'Type' : sortField === 'name' ? 'Name' : sortField === 'date' ? 'Date' : 'Size'
 
   return (
-    <div className="flex items-center gap-1">
+    <div className="flex items-center gap-2">
       <Button
         variant={isBulkMode ? "secondary" : "ghost"}
         size="sm"

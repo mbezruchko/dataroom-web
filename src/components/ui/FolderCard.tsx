@@ -152,15 +152,15 @@ const FolderActions = ({ isFavorite, onFavorite, onRename, onDelete, isGrid, cla
     </button>
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className={`size-8 rounded-full transition-all shrink-0 cursor-pointer ${isGrid ? 'group-hover/card:opacity-100 opacity-0' : 'opacity-100'}`} onClick={e => { e.preventDefault(); e.stopPropagation(); }}>
+        <Button variant="ghost" size="icon" className={`size-8 rounded-full transition-all shrink-0 cursor-pointer ${isGrid ? 'group-hover/card:opacity-100 opacity-0' : 'opacity-100'}`} onClick={e => e.stopPropagation()}>
           <MoreVertical className="size-4" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-40">
-        <DropdownMenuItem onClick={e => { e.preventDefault(); e.stopPropagation(); onRename(); }} className="cursor-pointer">
+        <DropdownMenuItem onSelect={() => onRename()} className="cursor-pointer">
           <Pencil className="mr-2 size-4" /> Rename
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={onDelete} className="text-destructive focus:text-destructive cursor-pointer">
+        <DropdownMenuItem onSelect={() => onDelete()} className="text-destructive focus:text-destructive cursor-pointer">
           <Trash2 className="mr-2 size-4" /> Delete
         </DropdownMenuItem>
       </DropdownMenuContent>
@@ -180,9 +180,11 @@ export const FolderCard = ({ folder, contextFolderGuid }: FolderCardProps) => {
   const handleSelect = (guid: string) => toggleResourceSelection(guid)
 
   const onFavoriteToggle = getFolderFavoriteHandler(folder)
-  const onDeleteClick = (e: React.MouseEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
+  const onDeleteClick = (e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault()
+      e.stopPropagation()
+    }
     setShowDeleteConfirm(true)
   }
 
@@ -192,6 +194,11 @@ export const FolderCard = ({ folder, contextFolderGuid }: FolderCardProps) => {
       e.stopPropagation()
     }
     setShowRename(true)
+  }
+
+  const handleRenameConfirm = (newName: string) => {
+    getFolderRenameHandler(folder)(newName)
+    setShowRename(false)
   }
 
   const commonProps = {
@@ -225,7 +232,7 @@ export const FolderCard = ({ folder, contextFolderGuid }: FolderCardProps) => {
         onOpenChange={setShowRename}
         title="Rename Folder"
         initialValue={folder.name}
-        onConfirm={getFolderRenameHandler(folder)}
+        onConfirm={handleRenameConfirm}
       />
     </>
   )
