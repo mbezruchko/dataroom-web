@@ -13,6 +13,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { useResourceActions } from "@/hooks/useResourceActions"
 import { useAppStore } from "@/store/useAppStore"
+import { Checkbox } from "./checkbox"
 
 interface FolderCardProps {
   folder: FolderData
@@ -20,6 +21,8 @@ interface FolderCardProps {
 }
 
 interface ViewProps extends FolderCardProps {
+  isSelected: boolean
+  onSelect: (guid: string) => void
   onFavoriteToggle: (e: React.MouseEvent) => void
   handleDeleteClick: (e: React.MouseEvent) => void
   handleRenameClick: (e: React.MouseEvent) => void
@@ -28,13 +31,26 @@ interface ViewProps extends FolderCardProps {
 // --- GRID VIEW ---
 const FolderCardGrid = ({
   folder,
+  isSelected,
+  onSelect,
   onFavoriteToggle,
   handleDeleteClick,
   handleRenameClick
 }: ViewProps) => (
-  <div className="h-20 p-3 border rounded-lg shadow-sm hover:bg-accent/80 cursor-pointer transition-colors flex items-center justify-between gap-3">
-    <div className="flex items-center gap-3 truncate min-w-0 flex-1">
-      <span className="text-2xl shrink-0"><FolderClosed className="text-sidebar-foreground" /></span>
+  <div className={`h-20 p-3 border rounded-lg shadow-sm hover:bg-accent/80 cursor-pointer transition-all flex items-center justify-between gap-3 group/card relative overflow-hidden ${isSelected ? 'border-primary bg-primary/5' : 'bg-card'}`}>
+    {/* Checkbox - absolutely positioned relative to the card */}
+    <div className={`absolute left-3 top-1/2 -translate-y-1/2 z-10 transition-all duration-200 ease-in-out ${isSelected ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4 group-hover/card:opacity-100 group-hover/card:translate-x-0'}`}>
+      <Checkbox
+        checked={isSelected}
+        onCheckedChange={() => onSelect(folder.guid)}
+      />
+    </div>
+
+    {/* Content shifted when selected or hovered */}
+    <div className={`flex items-center gap-3 truncate min-w-0 flex-1 transition-transform duration-200 ease-in-out ${isSelected ? 'translate-x-[26px]' : 'group-hover/card:translate-x-[26px]'}`}>
+      <div className="shrink-0">
+        <span className="text-2xl"><FolderClosed className="text-sidebar-foreground" /></span>
+      </div>
       <div className="flex flex-col truncate">
         <span className="font-medium truncate">{folder.name}</span>
         <span className="text-xs text-muted-foreground truncate">
@@ -55,12 +71,20 @@ const FolderCardGrid = ({
 // --- LIST VIEW ---
 const FolderCardList = ({
   folder,
+  isSelected,
+  onSelect,
   onFavoriteToggle,
   handleDeleteClick,
   handleRenameClick
 }: ViewProps) => (
-  <div className="h-12 border-b border-border hover:bg-muted cursor-pointer transition-colors grid grid-cols-[80px_1fr_180px_100px_48px] gap-3 px-3 items-center group">
-    <div className="flex justify-center group-hover:scale-110 transition-transform">
+  <div className={`h-12 border-b border-border hover:bg-muted cursor-pointer transition-colors grid grid-cols-[48px_80px_1fr_180px_100px_48px] gap-3 px-3 items-center group/card ${isSelected ? 'bg-primary/5' : ''}`}>
+    <div className="flex justify-center">
+      <Checkbox
+        checked={isSelected}
+        onCheckedChange={() => onSelect(folder.guid)}
+      />
+    </div>
+    <div className="flex justify-center group-hover/card:scale-110 transition-transform">
       <FolderClosed className="text-sidebar-foreground size-5" />
     </div>
     <div className="truncate min-w-0">
@@ -113,62 +137,62 @@ const FolderActions = ({ isFavorite, onFavorite, onRename, onDelete, isGrid, cla
 // --- MAIN COMPONENT ---
 export const FolderCard = ({ folder, contextFolderGuid }: FolderCardProps) => {
   const { workspaceGuid } = useParams<{ workspaceGuid: string }>()
-  const viewMode = useAppStore(state => state.viewMode)
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
-  const [renameDialogOpen, setRenameDialogOpen] = useState(false)
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [showRename, setShowRename] = useState(false)
+  const { viewMode, selectedResources, toggleResourceSelection } = useAppStore()
+  const isGrid = viewMode === "grid"
+  const { getFolderDeleteHandler, getFolderFavoriteHandler, getFolderRenameHandler } = useResourceActions()
 
-  const { getFolderFavoriteHandler, getFolderDeleteHandler, getFolderRenameHandler } = useResourceActions()
+  const isSelected = selectedResources.includes(folder.guid)
+  const handleSelect = (guid: string) => toggleResourceSelection(guid)
 
   const onFavoriteToggle = getFolderFavoriteHandler(folder)
-  const onDelete = getFolderDeleteHandler(folder, contextFolderGuid)
-  const onRename = getFolderRenameHandler(folder)
-
-  const handleDeleteClick = (e: React.MouseEvent) => {
+  const onDeleteClick = (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    setDeleteDialogOpen(true)
+    setShowDeleteConfirm(true)
   }
 
-  const handleRenameClick = () => {
-    setRenameDialogOpen(true)
-  }
-
-  const handleRenameConfirm = (newName: string) => {
-    onRename(newName)
-    setRenameDialogOpen(false)
+  const handleRenameClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setShowRename(true)
   }
 
   const commonProps = {
     folder,
+    contextFolderGuid,
+    isSelected,
+    onSelect: handleSelect,
     onFavoriteToggle,
-    handleDeleteClick,
+    handleDeleteClick: onDeleteClick,
     handleRenameClick
   }
 
   return (
     <>
-      <Link
-        to={`/${workspaceGuid}/folder/${folder.guid}`}
-        className="group relative"
-      >
-        {viewMode === 'grid' ? <FolderCardGrid {...commonProps} /> : <FolderCardList {...commonProps} />}
+      <Link to={`/${workspaceGuid}/folder/${folder.guid}`} className="block">
+        {isGrid ? (
+          <FolderCardGrid {...commonProps} />
+        ) : (
+          <FolderCardList {...commonProps} />
+        )}
       </Link>
 
-      <RenameDialog
-        open={renameDialogOpen}
-        onOpenChange={setRenameDialogOpen}
-        onConfirm={handleRenameConfirm}
-        title="Rename Folder"
-        description="Enter a new name for the folder."
-        initialValue={folder.name}
+      <DeleteConfirmationDialog
+        open={showDeleteConfirm}
+        onOpenChange={setShowDeleteConfirm}
+        onConfirm={() => getFolderDeleteHandler(folder, contextFolderGuid)({ preventDefault: () => { }, stopPropagation: () => { } } as any)}
+        title="Delete Folder"
+        description={`Are you sure you want to delete "${folder.name}"? All its contents will be moved to trash.`}
       />
 
-      <DeleteConfirmationDialog
-        open={deleteDialogOpen}
-        onOpenChange={setDeleteDialogOpen}
-        onConfirm={() => { onDelete({ preventDefault: () => { }, stopPropagation: () => { } } as any); setDeleteDialogOpen(false); }}
-        title="Delete Folder"
-        description={<>Are you sure you want to delete <span className="font-bold">"{folder.name}"</span>? <br /> All files inside will be moved to Trash.</>}
+      <RenameDialog
+        open={showRename}
+        onOpenChange={setShowRename}
+        title="Rename Folder"
+        initialValue={folder.name}
+        onConfirm={getFolderRenameHandler(folder)}
       />
     </>
   )

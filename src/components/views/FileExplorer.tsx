@@ -16,6 +16,8 @@ import { RenameDialog } from "@/components/ui/RenameDialog"
 import { useAppStore } from "@/store/useAppStore"
 import { sortResources } from "@/lib/sorting"
 import { SmartSearch } from "@/components/ui/SmartSearch"
+import { BulkActionToolbar } from "@/components/ui/BulkActionToolbar"
+import { useResourceActions } from "@/hooks/useResourceActions"
 
 export const FileExplorer = () => {
   const { workspaceGuid, folderGuid: folderGuidParam } = useParams<{ workspaceGuid: string, folderGuid?: string }>();
@@ -26,18 +28,34 @@ export const FileExplorer = () => {
   const isNotFound = folderGuid !== 'root' && isError && axios.isAxiosError(error) && error.response?.status === 404;
   const renameFolder = useRenameFolder();
 
-  const { sortField, sortOrder, resourceFilter, localSearch, setLocalSearch } = useAppStore();
+  const {
+    sortField, sortOrder, resourceFilter, localSearch, setLocalSearch,
+    selectedResources, toggleResourceSelection, clearResourceSelection
+  } = useAppStore();
+  const { handleBulkDelete } = useResourceActions();
   const [renameDialogOpen, setRenameDialogOpen] = useState(false);
+  const [isBulkDeleting, setIsBulkDeleting] = useState(false);
 
   useEffect(() => {
     setLocalSearch("");
-  }, [location.pathname, setLocalSearch]);
+    clearResourceSelection();
+  }, [location.pathname, setLocalSearch, clearResourceSelection]);
 
   const handleRenameConfirm = (newName: string) => {
     if (folderGuid !== 'root' && newName && newName !== folder?.name) {
       renameFolder.mutate({ guid: folderGuid, name: newName });
     }
     setRenameDialogOpen(false);
+  };
+
+  const handleBulkDeleteAction = async () => {
+    const itemsToDelete = combinedItems.filter(item => selectedResources.includes(item.guid));
+    if (itemsToDelete.length === 0) return;
+
+    setIsBulkDeleting(true);
+    await handleBulkDelete(itemsToDelete);
+    setIsBulkDeleting(false);
+    clearResourceSelection();
   };
 
 
@@ -80,8 +98,22 @@ export const FileExplorer = () => {
     );
   }
 
+  const isAllSelected = combinedItems.length > 0 && combinedItems.every(item => selectedResources.includes(item.guid));
+
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      combinedItems.forEach(item => {
+        if (!selectedResources.includes(item.guid)) {
+          toggleResourceSelection(item.guid);
+        }
+      });
+    } else {
+      clearResourceSelection();
+    }
+  };
+
   return (
-    <div className="flex h-full flex-col p-6 space-y-4">
+    <div className="flex h-full flex-col p-6 space-y-4 relative">
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2 group">
           <h2 className="text-2xl font-bold tracking-tight">
@@ -102,7 +134,10 @@ export const FileExplorer = () => {
 
       <div className="mt-6 flex-1 overflow-auto">
         {combinedItems.length > 0 ? (
-          <ResourceSection>
+          <ResourceSection
+            onSelectAll={handleSelectAll}
+            isAllSelected={isAllSelected}
+          >
             {combinedItems.map((item) => {
               if ('size' in item) {
                 return (
@@ -134,6 +169,11 @@ export const FileExplorer = () => {
           </div>
         )}
       </div>
+
+      <BulkActionToolbar
+        onDelete={handleBulkDeleteAction}
+        isDeleting={isBulkDeleting}
+      />
 
       {folder && (
         <RenameDialog

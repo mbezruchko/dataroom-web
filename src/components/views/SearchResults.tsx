@@ -1,16 +1,18 @@
-import { useLocation, useParams } from "react-router-dom"
-import { Loader2, Search } from "lucide-react"
-import { useMemo, useEffect } from "react"
+import { useState, useMemo, useEffect } from "react"
+import { useParams, useLocation } from "react-router-dom"
+import { Search, Loader2 } from "lucide-react"
 import { useSearch } from "@/lib/queries"
 import type { FolderData, FileData } from "@/lib/api"
+import { ResourceSection } from "@/components/ui/ResourceSection"
 import { FolderCard } from "@/components/ui/FolderCard"
 import { FileCard } from "@/components/ui/FileCard"
-import { ResourceSection } from "@/components/ui/ResourceSection"
 import { ViewSwitcher } from "@/components/ui/ViewSwitcher"
 import { ResourceFilters } from "@/components/ui/ResourceFilters"
 import { useAppStore } from "@/store/useAppStore"
 import { sortResources } from "@/lib/sorting"
-import { SmartSearch } from "../ui/SmartSearch"
+import { SmartSearch } from "@/components/ui/SmartSearch"
+import { BulkActionToolbar } from "@/components/ui/BulkActionToolbar"
+import { useResourceActions } from "@/hooks/useResourceActions"
 
 export const SearchResults = () => {
   const { workspaceGuid } = useParams<{ workspaceGuid: string }>();
@@ -20,18 +22,23 @@ export const SearchResults = () => {
   const folderId = queryParams.get('f') || undefined;
 
   const { data, isLoading } = useSearch(query, workspaceGuid, folderId);
-  const { sortField, sortOrder, resourceFilter, localSearch, setLocalSearch } = useAppStore();
+  const {
+    sortField, sortOrder, resourceFilter, localSearch, setLocalSearch,
+    selectedResources, toggleResourceSelection, clearResourceSelection
+  } = useAppStore();
+  const { handleBulkDelete } = useResourceActions();
+  const [isBulkDeleting, setIsBulkDeleting] = useState(false);
 
   useEffect(() => {
     setLocalSearch("");
-  }, [location.pathname, location.search, setLocalSearch]);
+    clearResourceSelection();
+  }, [location.pathname, setLocalSearch, clearResourceSelection]);
 
   const combinedItems = useMemo(() => {
     const folders = data?.folders || [];
     const files = data?.files || [];
-    const deletedFiles = data?.deleted_files || [];
 
-    let all: (FolderData | FileData)[] = [...folders, ...files, ...deletedFiles];
+    let all: (FolderData | FileData)[] = [...folders, ...files];
 
     if (localSearch) {
       all = all.filter(item => item.name.toLowerCase().includes(localSearch.toLowerCase()));
@@ -44,7 +51,31 @@ export const SearchResults = () => {
     }
 
     return sortResources(all, sortField, sortOrder);
-  }, [data?.folders, data?.files, data?.deleted_files, localSearch, resourceFilter, sortField, sortOrder]);
+  }, [data?.folders, data?.files, localSearch, resourceFilter, sortField, sortOrder]);
+
+  const handleBulkDeleteAction = async () => {
+    const itemsToDelete = combinedItems.filter(item => selectedResources.includes(item.guid));
+    if (itemsToDelete.length === 0) return;
+
+    setIsBulkDeleting(true);
+    await handleBulkDelete(itemsToDelete);
+    setIsBulkDeleting(false);
+    clearResourceSelection();
+  };
+
+  const isAllSelected = combinedItems.length > 0 && combinedItems.every(item => selectedResources.includes(item.guid));
+
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      combinedItems.forEach(item => {
+        if (!selectedResources.includes(item.guid)) {
+          toggleResourceSelection(item.guid);
+        }
+      });
+    } else {
+      clearResourceSelection();
+    }
+  };
 
   if (isLoading) {
     return (
@@ -66,11 +97,6 @@ export const SearchResults = () => {
     );
   }
 
-  const hasPhysicalResults =
-    (data?.folders?.length || 0) > 0 ||
-    (data?.files?.length || 0) > 0 ||
-    (data?.deleted_files?.length || 0) > 0;
-
   return (
     <div className="flex h-full flex-col p-6 space-y-4">
       <div className="flex items-center justify-between mb-2">
@@ -86,30 +112,19 @@ export const SearchResults = () => {
         </div>
       </div>
 
-      <div className="mt-6 flex-1 overflow-auto">
-        {!hasPhysicalResults ? (
-          <div className="flex flex-col items-center justify-center py-12 text-muted-foreground w-full h-full">
-            <Search className="h-12 w-12 mb-4 text-muted/30" />
-            <p className="text-lg font-medium">No results found</p>
-            <p className="text-sm">Try searching for something else.</p>
-          </div>
-        ) : combinedItems.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-12 text-muted-foreground w-full h-full">
-            <Search className="h-12 w-12 mb-4 text-muted/30" />
-            <p className="text-lg font-medium">No matches in results</p>
-            <p className="text-sm">We couldn't find anything matching "{localSearch}" among the search results.</p>
-          </div>
-        ) : (
-          <ResourceSection>
+      <div className="mt-6 flex-1 overflow-auto relative">
+        {combinedItems.length > 0 ? (
+          <ResourceSection
+            onSelectAll={handleSelectAll}
+            isAllSelected={isAllSelected}
+          >
             {combinedItems.map((item) => {
-              const isDeleted = data?.deleted_files?.some(df => df.guid === item.guid);
               if ('size' in item) {
                 return (
                   <FileCard
                     key={item.guid}
                     file={item}
                     contextFolderGuid={null}
-                    isTrash={isDeleted}
                   />
                 );
               }
@@ -122,7 +137,22 @@ export const SearchResults = () => {
               );
             })}
           </ResourceSection>
+        ) : (
+          <div className="flex flex-col items-center justify-center py-12 text-muted-foreground w-full h-full">
+            <Search className="size-12 mb-4 opacity-20" />
+            <p className="text-lg font-medium">{localSearch ? "No matches found" : "No results found"}</p>
+            <p className="text-sm">
+              {localSearch
+                ? `We couldn't find anything matching "${localSearch}"`
+                : "Try a different search term or check your spelling."}
+            </p>
+          </div>
         )}
+
+        <BulkActionToolbar
+          onDelete={handleBulkDeleteAction}
+          isDeleting={isBulkDeleting}
+        />
       </div>
     </div>
   );

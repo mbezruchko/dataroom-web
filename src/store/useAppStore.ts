@@ -5,9 +5,9 @@ interface AppState {
   sidebarOpen: boolean;
   setSidebarOpen: (open: boolean) => void;
   toggleSidebar: () => void;
-  selectedFileIds: number[];
-  toggleFileSelection: (id: number) => void;
-  clearFileSelection: () => void;
+  selectedResources: string[];
+  toggleResourceSelection: (guid: string) => void;
+  clearResourceSelection: () => void;
   viewMode: 'grid' | 'list';
   setViewMode: (mode: 'grid' | 'list') => void;
   sortField: 'type' | 'name' | 'date' | 'size';
@@ -27,16 +27,16 @@ export const useAppStore = create<AppState>()(
       setSidebarOpen: (open) => set({ sidebarOpen: open }),
       toggleSidebar: () => set((state) => ({ sidebarOpen: !state.sidebarOpen })),
 
-      selectedFileIds: [],
-      toggleFileSelection: (id) => set((state) => {
-        const isSelected = state.selectedFileIds.includes(id);
+      selectedResources: [],
+      toggleResourceSelection: (guid) => set((state) => {
+        const isSelected = state.selectedResources.includes(guid);
         return {
-          selectedFileIds: isSelected
-            ? state.selectedFileIds.filter(fId => fId !== id)
-            : [...state.selectedFileIds, id]
+          selectedResources: isSelected
+            ? state.selectedResources.filter(g => g !== guid)
+            : [...state.selectedResources, guid]
         };
       }),
-      clearFileSelection: () => set({ selectedFileIds: [] }),
+      clearResourceSelection: () => set({ selectedResources: [] }),
 
       viewMode: 'grid',
       setViewMode: (mode) => set({ viewMode: mode }),

@@ -12,6 +12,8 @@ import { ResourceFilters } from "@/components/ui/ResourceFilters"
 import { useAppStore } from "@/store/useAppStore"
 import { sortResources } from "@/lib/sorting"
 import { SmartSearch } from "@/components/ui/SmartSearch"
+import { BulkActionToolbar } from "@/components/ui/BulkActionToolbar"
+import { useResourceActions } from "@/hooks/useResourceActions"
 
 export const Trash = () => {
   const { workspaceGuid } = useParams<{ workspaceGuid: string }>();
@@ -19,11 +21,17 @@ export const Trash = () => {
   const location = useLocation();
   const emptyTrash = useEmptyTrash();
   const [showConfirm, setShowConfirm] = useState(false);
-  const { sortField, sortOrder, resourceFilter, localSearch, setLocalSearch } = useAppStore();
+  const {
+    sortField, sortOrder, resourceFilter, localSearch, setLocalSearch,
+    selectedResources, toggleResourceSelection, clearResourceSelection
+  } = useAppStore();
+  const { handleBulkPermanentDelete } = useResourceActions();
+  const [isBulkDeleting, setIsBulkDeleting] = useState(false);
 
   useEffect(() => {
     setLocalSearch("");
-  }, [location.pathname, setLocalSearch]);
+    clearResourceSelection();
+  }, [location.pathname, setLocalSearch, clearResourceSelection]);
 
   const combinedItems = useMemo(() => {
     const files = data?.files || [];
@@ -35,12 +43,35 @@ export const Trash = () => {
     }
 
     if (resourceFilter === 'folders') {
-      // Trash currently only contains files, but for future-proofing:
       return [];
     }
 
     return sortResources(all, sortField, sortOrder);
   }, [data?.files, localSearch, resourceFilter, sortField, sortOrder]);
+
+  const handleBulkDeleteAction = async () => {
+    const itemsToDelete = combinedItems.filter(item => selectedResources.includes(item.guid));
+    if (itemsToDelete.length === 0) return;
+
+    setIsBulkDeleting(true);
+    await handleBulkPermanentDelete(itemsToDelete);
+    setIsBulkDeleting(false);
+    clearResourceSelection();
+  };
+
+  const isAllSelected = combinedItems.length > 0 && combinedItems.every(item => selectedResources.includes(item.guid));
+
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      combinedItems.forEach(item => {
+        if (!selectedResources.includes(item.guid)) {
+          toggleResourceSelection(item.guid);
+        }
+      });
+    } else {
+      clearResourceSelection();
+    }
+  };
 
   if (isLoading) {
     return (
@@ -102,12 +133,20 @@ export const Trash = () => {
             <p className="text-sm">We couldn't find anything matching "{localSearch}" in your deleted files</p>
           </div>
         ) : (
-          <ResourceSection>
+          <ResourceSection
+            onSelectAll={handleSelectAll}
+            isAllSelected={isAllSelected}
+          >
             {combinedItems.map((file: FileData) => (
               <FileCard key={file.guid} file={file} isTrash={true} />
             ))}
           </ResourceSection>
         )}
+
+        <BulkActionToolbar
+          onDelete={handleBulkDeleteAction}
+          isDeleting={isBulkDeleting}
+        />
       </div>
 
       <DeleteConfirmationDialog

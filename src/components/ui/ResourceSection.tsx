@@ -1,12 +1,15 @@
 import React from "react"
 import { useAppStore } from "@/store/useAppStore"
 import { ChevronUp, ChevronDown } from "lucide-react"
+import { Checkbox } from "@/components/ui/checkbox"
 
 interface ResourceSectionProps {
   children: React.ReactNode
+  onSelectAll?: (checked: boolean) => void
+  isAllSelected?: boolean
 }
 
-export const ResourceSection = ({ children }: ResourceSectionProps) => {
+export const ResourceSection = ({ children, onSelectAll, isAllSelected }: ResourceSectionProps) => {
   const { viewMode, sortField, sortOrder, setSortField, setSortOrder } = useAppStore()
   const isGrid = viewMode === "grid"
 
@@ -27,7 +30,15 @@ export const ResourceSection = ({ children }: ResourceSectionProps) => {
   return (
     <div className="space-y-3 mb-12">
       {!isGrid && (
-        <div className="grid grid-cols-[80px_1fr_180px_100px_48px] gap-3 px-3 py-2 text-xs font-medium text-muted-foreground border-b border-border uppercase tracking-wider select-none">
+        <div className="grid grid-cols-[48px_80px_1fr_180px_100px_48px] gap-3 px-3 py-2 text-xs font-medium text-muted-foreground border-b border-border uppercase tracking-wider select-none align-center items-center">
+          <div className="flex justify-center">
+            {onSelectAll && (
+              <Checkbox
+                checked={isAllSelected}
+                onCheckedChange={onSelectAll}
+              />
+            )}
+          </div>
           <div
             className="flex justify-center items-center hover:text-foreground cursor-pointer transition-colors"
             onClick={() => handleSort('type')}

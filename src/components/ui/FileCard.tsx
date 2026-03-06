@@ -15,6 +15,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { useResourceActions } from "@/hooks/useResourceActions"
 import { useAppStore } from "@/store/useAppStore"
+import { Checkbox } from "./checkbox"
 
 interface FileCardProps {
   file: FileData
@@ -23,6 +24,8 @@ interface FileCardProps {
 }
 
 interface ViewProps extends FileCardProps {
+  isSelected: boolean
+  onSelect: (guid: string) => void
   onFavoriteToggle: (e: React.MouseEvent) => void
   handleDeleteClick: (e: React.MouseEvent) => void
   handleRenameClick: () => void
@@ -35,6 +38,8 @@ interface ViewProps extends FileCardProps {
 const FileCardGrid = ({
   file,
   isTrash,
+  isSelected,
+  onSelect,
   onFavoriteToggle,
   handleDeleteClick,
   handleRenameClick,
@@ -42,9 +47,25 @@ const FileCardGrid = ({
   onDownload,
   onRestore
 }: ViewProps) => (
-  <div onClick={handlePreviewClick} className={`group relative p-3 border rounded-lg shadow-sm transition-colors flex items-center justify-between gap-3 cursor-pointer hover:bg-accent/80 h-20 ${isTrash ? 'opacity-80' : ''}`}>
-    <div className="flex items-center gap-3 truncate min-w-0 flex-1">
-      <span className="text-2xl shrink-0"><FileText className="text-sidebar-foreground" /></span>
+  <div onClick={handlePreviewClick} className={`group/card relative p-3 border rounded-lg shadow-sm transition-all flex items-center justify-between gap-3 cursor-pointer hover:bg-accent/80 h-20 overflow-hidden ${isTrash ? 'opacity-80' : ''} ${isSelected ? 'border-primary bg-primary/5' : 'bg-card'}`}>
+    {/* Checkbox - absolutely positioned relative to the card */}
+    <div
+      className={`absolute left-3 top-1/2 -translate-y-1/2 z-10 transition-all duration-200 ease-in-out ${isSelected ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4 group-hover/card:opacity-100 group-hover/card:translate-x-0'}`}
+      onClick={(e) => {
+        e.stopPropagation();
+      }}
+    >
+      <Checkbox
+        checked={isSelected}
+        onCheckedChange={() => onSelect(file.guid)}
+      />
+    </div>
+
+    {/* Content shifted when selected or hovered */}
+    <div className={`flex items-center gap-3 truncate min-w-0 flex-1 transition-transform duration-200 ease-in-out ${isSelected ? 'translate-x-[26px]' : 'group-hover/card:translate-x-[26px]'}`}>
+      <div className="shrink-0">
+        <span className="text-2xl"><FileText className="text-sidebar-foreground" /></span>
+      </div>
       <div className="flex flex-col truncate">
         <span className="font-medium truncate">{file.name}</span>
         <span className="text-xs text-muted-foreground truncate">{(file.size / 1024 / 1024).toFixed(2)} MB</span>
@@ -62,6 +83,8 @@ const FileCardGrid = ({
 const FileCardList = ({
   file,
   isTrash,
+  isSelected,
+  onSelect,
   onFavoriteToggle,
   handleDeleteClick,
   handleRenameClick,
@@ -69,8 +92,14 @@ const FileCardList = ({
   onDownload,
   onRestore
 }: ViewProps) => (
-  <div onClick={handlePreviewClick} className={`group relative border-b border-border transition-colors h-12 grid grid-cols-[80px_1fr_180px_100px_48px] gap-3 px-3 items-center cursor-pointer hover:bg-muted ${isTrash ? 'opacity-80' : ''}`}>
-    <div className="flex justify-center group-hover:scale-110 transition-transform">
+  <div onClick={handlePreviewClick} className={`group/card relative border-b border-border transition-colors h-12 grid grid-cols-[48px_80px_1fr_180px_100px_48px] gap-3 px-3 items-center cursor-pointer hover:bg-muted ${isTrash ? 'opacity-80' : ''} ${isSelected ? 'bg-primary/5' : ''}`}>
+    <div className="flex justify-center">
+      <Checkbox
+        checked={isSelected}
+        onCheckedChange={() => onSelect(file.guid)}
+      />
+    </div>
+    <div className="flex justify-center group-hover/card:scale-110 transition-transform">
       <FileText className="text-sidebar-foreground size-5" />
     </div>
     <div className="truncate min-w-0">
@@ -142,7 +171,10 @@ const FileActions = ({ file, isTrash, onFavorite, onPreview, onDownload, onRenam
 
 // --- MAIN COMPONENT ---
 export const FileCard = ({ file, contextFolderGuid, isTrash }: FileCardProps) => {
-  const viewMode = useAppStore(state => state.viewMode)
+  const { viewMode, selectedResources, toggleResourceSelection } = useAppStore()
+  const isSelected = selectedResources.includes(file.guid)
+  const handleSelect = (guid: string) => toggleResourceSelection(guid)
+
   const [renameDialogOpen, setRenameDialogOpen] = useState(false)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [isPreviewOpen, setIsPreviewOpen] = useState(false)
@@ -180,7 +212,7 @@ export const FileCard = ({ file, contextFolderGuid, isTrash }: FileCardProps) =>
   const fileUrl = `${baseUrl}/files/${file.guid}/download?session-guid=${sessionId}`
 
   const commonProps = {
-    file, isTrash, onFavoriteToggle, handleDeleteClick, handleRenameClick, handlePreviewClick, onDownload, onRestore
+    file, isTrash, isSelected, onSelect: handleSelect, onFavoriteToggle, handleDeleteClick, handleRenameClick, handlePreviewClick, onDownload, onRestore
   }
 
   return (
