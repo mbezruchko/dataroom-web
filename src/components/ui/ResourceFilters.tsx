@@ -21,7 +21,7 @@ export const ResourceFilters = () => {
       <Button
         variant={isBulkMode ? "secondary" : "ghost"}
         size="sm"
-        className={`h-9 px-3 gap-2 border ${isBulkMode ? 'border-primary/30 bg-primary/10 text-primary hover:bg-primary/20' : 'border-input bg-background/50'} transition-all duration-300 font-medium text-xs`}
+        className={`h-9 px-3 gap-2 border cursor-pointer ${isBulkMode ? 'border-primary/30 bg-primary/10 text-primary hover:bg-primary/20' : 'border-input bg-background/50'} transition-all duration-300 font-medium text-xs`}
         onClick={() => setBulkMode(!isBulkMode)}
         title={isBulkMode ? "Disable Bulk Mode" : "Enable Bulk Mode"}
       >

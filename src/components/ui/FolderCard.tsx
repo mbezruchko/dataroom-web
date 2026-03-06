@@ -72,6 +72,7 @@ const FolderCardGrid = ({
             {folder.files_count === 0 ? 'empty' : folder.files_count === 1 ? '1 file' : `${folder.files_count} files`}
           </span>
         </div>
+        <span className="absolute inset-0 z-0" aria-hidden="true" />
       </Link>
 
       <FolderActions

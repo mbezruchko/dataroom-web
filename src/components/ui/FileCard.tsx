@@ -78,6 +78,7 @@ const FileCardGrid = ({
           <span className="font-medium truncate text-foreground">{file.name}</span>
           <span className="text-xs text-muted-foreground truncate">{(file.size / 1024 / 1024).toFixed(2)} MB</span>
         </div>
+        <span className="absolute inset-0 z-0 cursor-pointer" aria-hidden="true" />
       </div>
 
       <FileActions
