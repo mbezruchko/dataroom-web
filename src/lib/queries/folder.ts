@@ -113,10 +113,10 @@ export const useRenameFolder = () => {
       queryClient.invalidateQueries({ queryKey: ['folderPath'] });
       queryClient.invalidateQueries({ queryKey: ['search'] });
       queryClient.invalidateQueries({ queryKey: ['favorites'] });
-      toast.success('Папка переименована');
+      toast.success('Folder renamed');
     },
     onError: () => {
-      toast.error('Не удалось переименовать папку');
+      toast.error('Failed to rename folder');
     },
   });
 };

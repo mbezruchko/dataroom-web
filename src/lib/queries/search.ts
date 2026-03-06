@@ -2,12 +2,12 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../api';
 import type { SearchResponse } from '../api';
 
-export const useSearch = (query: string, workspaceGuid?: string) => {
+export const useSearch = (query: string, workspaceGuid?: string, folderGuid?: string) => {
   return useQuery({
-    queryKey: ['search', query, workspaceGuid],
+    queryKey: ['search', query, workspaceGuid, folderGuid],
     queryFn: async () => {
       const { data } = await api.get<SearchResponse>(`/search`, {
-        params: { query, workspace_guid: workspaceGuid },
+        params: { query, workspace_guid: workspaceGuid, folder_guid: folderGuid },
       });
       return data;
     },
