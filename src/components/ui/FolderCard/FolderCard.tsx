@@ -1,4 +1,5 @@
-import React, { useState } from "react"
+import { useState } from "react"
+import type { MouseEvent } from "react"
 import { RenameDialog } from "../RenameDialog"
 import { useFolderActions } from "@/hooks/useFolderActions"
 import { useAppStore } from "@/store/useAppStore"
@@ -18,12 +19,12 @@ const FolderCard = ({ folder, contextFolderGuid }: FolderCardProps) => {
 
   const onFavoriteToggle = getFolderFavoriteHandler(folder)
 
-  const handleDeleteClick = (e?: React.MouseEvent) => {
+  const handleDeleteClick = (e?: MouseEvent) => {
     if (e) { e.preventDefault(); e.stopPropagation() }
     setShowDeleteConfirm(true)
   }
 
-  const handleRenameClick = (e?: React.MouseEvent) => {
+  const handleRenameClick = (e?: MouseEvent) => {
     if (e) { e.preventDefault(); e.stopPropagation() }
     setShowRename(true)
   }

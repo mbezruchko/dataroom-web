@@ -1,13 +1,13 @@
-import React from "react"
+import type { MouseEvent } from "react"
 import { Star, Trash2, MoreVertical, Pencil } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 
 interface FolderActionsProps {
   isFavorite: boolean
-  onFavorite: (e: React.MouseEvent) => void
-  onRename: (e?: React.MouseEvent) => void
-  onDelete: (e?: React.MouseEvent) => void
+  onFavorite: (e: MouseEvent) => void
+  onRename: (e?: MouseEvent) => void
+  onDelete: (e?: MouseEvent) => void
   isGrid: boolean
   className?: string
 }

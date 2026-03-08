@@ -1,4 +1,4 @@
-import React from "react"
+import type { MouseEvent } from "react"
 import { Download, Eye, MoreVertical, Pencil, RotateCcw, Star, Trash2 } from "lucide-react"
 import { Button } from "../button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../dropdown-menu"
@@ -7,12 +7,12 @@ import type { FileData } from "@/lib/api"
 interface FileActionsProps {
   file: FileData
   isTrash?: boolean
-  onFavorite: (e: React.MouseEvent) => void
-  onPreview: (e?: React.MouseEvent) => void
-  onDownload: (e?: React.MouseEvent) => void
+  onFavorite: (e: MouseEvent) => void
+  onPreview: (e?: MouseEvent) => void
+  onDownload: (e?: MouseEvent) => void
   onRename: () => void
-  onDelete: (e?: React.MouseEvent) => void
-  onRestore: (e?: React.MouseEvent) => void
+  onDelete: (e?: MouseEvent) => void
+  onRestore: (e?: MouseEvent) => void
   isGrid: boolean
   className?: string
 }

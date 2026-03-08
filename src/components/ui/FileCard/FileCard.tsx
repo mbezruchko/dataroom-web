@@ -1,4 +1,5 @@
 import { useState } from "react"
+import type { MouseEvent } from "react"
 import { ensureSessionId } from "@/lib/cookies"
 import { RenameDialog } from "../RenameDialog"
 import { PDFPreviewDialog } from "../PDFPreviewDialog"
@@ -38,14 +39,14 @@ const FileCard = ({ file, contextFolderGuid, isTrash }: FileCardProps) => {
     setRenameDialogOpen(false)
   }
 
-  const handleDeleteClick = (e?: React.MouseEvent) => {
+  const handleDeleteClick = (e?: MouseEvent) => {
     if (e) {
       e.preventDefault(); e.stopPropagation();
     }
     setDeleteDialogOpen(true);
   }
 
-  const handlePreviewClick = (e?: React.MouseEvent) => {
+  const handlePreviewClick = (e?: MouseEvent) => {
     if (e) {
       e.preventDefault(); e.stopPropagation();
     }
