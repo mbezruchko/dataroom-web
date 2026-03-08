@@ -7,8 +7,16 @@ import { Trash } from "./components/views/Trash"
 import { SearchResults } from "./components/views/SearchResults"
 import { NotFound } from "./components/views/NotFound"
 import { WorkspaceRedirect } from "./components/layout/WorkspaceRedirect"
+import { useEffect } from "react"
+import { useAppStore } from "./store/useAppStore"
 
 const App = () => {
+  const theme = useAppStore(state => state.theme)
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', theme === 'dark')
+  }, [theme])
+
   return (
     <>
       <Routes>

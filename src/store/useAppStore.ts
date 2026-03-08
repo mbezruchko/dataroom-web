@@ -2,6 +2,8 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 interface AppState {
+  theme: 'light' | 'dark';
+  setTheme: (theme: 'light' | 'dark') => void;
   sidebarOpen: boolean;
   setSidebarOpen: (open: boolean) => void;
   toggleSidebar: () => void;
@@ -25,6 +27,9 @@ interface AppState {
 export const useAppStore = create<AppState>()(
   persist(
     (set) => ({
+      theme: 'light',
+      setTheme: (theme) => set({ theme }),
+
       sidebarOpen: typeof window !== 'undefined' ? window.innerWidth >= 1440 : true,
       setSidebarOpen: (open) => set({ sidebarOpen: open }),
       toggleSidebar: () => set((state) => ({ sidebarOpen: !state.sidebarOpen })),
@@ -63,6 +68,7 @@ export const useAppStore = create<AppState>()(
     {
       name: 'dataroom-storage',
       partialize: (state) => ({
+        theme: state.theme,
         viewMode: state.viewMode,
         sortField: state.sortField,
         sortOrder: state.sortOrder,

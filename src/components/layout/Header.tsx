@@ -14,7 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
-import { Menu } from "lucide-react"
+import { Menu, Sun, Moon } from "lucide-react"
 import React, { useMemo } from "react"
 import { Link, useLocation, useParams } from "react-router-dom"
 import { useAppStore } from "@/store/useAppStore"
@@ -28,6 +28,8 @@ interface BreadcrumbItemData {
 
 export function Header() {
   const toggleSidebar = useAppStore(state => state.toggleSidebar)
+  const theme = useAppStore(state => state.theme)
+  const setTheme = useAppStore(state => state.setTheme)
   const location = useLocation()
   const { workspaceGuid } = useParams<{ workspaceGuid: string }>()
 
@@ -134,6 +136,15 @@ export function Header() {
           )}
         </Breadcrumb>
       </div>
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+        className="shrink-0 min-h-[44px] min-w-[44px]"
+      >
+        {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+        <span className="sr-only">Toggle theme</span>
+      </Button>
     </header>
   )
 }
