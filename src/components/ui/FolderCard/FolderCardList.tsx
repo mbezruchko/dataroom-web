@@ -24,7 +24,7 @@ const FolderCardList = ({ folder, isSelected, onSelect, onFavoriteToggle, handle
 
       <Link
         to={`/${workspaceGuid}/folder/${folder.guid}`}
-        className="grid grid-cols-subgrid col-span-4 contents hover:no-underline"
+        className="grid grid-cols-subgrid col-span-4 contents hover:no-underline items-center"
       >
         <div className="flex justify-center group-hover/card:scale-110 transition-transform">
           <FolderClosed className="text-sidebar-foreground size-5" />

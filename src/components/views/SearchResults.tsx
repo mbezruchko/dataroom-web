@@ -6,13 +6,10 @@ import type { FolderData, FileData } from "@/lib/api"
 import { useAppStore } from "@/store/useAppStore"
 import { sortResources } from "@/lib/sorting"
 import { useBulkActions } from "@/hooks/useBulkActions"
-import ResourceSection from "@/components/ui/ResourceSection"
-import ViewSwitcher from "@/components/ui/ViewSwitcher"
-import ResourceFilters from "@/components/ui/ResourceFilters"
-import BulkActionToolbar from "@/components/ui/BulkActionToolbar"
-import SmartSearch from "@/components/ui/SmartSearch"
-import FolderCard from "@/components/ui/FolderCard"
-import FileCard from "@/components/ui/FileCard"
+import {
+  ResourceSection, ViewSwitcher, ResourceFilters,
+  BulkActionToolbar, SmartSearch, FolderCard, FileCard,
+} from "@/components/ui"
 
 export const SearchResults = () => {
   const { workspaceGuid } = useParams<{ workspaceGuid: string }>();

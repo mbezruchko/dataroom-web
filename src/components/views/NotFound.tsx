@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom"
-import { Button } from "@/components/ui/button"
 import { FolderX, FileQuestion } from "lucide-react"
+import { Button } from "@/components/ui"
 
 interface NotFoundProps {
   variant?: "folder" | "page"

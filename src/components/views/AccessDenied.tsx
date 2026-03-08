@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom"
-import { Button } from "@/components/ui/button"
 import { ShieldAlert } from "lucide-react"
+import { Button } from "@/components/ui"
 
 export const AccessDenied = () => (
   <div className="flex h-full flex-col items-center justify-center gap-6 text-center animate-in fade-in zoom-in duration-300">

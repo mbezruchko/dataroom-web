@@ -1,18 +1,15 @@
-import { Loader2, Search } from "lucide-react"
-import { useFavorites } from "@/lib/queries"
-import { useParams, useLocation } from "react-router-dom"
 import { useState, useMemo, useEffect } from "react"
+import { useParams, useLocation } from "react-router-dom"
+import { Loader2, Search } from "lucide-react"
 import type { FolderData, FileData } from "@/lib/api"
-import { useAppStore } from "@/store/useAppStore"
+import { useFavorites } from "@/lib/queries"
 import { sortResources } from "@/lib/sorting"
+import { useAppStore } from "@/store/useAppStore"
 import { useBulkActions } from "@/hooks/useBulkActions"
-import ResourceSection from "@/components/ui/ResourceSection"
-import ViewSwitcher from "@/components/ui/ViewSwitcher"
-import SmartSearch from "@/components/ui/SmartSearch"
-import ResourceFilters from "@/components/ui/ResourceFilters"
-import BulkActionToolbar from "@/components/ui/BulkActionToolbar"
-import FolderCard from "@/components/ui/FolderCard"
-import FileCard from "@/components/ui/FileCard"
+import {
+  ResourceSection, ViewSwitcher, SmartSearch, ResourceFilters,
+  BulkActionToolbar, FolderCard, FileCard
+} from "@/components/ui"
 
 export const Favorites = () => {
   const { workspaceGuid } = useParams<{ workspaceGuid: string }>();

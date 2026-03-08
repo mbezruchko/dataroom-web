@@ -1,19 +1,15 @@
+import { useState, useMemo, useEffect } from "react"
 import { Loader2, Trash2, Search } from "lucide-react"
-import { useTrash, useEmptyTrash } from "@/lib/queries/search"
 import { useParams, useLocation } from "react-router-dom"
 import type { FileData } from "@/lib/api"
-import { Button } from "@/components/ui/button"
-import { useState, useMemo, useEffect } from "react"
-import { useAppStore } from "@/store/useAppStore"
+import { useTrash, useEmptyTrash } from "@/lib/queries/search"
 import { sortResources } from "@/lib/sorting"
+import { useAppStore } from "@/store/useAppStore"
 import { useBulkActions } from "@/hooks/useBulkActions"
-import DeleteConfirmationDialog from "@/components/ui/DeleteConfirmationDialog"
-import ResourceSection from "@/components/ui/ResourceSection"
-import ViewSwitcher from "@/components/ui/ViewSwitcher"
-import ResourceFilters from "@/components/ui/ResourceFilters"
-import BulkActionToolbar from "@/components/ui/BulkActionToolbar"
-import SmartSearch from "@/components/ui/SmartSearch"
-import FileCard from "@/components/ui/FileCard"
+import {
+  Button, DeleteConfirmationDialog, ResourceSection,
+  ViewSwitcher, ResourceFilters, BulkActionToolbar, SmartSearch, FileCard,
+} from "@/components/ui"
 
 export const Trash = () => {
   const { workspaceGuid } = useParams<{ workspaceGuid: string }>();

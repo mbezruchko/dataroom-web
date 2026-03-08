@@ -1,23 +1,18 @@
+import axios from "axios"
 import { useState, useMemo, useEffect } from "react"
 import { useParams, useLocation } from "react-router-dom"
-import axios from "axios"
 import { Loader2, Search } from "lucide-react"
-import { useFolder, useRenameFolder } from "@/lib/queries"
-import { NotFound } from "./NotFound"
 import type { FolderData, FileData } from "@/lib/api"
-import { CreateFolderDialog } from "@/components/ui/CreateFolderDialog"
-import { UploadFileDialog } from "@/components/ui/UploadFileDialog"
-import { RenameDialog } from "@/components/ui/RenameDialog"
-import { useAppStore } from "@/store/useAppStore"
+import { useFolder, useRenameFolder } from "@/lib/queries"
 import { sortResources } from "@/lib/sorting"
+import { useAppStore } from "@/store/useAppStore"
 import { useBulkActions } from "@/hooks/useBulkActions"
-import ResourceSection from "@/components/ui/ResourceSection"
-import ViewSwitcher from "@/components/ui/ViewSwitcher"
-import ResourceFilters from "@/components/ui/ResourceFilters"
-import BulkActionToolbar from "@/components/ui/BulkActionToolbar"
-import SmartSearch from "@/components/ui/SmartSearch"
-import FolderCard from "@/components/ui/FolderCard"
-import FileCard from "@/components/ui/FileCard"
+import { NotFound } from "./NotFound"
+import {
+  CreateFolderDialog, UploadFileDialog, RenameDialog,
+  ResourceSection, ViewSwitcher, ResourceFilters,
+  BulkActionToolbar, SmartSearch, FolderCard, FileCard,
+} from "@/components/ui"
 
 export const FileExplorer = () => {
   const { workspaceGuid, folderGuid: folderGuidParam } = useParams<{ workspaceGuid: string, folderGuid?: string }>();
