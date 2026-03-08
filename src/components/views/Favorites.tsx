@@ -10,7 +10,7 @@ import { useAppStore } from "@/store/useAppStore"
 import { sortResources } from "@/lib/sorting"
 import { SmartSearch } from "@/components/ui/SmartSearch"
 import { BulkActionToolbar } from "@/components/ui/BulkActionToolbar"
-import { useResourceActions } from "@/hooks/useResourceActions"
+import { useBulkActions } from "@/hooks/useBulkActions"
 import FolderCard from "@/components/ui/FolderCard"
 import FileCard from "@/components/ui/FileCard"
 
@@ -22,7 +22,7 @@ export const Favorites = () => {
     sortField, sortOrder, resourceFilter, localSearch, setLocalSearch,
     selectedResources, toggleResourceSelection, clearResourceSelection
   } = useAppStore();
-  const { handleBulkDelete } = useResourceActions();
+  const { handleBulkDelete } = useBulkActions();
   const [isBulkDeleting, setIsBulkDeleting] = useState(false);
 
   useEffect(() => {

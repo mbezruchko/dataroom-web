@@ -3,7 +3,7 @@ import { ensureSessionId } from "@/lib/cookies"
 import { DeleteConfirmationDialog } from "../DeleteConfirmationDialog"
 import { RenameDialog } from "../RenameDialog"
 import { PDFPreviewDialog } from "../PDFPreviewDialog"
-import { useResourceActions } from "@/hooks/useResourceActions"
+import { useFileActions } from "@/hooks/useFileActions"
 import { useAppStore } from "@/store/useAppStore"
 import type { FileCardProps } from "./types"
 import FileCardGrid from "./FileCardGrid"
@@ -20,7 +20,7 @@ const FileCard = ({ file, contextFolderGuid, isTrash }: FileCardProps) => {
 
   const {
     getDownloadHandler, getFileFavoriteHandler, getFileDeleteHandler, getFileRenameHandler, getFileRestoreHandler, getFilePermanentDeleteHandler
-  } = useResourceActions()
+  } = useFileActions()
 
   const onDownload = getDownloadHandler(file.guid)
   const onFavoriteToggle = getFileFavoriteHandler(file)

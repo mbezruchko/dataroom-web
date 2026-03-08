@@ -12,7 +12,7 @@ import { useAppStore } from "@/store/useAppStore"
 import { sortResources } from "@/lib/sorting"
 import { SmartSearch } from "@/components/ui/SmartSearch"
 import { BulkActionToolbar } from "@/components/ui/BulkActionToolbar"
-import { useResourceActions } from "@/hooks/useResourceActions"
+import { useBulkActions } from "@/hooks/useBulkActions"
 import FileCard from "@/components/ui/FileCard"
 
 export const Trash = () => {
@@ -25,7 +25,7 @@ export const Trash = () => {
     sortField, sortOrder, resourceFilter, localSearch, setLocalSearch,
     selectedResources, toggleResourceSelection, clearResourceSelection
   } = useAppStore();
-  const { handleBulkPermanentDelete } = useResourceActions();
+  const { handleBulkPermanentDelete } = useBulkActions();
   const [isBulkDeleting, setIsBulkDeleting] = useState(false);
 
   useEffect(() => {

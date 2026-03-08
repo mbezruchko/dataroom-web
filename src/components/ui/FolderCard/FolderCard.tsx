@@ -1,7 +1,7 @@
 import React, { useState } from "react"
 import { DeleteConfirmationDialog } from "../DeleteConfirmationDialog"
 import { RenameDialog } from "../RenameDialog"
-import { useResourceActions } from "@/hooks/useResourceActions"
+import { useFolderActions } from "@/hooks/useFolderActions"
 import { useAppStore } from "@/store/useAppStore"
 import type { FolderCardProps } from "./types"
 import FolderCardGrid from "./FolderCardGrid"
@@ -11,7 +11,7 @@ const FolderCard = ({ folder, contextFolderGuid }: FolderCardProps) => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [showRename, setShowRename] = useState(false)
   const { viewMode, selectedResources, toggleResourceSelection } = useAppStore()
-  const { getFolderDeleteHandler, getFolderFavoriteHandler, getFolderRenameHandler } = useResourceActions()
+  const { getFolderDeleteHandler, getFolderFavoriteHandler, getFolderRenameHandler } = useFolderActions()
 
   const isSelected = selectedResources.includes(folder.guid)
   const handleSelect = (guid: string) => toggleResourceSelection(guid)
@@ -49,7 +49,7 @@ const FolderCard = ({ folder, contextFolderGuid }: FolderCardProps) => {
       <DeleteConfirmationDialog
         open={showDeleteConfirm}
         onOpenChange={setShowDeleteConfirm}
-        onConfirm={() => getFolderDeleteHandler(folder, contextFolderGuid)({ preventDefault: () => {}, stopPropagation: () => {} } as React.MouseEvent)}
+        onConfirm={() => getFolderDeleteHandler(folder, contextFolderGuid)()}
         title="Delete Folder"
         description={`Are you sure you want to delete "${folder.name}"? All its contents will be moved to trash.`}
       />
