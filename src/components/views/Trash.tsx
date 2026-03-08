@@ -3,7 +3,6 @@ import { useTrash, useEmptyTrash } from "@/lib/queries/search"
 import { useParams, useLocation } from "react-router-dom"
 import type { FileData } from "@/lib/api"
 import { ResourceSection } from "@/components/ui/ResourceSection"
-import { FileCard } from "@/components/ui/FileCard"
 import { Button } from "@/components/ui/button"
 import { useState, useMemo, useEffect } from "react"
 import { DeleteConfirmationDialog } from "@/components/ui/DeleteConfirmationDialog"
@@ -14,6 +13,7 @@ import { sortResources } from "@/lib/sorting"
 import { SmartSearch } from "@/components/ui/SmartSearch"
 import { BulkActionToolbar } from "@/components/ui/BulkActionToolbar"
 import { useResourceActions } from "@/hooks/useResourceActions"
+import FileCard from "@/components/ui/FileCard"
 
 export const Trash = () => {
   const { workspaceGuid } = useParams<{ workspaceGuid: string }>();

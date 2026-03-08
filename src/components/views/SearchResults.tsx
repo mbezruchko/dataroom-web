@@ -4,8 +4,6 @@ import { Search, Loader2 } from "lucide-react"
 import { useSearch } from "@/lib/queries"
 import type { FolderData, FileData } from "@/lib/api"
 import { ResourceSection } from "@/components/ui/ResourceSection"
-import { FolderCard } from "@/components/ui/FolderCard"
-import { FileCard } from "@/components/ui/FileCard"
 import { ViewSwitcher } from "@/components/ui/ViewSwitcher"
 import { ResourceFilters } from "@/components/ui/ResourceFilters"
 import { useAppStore } from "@/store/useAppStore"
@@ -13,6 +11,8 @@ import { sortResources } from "@/lib/sorting"
 import { SmartSearch } from "@/components/ui/SmartSearch"
 import { BulkActionToolbar } from "@/components/ui/BulkActionToolbar"
 import { useResourceActions } from "@/hooks/useResourceActions"
+import FolderCard from "@/components/ui/FolderCard"
+import FileCard from "@/components/ui/FileCard"
 
 export const SearchResults = () => {
   const { workspaceGuid } = useParams<{ workspaceGuid: string }>();

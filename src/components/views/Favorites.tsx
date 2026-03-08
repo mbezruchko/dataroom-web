@@ -3,8 +3,6 @@ import { useFavorites } from "@/lib/queries"
 import { useParams, useLocation } from "react-router-dom"
 import { useState, useMemo, useEffect } from "react"
 import type { FolderData, FileData } from "@/lib/api"
-import { FolderCard } from "@/components/ui/FolderCard"
-import { FileCard } from "@/components/ui/FileCard"
 import { ResourceSection } from "@/components/ui/ResourceSection"
 import { ViewSwitcher } from "@/components/ui/ViewSwitcher"
 import { ResourceFilters } from "@/components/ui/ResourceFilters"
@@ -13,6 +11,8 @@ import { sortResources } from "@/lib/sorting"
 import { SmartSearch } from "@/components/ui/SmartSearch"
 import { BulkActionToolbar } from "@/components/ui/BulkActionToolbar"
 import { useResourceActions } from "@/hooks/useResourceActions"
+import FolderCard from "@/components/ui/FolderCard"
+import FileCard from "@/components/ui/FileCard"
 
 export const Favorites = () => {
   const { workspaceGuid } = useParams<{ workspaceGuid: string }>();
