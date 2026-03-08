@@ -10,8 +10,8 @@ import { useBulkActions } from "@/hooks/useBulkActions"
 import { NotFound } from "./NotFound"
 import {
   CreateFolderDialog, UploadFileDialog, RenameDialog,
-  ResourceSection, ViewSwitcher, ResourceFilters,
-  BulkActionToolbar, SmartSearch, FolderCard, FileCard,
+  ResourceSection, SearchToolbar,
+  BulkActionToolbar, FolderCard, FileCard,
 } from "@/components/ui"
 
 export const FileExplorer = () => {
@@ -108,23 +108,19 @@ export const FileExplorer = () => {
   };
 
   return (
-    <div className="flex h-full flex-col p-6 space-y-4 relative">
-      <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center gap-2 group">
-          <h2 className="text-2xl font-bold tracking-tight">
+    <div className="flex h-full flex-col p-4 sm:p-6 space-y-4 relative">
+      <div className="flex flex-col sm:flex-col md:flex-col lg:flex-row justify-between gap-3 mb-2">
+        <div className="flex items-center justify-between gap-2">
+          <h2 className="text-xl sm:text-2xl font-bold tracking-tight truncate">
             {<span className="mr-4">{folder?.name || 'Storage'}</span>}
           </h2>
-          <CreateFolderDialog parentId={folderGuid === 'root' ? null : folderGuid} />
-          <UploadFileDialog folderId={folderGuid === 'root' ? null : folderGuid} />
-        </div>
-
-        <div className="flex items-center gap-4 flex-1 justify-end">
-          <SmartSearch />
-          <div className="flex items-center gap-2 shrink-0">
-            <ResourceFilters />
-            <ViewSwitcher />
+          <div className="flex items-center gap-2">
+            <CreateFolderDialog parentId={folderGuid === 'root' ? null : folderGuid} />
+            <UploadFileDialog folderId={folderGuid === 'root' ? null : folderGuid} />
           </div>
         </div>
+
+        <SearchToolbar />
       </div>
 
       <div className="mt-6 flex-1 overflow-auto">

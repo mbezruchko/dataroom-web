@@ -7,7 +7,7 @@ import { sortResources } from "@/lib/sorting"
 import { useAppStore } from "@/store/useAppStore"
 import { useBulkActions } from "@/hooks/useBulkActions"
 import {
-  ResourceSection, ViewSwitcher, SmartSearch, ResourceFilters,
+  ResourceSection, SearchToolbar,
   BulkActionToolbar, FolderCard, FileCard
 } from "@/components/ui"
 
@@ -82,13 +82,7 @@ export const Favorites = () => {
     <div className="flex h-full flex-col p-6 space-y-4">
       <div className="flex items-center justify-between mb-2">
         <h2 className="text-2xl font-bold tracking-tight">Favorites</h2>
-        <div className="flex items-center gap-4 flex-1 justify-end">
-          <SmartSearch />
-          <div className="flex items-center gap-2 shrink-0">
-            <ResourceFilters />
-            <ViewSwitcher />
-          </div>
-        </div>
+        <SearchToolbar />
       </div>
 
       <div className="space-y-8 mt-6 h-full flex-1 overflow-auto relative">

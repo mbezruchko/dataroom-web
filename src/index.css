@@ -2,6 +2,7 @@
 @plugin "tailwindcss-animate";
 
 @custom-variant dark (&:is(.dark *));
+@custom-variant touch (@media (hover: none) and (pointer: coarse));
 
 :root {
   --radius: 0.625rem;
@@ -118,7 +119,12 @@
     @apply border-border outline-ring/50;
   }
 
+  html {
+    touch-action: manipulation;
+  }
+
   body {
     @apply bg-background text-foreground;
+    overscroll-behavior-y: contain;
   }
 }

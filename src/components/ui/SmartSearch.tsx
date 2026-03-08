@@ -5,11 +5,7 @@ import { Input } from "@/components/ui/input"
 import { useAppStore } from "@/store/useAppStore"
 import { Badge } from "@/components/ui/badge"
 
-interface SmartSearchProps {
-  className?: string
-}
-
-const SmartSearch = ({ className }: SmartSearchProps) => {
+const SmartSearch = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const { workspaceGuid } = useParams<{ workspaceGuid: string }>()
@@ -52,7 +48,7 @@ const SmartSearch = ({ className }: SmartSearchProps) => {
   }
 
   return (
-    <div className={`relative flex items-center w-full max-w-[200px] lg:max-w-[380px] ${className}`}>
+    <div className={'relative flex items-center w-full max-w-none'}>
       <div className="absolute left-2.5 flex items-center gap-2 z-10">
         <Search className="size-4 text-muted-foreground pointer-events-none" />
         <Badge
@@ -69,7 +65,7 @@ const SmartSearch = ({ className }: SmartSearchProps) => {
       <Input
         type="search"
         placeholder={searchMode === 'workspace' ? "Search in workspace..." : "Search in current tab..."}
-        className={`w-full bg-background/50 focus-visible:bg-background transition-all duration-300 h-9 ${searchMode === 'workspace' ? 'pl-[122px]' : 'pl-[78px]'
+        className={`w-full bg-background/50 focus-visible:bg-background transition-all duration-300 h-9 ${searchMode === 'workspace' ? 'pl-[120px] sm:pl-[122px]' : 'pl-[75px] sm:pl-[78px]'
           }`}
         value={search}
         onChange={(e) => setSearch(e.target.value)}

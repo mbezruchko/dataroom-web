@@ -9,7 +9,9 @@ const FolderCardList = ({ folder, isSelected, onSelect, onFavoriteToggle, handle
   const { workspaceGuid } = useParams<{ workspaceGuid: string }>()
   const { isBulkMode } = useAppStore()
   const showCheckbox = isBulkMode || isSelected
-  const gridCols = showCheckbox ? 'grid-cols-[48px_80px_1fr_180px_100px_48px]' : 'grid-cols-[80px_1fr_180px_100px_48px]'
+  const gridCols = showCheckbox
+    ? 'grid-cols-[48px_48px_1fr_80px] md:grid-cols-[48px_80px_1fr_180px_100px_48px]'
+    : 'grid-cols-[48px_1fr_80px] md:grid-cols-[80px_1fr_180px_100px_48px]'
 
   return (
     <div className={`h-12 border-b border-border hover:bg-muted transition-colors grid ${gridCols} gap-3 px-3 items-center group/card ${isSelected ? 'bg-primary/5' : ''}`}>
@@ -24,7 +26,7 @@ const FolderCardList = ({ folder, isSelected, onSelect, onFavoriteToggle, handle
 
       <Link
         to={`/${workspaceGuid}/folder/${folder.guid}`}
-        className="grid grid-cols-subgrid col-span-4 contents hover:no-underline items-center"
+        className="contents hover:no-underline"
       >
         <div className="flex justify-center group-hover/card:scale-110 transition-transform">
           <FolderClosed className="text-sidebar-foreground size-5" />
@@ -32,10 +34,10 @@ const FolderCardList = ({ folder, isSelected, onSelect, onFavoriteToggle, handle
         <div className="truncate min-w-0">
           <span className="font-medium truncate text-foreground">{folder.name}</span>
         </div>
-        <div className="text-sm text-muted-foreground truncate">
+        <div className="text-sm text-muted-foreground truncate hidden md:block">
           {new Date(folder.updated_at || folder.created_at).toLocaleDateString([], { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
         </div>
-        <div className="text-sm text-muted-foreground truncate">
+        <div className="text-sm text-muted-foreground truncate hidden md:block">
           {folder.files_count === 0 ? '--' : folder.files_count === 1 ? '1 file' : `${folder.files_count} files`}
         </div>
       </Link>

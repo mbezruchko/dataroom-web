@@ -57,11 +57,11 @@ export function Header() {
   const renderBreadcrumbs = () => {
     const BreadcrumbContent = ({ item }: { item: BreadcrumbItemData }) => {
       const content = item.active ? (
-        <BreadcrumbPage className="max-w-[150px] truncate" title={item.label}>
+        <BreadcrumbPage className="max-w-[80px] sm:max-w-[150px] truncate" title={item.label}>
           {item.label}
         </BreadcrumbPage>
       ) : (
-        <BreadcrumbLink asChild className="max-w-[150px] truncate" title={item.label}>
+        <BreadcrumbLink asChild className="max-w-[80px] sm:max-w-[150px] truncate" title={item.label}>
           <Link to={item.href}>{item.label}</Link>
         </BreadcrumbLink>
       )
@@ -122,7 +122,7 @@ export function Header() {
   return (
     <header className="flex h-14 items-center gap-4 border-b bg-background px-4 lg:px-6">
       <div className="flex items-center gap-4 flex-1 overflow-hidden">
-        <Button variant="ghost" size="icon" onClick={toggleSidebar} className="lg:hidden shrink-0">
+        <Button variant="ghost" size="icon" onClick={toggleSidebar} className="min-[1440px]:hidden shrink-0 min-h-[44px] min-w-[44px]">
           <Menu className="h-5 w-5" />
           <span className="sr-only">Toggle Sidebar</span>
         </Button>
@@ -133,10 +133,6 @@ export function Header() {
             <BreadcrumbList>{renderBreadcrumbs()}</BreadcrumbList>
           )}
         </Breadcrumb>
-      </div>
-
-      <div className="flex items-center gap-3 shrink-0">
-        {/* Actions/Profile can go here if any */}
       </div>
     </header>
   )

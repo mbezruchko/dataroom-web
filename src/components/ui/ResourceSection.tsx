@@ -30,7 +30,7 @@ const ResourceSection = ({ children, onSelectAll, isAllSelected }: ResourceSecti
   return (
     <div className="space-y-3 mb-12">
       {(!isGrid || isBulkMode) && (
-        <div className={`flex items-center gap-3 px-3 ${isGrid ? 'mb-4 py-2 bg-accent/30 rounded-lg border border-border/50' : `grid ${isBulkMode ? 'grid-cols-[48px_80px_1fr_180px_100px_48px]' : 'grid-cols-[80px_1fr_180px_100px_48px]'} border-b border-border py-2`} text-xs font-medium text-muted-foreground uppercase tracking-wider select-none`}>
+        <div className={`flex items-center gap-3 px-3 ${isGrid ? 'mb-4 py-2 bg-accent/30 rounded-lg border border-border/50' : `grid ${isBulkMode ? 'grid-cols-[48px_48px_1fr_80px] md:grid-cols-[48px_80px_1fr_180px_100px_48px]' : 'grid-cols-[48px_1fr_80px] md:grid-cols-[80px_1fr_180px_100px_48px]'} border-b border-border py-2`} text-xs font-medium text-muted-foreground uppercase tracking-wider select-none`}>
           {(!isGrid && isBulkMode || isGrid) && (
             <div className={`${isGrid ? 'flex items-center gap-2' : 'flex justify-center'}`}>
               {onSelectAll && (
@@ -67,13 +67,13 @@ const ResourceSection = ({ children, onSelectAll, isAllSelected }: ResourceSecti
                 Name <SortIndicator field="name" />
               </div>
               <div
-                className="flex items-center hover:text-foreground cursor-pointer transition-colors"
+                className="hidden md:flex items-center hover:text-foreground cursor-pointer transition-colors"
                 onClick={() => handleSort('date')}
               >
                 Date Modified <SortIndicator field="date" />
               </div>
               <div
-                className="flex items-center hover:text-foreground cursor-pointer transition-colors"
+                className="hidden md:flex items-center hover:text-foreground cursor-pointer transition-colors"
                 onClick={() => handleSort('size')}
               >
                 Size <SortIndicator field="size" />

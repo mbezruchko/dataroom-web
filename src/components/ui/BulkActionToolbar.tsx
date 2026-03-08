@@ -15,7 +15,7 @@ const BulkActionToolbar = ({ onDelete, isDeleting }: BulkActionToolbarProps) => 
   if (count === 0) return null
 
   return (
-    <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 animate-in fade-in slide-in-from-bottom-4 duration-300">
+    <div className="fixed left-1/2 -translate-x-1/2 z-50 animate-in fade-in slide-in-from-bottom-4 duration-300" style={{ bottom: 'max(2rem, env(safe-area-inset-bottom, 2rem))' }}>
       <div className="bg-popover border border-border shadow-2xl rounded-full px-4 py-2 flex items-center gap-3 backdrop-blur-md bg-opacity-90">
         <div className="flex items-center gap-2 px-2">
           <span className="bg-primary text-primary-foreground text-xs font-bold rounded-full size-5 flex items-center justify-center">

@@ -1,11 +1,29 @@
+import { useEffect, useRef } from "react"
 import { Sidebar } from "./Sidebar"
 import { Header } from "./Header"
 import { Outlet, useParams } from "react-router-dom"
 import { useWorkspace } from "@/lib/queries/workspace"
+import { useAppStore } from "@/store/useAppStore"
 import { AccessDenied } from "../views/AccessDenied"
 import { Loader2 } from "lucide-react"
 
+const LG_BREAKPOINT = 1440
+
 export function Layout() {
+  const setSidebarOpen = useAppStore(state => state.setSidebarOpen)
+  const wasDesktop = useRef(window.innerWidth >= LG_BREAKPOINT)
+
+  useEffect(() => {
+    const onResize = () => {
+      const isDesktop = window.innerWidth >= LG_BREAKPOINT
+      if (isDesktop !== wasDesktop.current) {
+        setSidebarOpen(isDesktop)
+        wasDesktop.current = isDesktop
+      }
+    }
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [setSidebarOpen])
   const { workspaceGuid } = useParams<{ workspaceGuid: string }>()
   const { error, isLoading } = useWorkspace(workspaceGuid)
 

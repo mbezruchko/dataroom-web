@@ -8,7 +8,7 @@ import { useAppStore } from "@/store/useAppStore"
 import { useBulkActions } from "@/hooks/useBulkActions"
 import {
   Button, DeleteConfirmationDialog, ResourceSection,
-  ViewSwitcher, ResourceFilters, BulkActionToolbar, SmartSearch, FileCard,
+  SearchToolbar, BulkActionToolbar, FileCard,
 } from "@/components/ui"
 
 export const Trash = () => {
@@ -91,29 +91,24 @@ export const Trash = () => {
     <div className="flex h-full flex-col p-6 space-y-4">
       <div className="flex items-center justify-between mb-2">
         <h2 className="text-2xl font-bold tracking-tight">Trash</h2>
-        <div className="flex items-center gap-4 flex-1 justify-end">
-          <SmartSearch />
-          <div className="flex items-center gap-2 shrink-0">
-            <ResourceFilters />
-            <ViewSwitcher />
-            {hasPhysicalContent && (
-              <Button
-                variant="destructive"
-                size="sm"
-                onClick={() => setShowConfirm(true)}
-                disabled={emptyTrash.isPending}
-                className="cursor-pointer"
-              >
-                {emptyTrash.isPending ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                  <Trash2 className="mr-2 h-4 w-4" />
-                )}
-                Empty Trash
-              </Button>
-            )}
-          </div>
-        </div>
+        <SearchToolbar>
+          {hasPhysicalContent && (
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => setShowConfirm(true)}
+              disabled={emptyTrash.isPending}
+              className="cursor-pointer"
+            >
+              {emptyTrash.isPending ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <Trash2 className="mr-2 h-4 w-4" />
+              )}
+              Empty Trash
+            </Button>
+          )}
+        </SearchToolbar>
       </div>
 
       <div className="mt-6 flex-1 overflow-auto">

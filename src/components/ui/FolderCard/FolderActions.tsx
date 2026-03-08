@@ -16,13 +16,13 @@ const FolderActions = ({ isFavorite, onFavorite, onRename, onDelete, isGrid, cla
   <div className={`flex items-center justify-end gap-1 ${className}`}>
     <button
       onClick={onFavorite}
-      className={`p-2 hover:bg-yellow-500/10 rounded-full transition-all shrink-0 ${isFavorite ? 'opacity-100' : isGrid ? 'group-hover/card:opacity-100 opacity-0' : 'opacity-40 hover:opacity-100'}`}
+      className={`p-2 hover:bg-yellow-500/10 rounded-full transition-all shrink-0 ${isFavorite ? 'opacity-100' : isGrid ? 'group-hover/card:opacity-100 opacity-0 touch:opacity-100' : 'opacity-40 hover:opacity-100'}`}
     >
       <Star className={`h-4 w-4 ${isFavorite ? 'fill-yellow-400 text-yellow-500' : 'text-muted-foreground'}`} />
     </button>
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className={`size-8 rounded-full transition-all shrink-0 cursor-pointer ${isGrid ? 'group-hover/card:opacity-100 opacity-0' : 'opacity-100'}`} onClick={e => e.stopPropagation()}>
+        <Button variant="ghost" size="icon" className={`size-8 rounded-full transition-all shrink-0 cursor-pointer ${isGrid ? 'group-hover/card:opacity-100 opacity-0 touch:opacity-100' : 'opacity-100'}`} onClick={e => e.stopPropagation()}>
           <MoreVertical className="size-4" />
         </Button>
       </DropdownMenuTrigger>

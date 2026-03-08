@@ -23,7 +23,7 @@ export function PDFPreviewDialog({
 }: PDFPreviewDialogProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[70vw] h-[95vh] sm:max-w-none flex flex-col p-0 gap-0 overflow-hidden">
+      <DialogContent className="w-[95vw] sm:w-[85vw] lg:w-[70vw] h-[95vh] sm:max-w-none flex flex-col p-0 gap-0 overflow-hidden">
         <DialogHeader className="p-4 border-b flex flex-row items-center justify-between space-y-0 shrink-0">
           <DialogTitle className="truncate pr-8">{fileName}</DialogTitle>
           <div className="flex items-center mr-8">

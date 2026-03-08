@@ -26,7 +26,7 @@ const ResourceFilters = () => {
         title={isBulkMode ? "Disable Bulk Mode" : "Enable Bulk Mode"}
       >
         <CheckSquare className={`size-4 ${isBulkMode ? 'text-primary' : 'text-muted-foreground'}`} />
-        <span className="hidden sm:inline">Bulk Actions</span>
+        <span className="not-sr-only max-[475px]:not-sr-only min-[475px]:sr-only sm:not-sr-only">Bulk Actions</span>
       </Button>
 
       <DropdownMenu>

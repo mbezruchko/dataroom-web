@@ -7,8 +7,8 @@ import { useAppStore } from "@/store/useAppStore"
 import { sortResources } from "@/lib/sorting"
 import { useBulkActions } from "@/hooks/useBulkActions"
 import {
-  ResourceSection, ViewSwitcher, ResourceFilters,
-  BulkActionToolbar, SmartSearch, FolderCard, FileCard,
+  ResourceSection, SearchToolbar,
+  BulkActionToolbar, FolderCard, FileCard,
 } from "@/components/ui"
 
 export const SearchResults = () => {
@@ -100,13 +100,7 @@ export const SearchResults = () => {
         <h2 className="text-2xl font-bold tracking-tight">
           Search results for "{query}"
         </h2>
-        <div className="flex items-center gap-4 flex-1 justify-end">
-          <SmartSearch />
-          <div className="flex items-center gap-2 shrink-0">
-            <ResourceFilters />
-            <ViewSwitcher />
-          </div>
-        </div>
+        <SearchToolbar />
       </div>
 
       <div className="mt-6 flex-1 overflow-auto relative">

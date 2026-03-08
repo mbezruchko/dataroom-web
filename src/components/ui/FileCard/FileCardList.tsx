@@ -18,7 +18,9 @@ const FileCardList = ({
 }: ViewProps) => {
   const { isBulkMode } = useAppStore()
   const showCheckbox = isBulkMode || isSelected
-  const gridCols = showCheckbox ? 'grid-cols-[48px_80px_1fr_180px_100px_48px]' : 'grid-cols-[80px_1fr_180px_100px_48px]'
+  const gridCols = showCheckbox
+    ? 'grid-cols-[48px_48px_1fr_80px] md:grid-cols-[48px_80px_1fr_180px_100px_48px]'
+    : 'grid-cols-[48px_1fr_80px] md:grid-cols-[80px_1fr_180px_100px_48px]'
 
   return (
     <div className={`group/card relative border-b border-border transition-colors h-12 grid ${gridCols} gap-3 px-3 items-center hover:bg-muted ${isTrash ? 'opacity-80' : ''} ${isSelected ? 'bg-primary/5' : ''}`}>
@@ -33,7 +35,7 @@ const FileCardList = ({
 
       <div
         onClick={handlePreviewClick}
-        className="grid grid-cols-subgrid col-span-4 contents cursor-pointer"
+        className="contents cursor-pointer"
       >
         <div className="flex justify-center group-hover/card:scale-110 transition-transform">
           <FileText className="text-sidebar-foreground size-5" />
@@ -41,10 +43,10 @@ const FileCardList = ({
         <div className="truncate min-w-0">
           <span className="font-medium truncate text-foreground">{file.name}</span>
         </div>
-        <div className="text-sm text-muted-foreground truncate">
+        <div className="text-sm text-muted-foreground truncate hidden md:block">
           {new Date(file.updated_at || file.created_at).toLocaleDateString([], { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
         </div>
-        <div className="text-sm text-muted-foreground truncate">{(file.size / 1024 / 1024).toFixed(2)} MB</div>
+        <div className="text-sm text-muted-foreground truncate hidden md:block">{(file.size / 1024 / 1024).toFixed(2)} MB</div>
       </div>
 
       <FileActions
