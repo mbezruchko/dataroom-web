@@ -109,7 +109,7 @@ export const FileExplorer = () => {
 
   return (
     <div className="flex h-full flex-col p-4 sm:p-6 space-y-4 relative">
-      <div className="flex flex-col sm:flex-col md:flex-col lg:flex-row justify-between gap-3 mb-2">
+      <div className="flex max-lg:flex-col justify-between gap-3 mb-2">
         <div className="flex items-center justify-between gap-2">
           <h2 className="text-xl sm:text-2xl font-bold tracking-tight truncate">
             {<span className="mr-4">{folder?.name || 'Storage'}</span>}

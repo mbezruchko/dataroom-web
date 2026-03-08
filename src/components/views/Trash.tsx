@@ -89,9 +89,9 @@ export const Trash = () => {
 
   return (
     <div className="flex h-full flex-col p-6 space-y-4">
-      <div className="flex items-center justify-between mb-2">
-        <h2 className="text-2xl font-bold tracking-tight">Trash</h2>
-        <SearchToolbar>
+      <div className="flex max-lg:flex-col justify-between mb-2 gap-2">
+        <div className="flex max-lg:justify-between gap-2">
+          <h2 className="text-2xl font-bold tracking-tight mr-4">Trash</h2>
           {hasPhysicalContent && (
             <Button
               variant="destructive"
@@ -107,7 +107,9 @@ export const Trash = () => {
               )}
               Empty Trash
             </Button>
-          )}
+            )}
+        </div>
+        <SearchToolbar>
         </SearchToolbar>
       </div>
 

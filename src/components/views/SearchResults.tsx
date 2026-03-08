@@ -96,7 +96,7 @@ export const SearchResults = () => {
 
   return (
     <div className="flex h-full flex-col p-6 space-y-4">
-      <div className="flex items-center justify-between mb-2">
+      <div className="flex max-md:flex-col justify-between mb-2 gap-2">
         <h2 className="text-2xl font-bold tracking-tight">
           Search results for "{query}"
         </h2>
