@@ -18,14 +18,14 @@ interface DeleteConfirmationDialogProps {
   isPending?: boolean
 }
 
-export function DeleteConfirmationDialog({
+const DeleteConfirmationDialog = ({
   open,
   onOpenChange,
   onConfirm,
   title,
   description,
   isPending
-}: DeleteConfirmationDialogProps) {
+}: DeleteConfirmationDialogProps) => {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
@@ -63,3 +63,5 @@ export function DeleteConfirmationDialog({
     </Dialog>
   )
 }
+
+export default DeleteConfirmationDialog

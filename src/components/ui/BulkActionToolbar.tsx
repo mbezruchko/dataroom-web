@@ -8,7 +8,7 @@ interface BulkActionToolbarProps {
   isDeleting?: boolean
 }
 
-export const BulkActionToolbar = ({ onDelete, isDeleting }: BulkActionToolbarProps) => {
+const BulkActionToolbar = ({ onDelete, isDeleting }: BulkActionToolbarProps) => {
   const { selectedResources, clearResourceSelection } = useAppStore()
   const count = selectedResources.length
 
@@ -51,3 +51,5 @@ export const BulkActionToolbar = ({ onDelete, isDeleting }: BulkActionToolbarPro
     </div>
   )
 }
+
+export default BulkActionToolbar

@@ -2,7 +2,7 @@ import { LayoutGrid, List } from "lucide-react"
 import { useAppStore } from "@/store/useAppStore"
 import { Tabs, TabsList, TabsTrigger } from "./tabs"
 
-export const ViewSwitcher = () => {
+const ViewSwitcher = () => {
   const { viewMode, setViewMode } = useAppStore()
 
   return (
@@ -29,3 +29,5 @@ export const ViewSwitcher = () => {
     </Tabs>
   )
 }
+
+export default ViewSwitcher

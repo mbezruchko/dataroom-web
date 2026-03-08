@@ -3,10 +3,10 @@ import { useNavigate, useParams } from "react-router-dom"
 import { ChevronsUpDown, GalleryVerticalEnd, Pencil, Trash2, MoreVertical } from "lucide-react"
 import { useWorkspaces, useDeleteWorkspace, useUpdateWorkspace } from "@/lib/queries/workspace"
 import { CreateWorkspaceDialog } from "@/components/ui/CreateWorkspaceDialog"
-import { DeleteConfirmationDialog } from "@/components/ui/DeleteConfirmationDialog"
 import { RenameDialog } from "@/components/ui/RenameDialog"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import DeleteConfirmationDialog from "@/components/ui/DeleteConfirmationDialog"
 
 
 export function WorkspaceSwitcher() {

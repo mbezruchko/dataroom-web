@@ -1,9 +1,9 @@
 import React, { useState } from "react"
-import { DeleteConfirmationDialog } from "../DeleteConfirmationDialog"
 import { RenameDialog } from "../RenameDialog"
 import { useFolderActions } from "@/hooks/useFolderActions"
 import { useAppStore } from "@/store/useAppStore"
 import type { FolderCardProps } from "./types"
+import DeleteConfirmationDialog from "../DeleteConfirmationDialog"
 import FolderCardGrid from "./FolderCardGrid"
 import FolderCardList from "./FolderCardList"
 

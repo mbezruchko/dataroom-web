@@ -1,11 +1,11 @@
 import { useState } from "react"
 import { ensureSessionId } from "@/lib/cookies"
-import { DeleteConfirmationDialog } from "../DeleteConfirmationDialog"
 import { RenameDialog } from "../RenameDialog"
 import { PDFPreviewDialog } from "../PDFPreviewDialog"
 import { useFileActions } from "@/hooks/useFileActions"
 import { useAppStore } from "@/store/useAppStore"
 import type { FileCardProps } from "./types"
+import DeleteConfirmationDialog from "../DeleteConfirmationDialog"
 import FileCardGrid from "./FileCardGrid"
 import FileCardList from "./FileCardList"
 

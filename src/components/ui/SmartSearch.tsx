@@ -9,7 +9,7 @@ interface SmartSearchProps {
   className?: string
 }
 
-export function SmartSearch({ className }: SmartSearchProps) {
+const SmartSearch = ({ className }: SmartSearchProps) => {
   const navigate = useNavigate()
   const location = useLocation()
   const { workspaceGuid } = useParams<{ workspaceGuid: string }>()
@@ -78,3 +78,5 @@ export function SmartSearch({ className }: SmartSearchProps) {
     </div>
   )
 }
+
+export default SmartSearch

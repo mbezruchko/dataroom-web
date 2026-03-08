@@ -11,7 +11,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { useAppStore } from "@/store/useAppStore"
 
-export const ResourceFilters = () => {
+const ResourceFilters = () => {
   const { sortField, setSortField, sortOrder, setSortOrder, isBulkMode, setBulkMode } = useAppStore()
 
   const sortLabel = sortField === 'type' ? 'Type' : sortField === 'name' ? 'Name' : sortField === 'date' ? 'Date' : 'Size'
@@ -65,3 +65,5 @@ export const ResourceFilters = () => {
     </div>
   )
 }
+
+export default ResourceFilters

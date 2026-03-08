@@ -9,7 +9,7 @@ interface ResourceSectionProps {
   isAllSelected?: boolean
 }
 
-export const ResourceSection = ({ children, onSelectAll, isAllSelected }: ResourceSectionProps) => {
+const ResourceSection = ({ children, onSelectAll, isAllSelected }: ResourceSectionProps) => {
   const { viewMode, sortField, sortOrder, setSortField, setSortOrder, isBulkMode } = useAppStore()
   const isGrid = viewMode === "grid"
 
@@ -93,3 +93,5 @@ export const ResourceSection = ({ children, onSelectAll, isAllSelected }: Resour
     </div>
   )
 }
+
+export default ResourceSection
