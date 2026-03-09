@@ -72,6 +72,7 @@ const FileCard = ({ file, contextFolderGuid, isTrash }: FileCardProps) => {
         title="Rename File"
         description="Enter a new name for the file."
         initialValue={file.name}
+        maxLength={120}
       />
 
       <DeleteConfirmationDialog
