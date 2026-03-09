@@ -6,9 +6,10 @@ import type { FolderData, FileData } from "@/lib/api"
 import { useAppStore } from "@/store/useAppStore"
 import { sortResources } from "@/lib/sorting"
 import { useBulkActions } from "@/hooks/useBulkActions"
+import { usePagination } from "@/hooks/usePagination"
 import {
   ResourceSection, SearchToolbar,
-  BulkActionToolbar, FolderCard, FileCard,
+  BulkActionToolbar, FolderCard, FileCard, Pagination,
 } from "@/components/ui"
 
 export const SearchResults = () => {
@@ -50,6 +51,8 @@ export const SearchResults = () => {
     return sortResources(all, sortField, sortOrder);
   }, [data?.folders, data?.files, localSearch, resourceFilter, sortField, sortOrder]);
 
+  const { paginatedItems, currentPage, totalPages, goToPage } = usePagination(combinedItems);
+
   const handleBulkDeleteAction = async () => {
     const itemsToDelete = combinedItems.filter(item => selectedResources.includes(item.guid));
     if (itemsToDelete.length === 0) return;
@@ -60,11 +63,11 @@ export const SearchResults = () => {
     clearResourceSelection();
   };
 
-  const isAllSelected = combinedItems.length > 0 && combinedItems.every(item => selectedResources.includes(item.guid));
+  const isAllSelected = paginatedItems.length > 0 && paginatedItems.every(item => selectedResources.includes(item.guid));
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      combinedItems.forEach(item => {
+      paginatedItems.forEach(item => {
         if (!selectedResources.includes(item.guid)) {
           toggleResourceSelection(item.guid);
         }
@@ -103,31 +106,34 @@ export const SearchResults = () => {
         <SearchToolbar />
       </div>
 
-      <div className="mt-6 flex-1 overflow-auto relative">
+      <div className="mt-6 flex flex-col justify-between flex-1 overflow-auto relative">
         {combinedItems.length > 0 ? (
-          <ResourceSection
-            onSelectAll={handleSelectAll}
-            isAllSelected={isAllSelected}
-          >
-            {combinedItems.map((item) => {
-              if ('size' in item) {
+          <>
+            <ResourceSection
+              onSelectAll={handleSelectAll}
+              isAllSelected={isAllSelected}
+            >
+              {paginatedItems.map((item) => {
+                if ('size' in item) {
+                  return (
+                    <FileCard
+                      key={item.guid}
+                      file={item}
+                      contextFolderGuid={null}
+                    />
+                  );
+                }
                 return (
-                  <FileCard
+                  <FolderCard
                     key={item.guid}
-                    file={item}
+                    folder={item}
                     contextFolderGuid={null}
                   />
                 );
-              }
-              return (
-                <FolderCard
-                  key={item.guid}
-                  folder={item}
-                  contextFolderGuid={null}
-                />
-              );
-            })}
-          </ResourceSection>
+              })}
+            </ResourceSection>
+            <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={goToPage} />
+          </>
         ) : (
           <div className="flex flex-col items-center justify-center py-12 text-muted-foreground w-full h-full">
             <Search className="size-12 mb-4 opacity-20" />

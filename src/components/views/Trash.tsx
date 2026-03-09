@@ -6,9 +6,10 @@ import { useTrash, useEmptyTrash } from "@/lib/queries/search"
 import { sortResources } from "@/lib/sorting"
 import { useAppStore } from "@/store/useAppStore"
 import { useBulkActions } from "@/hooks/useBulkActions"
+import { usePagination } from "@/hooks/usePagination"
 import {
   Button, DeleteConfirmationDialog, ResourceSection,
-  SearchToolbar, BulkActionToolbar, FileCard,
+  SearchToolbar, BulkActionToolbar, FileCard, Pagination,
 } from "@/components/ui"
 
 export const Trash = () => {
@@ -45,6 +46,8 @@ export const Trash = () => {
     return sortResources(all, sortField, sortOrder);
   }, [data?.files, localSearch, resourceFilter, sortField, sortOrder]);
 
+  const { paginatedItems, currentPage, totalPages, goToPage } = usePagination(combinedItems);
+
   const handleBulkDeleteAction = async () => {
     const itemsToDelete = combinedItems.filter(item => selectedResources.includes(item.guid));
     if (itemsToDelete.length === 0) return;
@@ -55,11 +58,11 @@ export const Trash = () => {
     clearResourceSelection();
   };
 
-  const isAllSelected = combinedItems.length > 0 && combinedItems.every(item => selectedResources.includes(item.guid));
+  const isAllSelected = paginatedItems.length > 0 && paginatedItems.every(item => selectedResources.includes(item.guid));
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      combinedItems.forEach(item => {
+      paginatedItems.forEach(item => {
         if (!selectedResources.includes(item.guid)) {
           toggleResourceSelection(item.guid);
         }
@@ -113,7 +116,7 @@ export const Trash = () => {
         </SearchToolbar>
       </div>
 
-      <div className="mt-6 flex-1 overflow-auto">
+      <div className="mt-6 flex flex-col justify-between flex-1 overflow-auto">
         {!hasPhysicalContent ? (
           <div className="flex flex-col items-center justify-center py-12 text-muted-foreground w-full h-full">
             <p className="text-lg font-medium">Trash is empty</p>
@@ -126,14 +129,17 @@ export const Trash = () => {
             <p className="text-sm">We couldn't find anything matching "{localSearch}" in your deleted files</p>
           </div>
         ) : (
-          <ResourceSection
-            onSelectAll={handleSelectAll}
-            isAllSelected={isAllSelected}
-          >
-            {combinedItems.map((file: FileData) => (
-              <FileCard key={file.guid} file={file} isTrash={true} />
-            ))}
-          </ResourceSection>
+          <>
+            <ResourceSection
+              onSelectAll={handleSelectAll}
+              isAllSelected={isAllSelected}
+            >
+              {paginatedItems.map((file: FileData) => (
+                <FileCard key={file.guid} file={file} isTrash={true} />
+              ))}
+            </ResourceSection>
+            <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={goToPage} />
+          </>
         )}
 
         <BulkActionToolbar

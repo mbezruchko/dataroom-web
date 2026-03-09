@@ -14,6 +14,7 @@ export { default as SearchToolbar } from "./SearchToolbar"
 export { default as SmartSearch } from "./SmartSearch"
 export { UploadFileDialog } from "./UploadFileDialog"
 export { default as ViewSwitcher } from "./ViewSwitcher"
+export { default as Pagination } from "./Pagination"
 
 // shadcn/ui primitives
 export * from "./badge"
