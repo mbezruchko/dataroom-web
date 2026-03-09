@@ -23,22 +23,37 @@ export default function Pagination({ currentPage, totalPages, onPageChange }: Pa
   if (totalPages <= 1) return null
   return (
     <nav className="flex items-center justify-center gap-1 py-4" aria-label="Pagination">
-      <Button variant="outline" size="icon" disabled={currentPage === 1}
-        onClick={() => onPageChange(currentPage - 1)}>
+      <Button
+        variant="outline"
+        size="icon"
+        disabled={currentPage === 1}
+        onClick={() => onPageChange(currentPage - 1)}
+        className="cursor-pointer"
+      >
         <ChevronLeft className="h-4 w-4" />
       </Button>
       {getPageNumbers(currentPage, totalPages).map((p, i) =>
         p === "..." ? (
           <span key={`ellipsis-${i}`} className="px-2 text-muted-foreground select-none">...</span>
         ) : (
-          <Button key={p} variant={p === currentPage ? "default" : "ghost"} size="icon"
-            onClick={() => onPageChange(p)}>
+          <Button
+            key={p}
+            variant={p === currentPage ? "default" : "ghost"}
+            size="icon"
+            onClick={() => onPageChange(p)}
+            className="cursor-pointer"
+          >
             {p}
           </Button>
         )
       )}
-      <Button variant="outline" size="icon" disabled={currentPage === totalPages}
-        onClick={() => onPageChange(currentPage + 1)}>
+      <Button
+        variant="outline"
+        size="icon"
+        disabled={currentPage === totalPages}
+        onClick={() => onPageChange(currentPage + 1)}
+        className="cursor-pointer"
+      >
         <ChevronRight className="h-4 w-4" />
       </Button>
     </nav>

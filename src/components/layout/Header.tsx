@@ -140,7 +140,7 @@ export function Header() {
         variant="ghost"
         size="icon"
         onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-        className="shrink-0 min-h-[44px] min-w-[44px]"
+        className="shrink-0 min-h-[44px] min-w-[44px] cursor-pointer"
       >
         {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
         <span className="sr-only">Toggle theme</span>
