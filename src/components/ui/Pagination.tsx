@@ -20,7 +20,6 @@ function getPageNumbers(current: number, total: number): (number | "...")[] {
 }
 
 export default function Pagination({ currentPage, totalPages, onPageChange }: PaginationProps) {
-  if (totalPages <= 1) return null
   return (
     <nav className="flex items-center justify-center gap-1 py-4" aria-label="Pagination">
       <Button
