@@ -83,7 +83,7 @@ export const Favorites = () => {
 
   return (
     <div className="flex h-full flex-col p-6 space-y-4">
-      <div className="flex max-lg:flex-col justify-between mb-2 gap-2">
+      <div className="flex flex-col justify-between mb-2 gap-2">
         <h2 className="text-2xl font-bold tracking-tight">Favorites</h2>
         <SearchToolbar />
       </div>

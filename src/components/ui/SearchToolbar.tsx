@@ -7,7 +7,7 @@ interface SearchToolbarProps {
 }
 
 const SearchToolbar = ({ children }: SearchToolbarProps) => (
-  <div className="flex flex-col max-[475px]:gap-2 min-[475px]:flex-row min-[475px]:items-center gap-2">
+  <div className="flex flex-col max-[475px]:gap-2 min-[475px]:flex-row min-[475px]:items-center justify-between gap-2">
     <SmartSearch />
     <div className="flex max-[475px]:justify-between items-center gap-2 shrink-0">
       <ResourceFilters />
