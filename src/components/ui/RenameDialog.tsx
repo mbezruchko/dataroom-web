@@ -36,6 +36,7 @@ export function RenameDialog({
 }: RenameDialogProps) {
   const [name, setName] = useState(initialValue)
   const isTooLong = maxLength ? name.length > maxLength : false
+  const isAtLimit = maxLength ? name.length === maxLength : false
 
   useEffect(() => {
     if (open) {
@@ -87,11 +88,17 @@ export function RenameDialog({
                       Maximum {maxLength} characters
                     </span>
                   )}
+                  {isAtLimit && !isTooLong && (
+                    <span className="text-[11px] text-amber-500 flex items-center gap-1 font-medium animate-in fade-in slide-in-from-top-1">
+                      <AlertCircle className="size-3" />
+                      Max {maxLength} characters reached
+                    </span>
+                  )}
                 </div>
                 {maxLength && (
                   <span className={cn(
                     "text-[10px] font-medium transition-colors",
-                    isTooLong ? "text-destructive" : "text-muted-foreground"
+                    isTooLong ? "text-destructive" : isAtLimit ? "text-amber-500" : "text-muted-foreground"
                   )}>
                     {name.length}/{maxLength}
                   </span>

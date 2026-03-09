@@ -27,6 +27,7 @@ export function CreateFolderDialog({ parentId }: CreateFolderDialogProps) {
   const { workspaceGuid } = useParams<{ workspaceGuid: string }>()
   const createFolder = useCreateFolder()
   const isTooLong = name.length > MAX_NAME_LENGTH
+  const isAtLimit = name.length === MAX_NAME_LENGTH
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -81,16 +82,16 @@ export function CreateFolderDialog({ parentId }: CreateFolderDialogProps) {
               />
               <div className="flex items-center justify-between px-1">
                 <div className="flex items-center gap-1.5 min-h-[16px]">
-                  {isTooLong && (
-                    <span className="text-[11px] text-destructive flex items-center gap-1 font-medium animate-in fade-in slide-in-from-top-1">
+                  {isAtLimit && (
+                    <span className="text-[11px] text-amber-500 flex items-center gap-1 font-medium animate-in fade-in slide-in-from-top-1">
                       <AlertCircle className="size-3" />
-                      Maximum 30 characters
+                      Max {MAX_NAME_LENGTH} characters reached
                     </span>
                   )}
                 </div>
                 <span className={cn(
                   "text-[10px] font-medium transition-colors",
-                  isTooLong ? "text-destructive" : "text-muted-foreground"
+                  isAtLimit ? "text-amber-500" : "text-muted-foreground"
                 )}>
                   {name.length}/{MAX_NAME_LENGTH}
                 </span>
